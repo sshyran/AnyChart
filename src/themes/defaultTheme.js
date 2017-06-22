@@ -2230,6 +2230,7 @@ goog.provide('anychart.themes.defaultTheme');
 
     // merge with chart
     'pieFunnelPyramidBase': {
+      'mode3d': false,
       'animation': {
         'duration': 500
       },
@@ -2242,6 +2243,10 @@ goog.provide('anychart.themes.defaultTheme');
       'connectorStroke': colorStrokeNormal,
       'overlapMode': 'noOverlap',
       'connectorLength': 20,
+      'baseWidth': '70%',
+      'neckWidth': null,
+      'neckHeight': null,
+      'pointsPadding': 0,
       'hatchFill': null,
       'forceHoverLabels': false,
       'labels': {
@@ -2340,10 +2345,9 @@ goog.provide('anychart.themes.defaultTheme');
       'title': {
         'text': 'Funnel Chart'
       },
-      'baseWidth': '70%',
       'neckWidth': '30%',
       'neckHeight': '25%',
-      'pointsPadding': 0,
+      'reversed': true,
       'labels': {
         'position': 'outsideLeftInColumn'
       }
@@ -2352,8 +2356,6 @@ goog.provide('anychart.themes.defaultTheme');
       'title': {
         'text': 'Pyramid Chart'
       },
-      'baseWidth': '70%',
-      'pointsPadding': 0,
       'legend': {
         'inverted': true
       },
@@ -2365,6 +2367,7 @@ goog.provide('anychart.themes.defaultTheme');
 
     // merge with pie
     'pie3d': {
+      'mode3d': true,
       'explode': '5%',
       'connectorLength': '15%',
       //'legend': {

@@ -17,20 +17,23 @@ goog.require('goog.math');
  *    normalizer: Function,
  *    capabilityCheck: number,
  *    consistency: (anychart.ConsistencyState|number),
- *    signal: (anychart.Signal|number)
- * }|{
- *    handler: number,
- *    propName: string,
- *    normalizer: Function,
- *    consistency: (anychart.ConsistencyState|number),
- *    signal: (anychart.Signal|number)
+ *    signal: (anychart.Signal|number),
+ *    beforeInvalidationHook: Function
  * }|{
  *    handler: number,
  *    propName: string,
  *    normalizer: Function,
  *    consistency: (anychart.ConsistencyState|number),
  *    signal: (anychart.Signal|number),
- *    deprecatedPropName: string
+ *    beforeInvalidationHook: Function
+ * }|{
+ *    handler: number,
+ *    propName: string,
+ *    normalizer: Function,
+ *    consistency: (anychart.ConsistencyState|number),
+ *    signal: (anychart.Signal|number),
+ *    deprecatedPropName: string,
+ *    beforeInvalidationHook: Function
  * }}
  */
 anychart.core.settings.PropertyDescriptor;
@@ -46,9 +49,10 @@ anychart.core.settings.PropertyDescriptor;
  * @param {number} consistency - Consistency to set.
  * @param {number} signal - Signal.
  * @param {number=} opt_check - Check function.
+ * @param {Function=} opt_beforeInvalidationHook
  * @param {string=} opt_methodName - Deprecated prop name.
  */
-anychart.core.settings.createDescriptor = function(map, handler, propName, normalizer, consistency, signal, opt_check, opt_methodName) {
+anychart.core.settings.createDescriptor = function(map, handler, propName, normalizer, consistency, signal, opt_check, opt_beforeInvalidationHook, opt_methodName) {
   /**
    * @type {anychart.core.settings.PropertyDescriptor}
    */
@@ -57,7 +61,8 @@ anychart.core.settings.createDescriptor = function(map, handler, propName, norma
     propName: propName,
     normalizer: normalizer,
     consistency: consistency,
-    signal: signal
+    signal: signal,
+    beforeInvalidationHook: opt_beforeInvalidationHook || goog.nullFunction
   };
   if (goog.isDef(opt_check))
     descriptor.capabilityCheck = opt_check;
@@ -284,7 +289,8 @@ anychart.core.settings.populate = function(classConstructor, descriptors) {
         descriptor.normalizer,
         descriptor.capabilityCheck,
         descriptor.consistency,
-        descriptor.signal);
+        descriptor.signal,
+        descriptor.beforeInvalidationHook);
   }
 };
 
@@ -380,16 +386,18 @@ anychart.core.settings.copy = function(target, descriptors, config) {
  * @param {number} supportCheck - set to anychart.core.series.Capabilities.ANY to invalidate in any case.
  * @param {anychart.ConsistencyState|number} consistencyState
  * @param {anychart.Signal|number} signal
+ * @param {Function} beforeInvalidationHook
  * @param {*=} opt_value
  * @return {*|anychart.core.settings.IObjectWithSettings}
  * @this {anychart.core.settings.IObjectWithSettings}
  */
-anychart.core.settings.simpleHandler = function(fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, opt_value) {
+anychart.core.settings.simpleHandler = function(fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value) {
   if (goog.isDef(opt_value)) {
-    opt_value = normalizer(opt_value);
+    opt_value = normalizer.call(this, opt_value);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
       if (this.check(supportCheck)) {
+        beforeInvalidationHook.call(this);
         if (consistencyState) {
           this.invalidate(consistencyState, signal);
         } else {
@@ -411,13 +419,14 @@ anychart.core.settings.simpleHandler = function(fieldName, deprecatedFieldName, 
  * @param {number} supportCheck - set to anychart.core.series.Capabilities.ANY to invalidate in any case.
  * @param {anychart.ConsistencyState|number} consistencyState
  * @param {anychart.Signal|number} signal
+ * @param {Function} beforeInvalidationHook
  * @param {*=} opt_value
  * @return {*|anychart.core.settings.IObjectWithSettings}
  * @this {anychart.core.settings.IObjectWithSettings}
  */
-anychart.core.settings.simpleDeprecatedHandler = function(fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, opt_value) {
+anychart.core.settings.simpleDeprecatedHandler = function(fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value) {
   anychart.core.reporting.warning(anychart.enums.WarningCode.DEPRECATED, null, [deprecatedFieldName + '()', fieldName + '()'], true);
-  return anychart.core.settings.simpleHandler.call(this, fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, opt_value);
+  return anychart.core.settings.simpleHandler.call(this, fieldName, deprecatedFieldName, normalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value);
 };
 
 
@@ -430,28 +439,31 @@ anychart.core.settings.simpleDeprecatedHandler = function(fieldName, deprecatedF
  * @param {number} supportCheck - set to anychart.core.series.Capabilities.ANY to invalidate in any case.
  * @param {anychart.ConsistencyState|number} consistencyState
  * @param {anychart.Signal|number} signal
+ * @param {Function} beforeInvalidationHook
  * @param {*=} opt_value
  * @param {...*} var_args
  * @return {*|anychart.core.settings.IObjectWithSettings}
  * @this {anychart.core.settings.IObjectWithSettings}
  */
-anychart.core.settings.multiArgsHandler = function(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, opt_value, var_args) {
+anychart.core.settings.multiArgsHandler = function(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value, var_args) {
   if (goog.isDef(opt_value)) {
     // Copying using loop to avoid deop due to passing arguments object to
     // function. This is faster in many JS engines as of late 2014.
     var args = [];
-    for (var i = 6; i < arguments.length; i++) {
+    for (var i = 7; i < arguments.length; i++) {
       args.push(arguments[i]);
     }
-    opt_value = arrayNormalizer(args);
+    opt_value = arrayNormalizer.call(this, args);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
-      if (this.check(supportCheck))
-        if (consistencyState == anychart.ConsistencyState.ONLY_DISPATCHING) {
-          this.dispatchSignal(signal);
-        } else {
+      if (this.check(supportCheck)) {
+        beforeInvalidationHook.call(this);
+        if (consistencyState) {
           this.invalidate(consistencyState, signal);
+        } else {
+          this.dispatchSignal(signal);
         }
+      }
     }
     return this;
   }
@@ -468,14 +480,15 @@ anychart.core.settings.multiArgsHandler = function(fieldName, deprecatedFieldNam
  * @param {number} supportCheck - set to anychart.core.series.Capabilities.ANY to invalidate in any case.
  * @param {anychart.ConsistencyState|number} consistencyState
  * @param {anychart.Signal|number} signal
+ * @param {Function} beforeInvalidationHook
  * @param {*=} opt_value
  * @param {...*} var_args
  * @return {*|anychart.core.settings.IObjectWithSettings}
  * @this {anychart.core.settings.IObjectWithSettings}
  */
-anychart.core.settings.multiArgsDeprecatedHandler = function(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, opt_value, var_args) {
+anychart.core.settings.multiArgsDeprecatedHandler = function(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value, var_args) {
   anychart.core.reporting.warning(anychart.enums.WarningCode.DEPRECATED, null, [deprecatedFieldName + '()', fieldName + '()'], true);
-  return anychart.core.settings.multiArgsHandler(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, opt_value, var_args);
+  return anychart.core.settings.multiArgsHandler(fieldName, deprecatedFieldName, arrayNormalizer, supportCheck, consistencyState, signal, beforeInvalidationHook, opt_value, var_args);
 };
 
 

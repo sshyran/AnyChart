@@ -1448,6 +1448,9 @@
         "forceHoverLabels": {
           "type": "boolean"
         },
+        "mode3d": {
+          "type": "boolean"
+        },
         "connectorLength": {
           "type": [
             "string",
@@ -2135,6 +2138,8 @@
       "allOf": [{"$ref": "#/definitions/anychart.core.SeparateChart"}],
       "properties": {
         "type": {"enum": ["ganttResource"]},
+        "rowStroke": {"$ref": "#/definitions/stroke"},
+        "columnStroke": {"$ref": "#/definitions/stroke"},
         "headerHeight": {"type": "number"},
         "defaultRowHeight": {"type": "number"},
         "rowHoverFill": {"$ref": "#/definitions/fill"},
@@ -2158,6 +2163,8 @@
       "allOf": [{"$ref": "#/definitions/anychart.core.SeparateChart"}],
       "properties": {
         "type": {"enum": ["ganttProject"]},
+        "rowStroke": {"$ref": "#/definitions/stroke"},
+        "columnStroke": {"$ref": "#/definitions/stroke"},
         "headerHeight": {"type": "number"},
         "defaultRowHeight": {"type": "number"},
         "rowHoverFill": {"$ref": "#/definitions/fill"},
@@ -2269,6 +2276,9 @@
       "properties": {
         "type": {"enum": ["linearGauge", "thermometerGauge", "tankGauge", "ledGauge"]},
         "data": {"$ref": "#/definitions/data"},
+        "defaultPointerType": {
+          "type": "string"
+        },
         "globalOffset": {
           "type": "string"
         },
