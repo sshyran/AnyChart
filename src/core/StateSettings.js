@@ -24,6 +24,8 @@ anychart.core.StateSettings = function() {
    * @type {Object}
    */
   this.themeSettings = {};
+
+  this.stateSignalHookMap = {};
 };
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
@@ -34,7 +36,7 @@ goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 anychart.core.StateSettings.prototype.dummy = function() {};
 
 
-//region --- setup/serialize/dispose
+//region --- Setup / Serialize / Dispose
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.disposeInternal = function() {
   anychart.core.StateSettings.base(this, 'disposeInternal');
@@ -44,8 +46,48 @@ anychart.core.StateSettings.prototype.disposeInternal = function() {
 //endregion
 //region --- Descriptors
 
+
 //endregion
 //region --- Complex objects
+/**
+ * Labels.
+ * @param {Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.core.ui.LabelsFactory}
+ */
+anychart.core.StateSettings.prototype.labels = function(opt_value) {
+  if (!this.labels_) {
+    this.labels_ = new anychart.core.ui.LabelsFactory();
+
+    this.labels_.listenSignals(this.labelsInvalidated_, this);
+    this.labels_.setParentEventTarget(this);
+  }
+
+  if (goog.isDef(opt_value)) {
+    if (goog.isObject(opt_value) && !('enabled' in opt_value))
+      opt_value['enabled'] = true;
+    this.labels_.setup(opt_value);
+    return this;
+  }
+  return this.labels_;
+};
+
+
+/**
+ * Labels invalidation handler.
+ * @param {anychart.SignalEvent} event Signal event.
+ * @private
+ */
+anychart.core.StateSettings.prototype.labelsInvalidated_ = function(event) {
+  var prop = this.stateSignalHookMap['labels'];
+  if (event.hasSignal(anychart.Signal.NEEDS_REDRAW)) {
+    if (prop[2]) {
+      prop[2].call(prop[3] || this);
+    }
+    this.invalidate(prop[0], prop[1]);
+  }
+};
+
+
 //endregion
 //region --- IObjectWithSettings implementation
 /** @inheritDoc */
