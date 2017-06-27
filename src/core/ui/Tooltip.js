@@ -146,6 +146,74 @@ anychart.core.ui.Tooltip = function(capability) {
   this.tooltipContainer_ = null;
 
   anychart.utils.tooltipsRegistry[String(goog.getUid(this))] = this;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.ConsistencyState.TOOLTIP_CONTENT | anychart.ConsistencyState.TOOLTIP_TITLE,
+      anychart.Signal.NEEDS_REDRAW,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['width',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['height',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['titleFormat',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW],
+    ['format',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW],
+    ['unionFormat',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW],
+    ['valuePrefix',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW],
+    ['valuePostfix',
+      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
+      anychart.Signal.NEEDS_REDRAW],
+    ['position',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    ['anchor',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    ['offsetX',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    ['offsetY',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    ['x',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    ['y',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW],
+    //TODO (A.Kudryavtsev): Check consistency states and signals!!!
+    ['allowLeaveScreen',
+      anychart.ConsistencyState.CONTAINER,
+      anychart.Signal.NEEDS_REDRAW],
+    ['allowLeaveChart',
+      anychart.ConsistencyState.CONTAINER,
+      anychart.Signal.NEEDS_REDRAW],
+    ['allowLeaveStage',
+      anychart.ConsistencyState.CONTAINER,
+      anychart.Signal.NEEDS_REDRAW],
+    ['displayMode',
+      anychart.ConsistencyState.TOOLTIP_MODE,
+      anychart.Signal.NEEDS_REDRAW,
+      anychart.core.ui.Tooltip.Capabilities.CAN_CHANGE_DISPLAY_MODE],
+    ['positionMode',
+      anychart.ConsistencyState.TOOLTIP_POSITION,
+      anychart.Signal.NEEDS_REDRAW,
+      anychart.core.ui.Tooltip.Capabilities.CAN_CHANGE_POSITION_MODE]
+  ]);
 };
 goog.inherits(anychart.core.ui.Tooltip, anychart.core.VisualBase);
 
@@ -211,12 +279,7 @@ anychart.core.ui.Tooltip.Capabilities = {
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.ui.Tooltip.prototype.TEXT_PROPERTY_DESCRIPTORS =
-    anychart.core.settings.createTextPropertiesDescriptors(
-        anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-        anychart.ConsistencyState.TOOLTIP_CONTENT | anychart.ConsistencyState.TOOLTIP_TITLE,
-        anychart.Signal.NEEDS_REDRAW,
-        anychart.Signal.NEEDS_REDRAW
-    );
+    anychart.core.settings.createTextPropertiesDescriptors();
 anychart.core.settings.populate(anychart.core.ui.Tooltip, anychart.core.ui.Tooltip.prototype.TEXT_PROPERTY_DESCRIPTORS);
 
 
@@ -232,148 +295,109 @@ anychart.core.ui.Tooltip.prototype.TOOLTIP_SIMPLE_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'titleFormat',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'format',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'unionFormat',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'valuePrefix',
-      anychart.core.settings.stringNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'valuePostfix',
-      anychart.core.settings.stringNormalizer,
-      anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'position',
-      anychart.enums.normalizePosition,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.enums.normalizePosition);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'anchor',
-      anychart.enums.normalizeAnchor,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.enums.normalizeAnchor);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetX',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetY',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'x',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'y',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.numberNormalizer);
 
-  //TODO (A.Kudryavtsev): Check consistency states and signals!!!
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'allowLeaveScreen',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.CONTAINER,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'allowLeaveChart',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.CONTAINER,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'allowLeaveStage',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.CONTAINER,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'displayMode',
-      anychart.enums.normalizeTooltipDisplayMode,
-      anychart.ConsistencyState.TOOLTIP_MODE,
-      anychart.Signal.NEEDS_REDRAW,
-      anychart.core.ui.Tooltip.Capabilities.CAN_CHANGE_DISPLAY_MODE);
+      anychart.enums.normalizeTooltipDisplayMode);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'positionMode',
-      anychart.enums.normalizeTooltipPositionMode,
-      anychart.ConsistencyState.TOOLTIP_POSITION,
-      anychart.Signal.NEEDS_REDRAW,
-      anychart.core.ui.Tooltip.Capabilities.CAN_CHANGE_POSITION_MODE);
+      anychart.enums.normalizeTooltipPositionMode);
 
   return map;
 })();
@@ -2187,6 +2211,37 @@ anychart.core.ui.Tooltip.prototype.check = function(flags) {
     return !!(flags & this.capability);
   }
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Tooltip.prototype.getCapabilities = function(fieldName) {
+  return this.descriptorsMeta[fieldName].capabilities;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Tooltip.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Tooltip.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Tooltip.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Tooltip.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

@@ -37,6 +37,22 @@ anychart.core.venn.Intersections = function(chart) {
    * @type {Object}
    */
   this.ownSettings = {};
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['fill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND],
+    ['hoverFill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['selectFill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['hatchFill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND],
+    ['hoverHatchFill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['selectHatchFill', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['stroke', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND],
+    ['hoverStroke', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['selectStroke', 0, anychart.Signal.NEEDS_REDRAW_APPEARANCE]
+  ]);
 };
 goog.inherits(anychart.core.venn.Intersections, anychart.core.Base);
 
@@ -66,73 +82,55 @@ anychart.core.venn.Intersections.prototype.SIMPLE_PROPS_DESCRIPTORS = (function(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND);
+      anychart.core.settings.fillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverFill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.fillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectFill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.fillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE | anychart.Signal.NEED_UPDATE_LEGEND);
+      anychart.core.settings.strokeOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.strokeOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.strokeOrFunctionNormalizer);
 
   return map;
 })();
@@ -174,6 +172,38 @@ anychart.core.venn.Intersections.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.venn.Intersections.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.venn.Intersections.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.venn.Intersections.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.venn.Intersections.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.venn.Intersections.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.venn.Intersections.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

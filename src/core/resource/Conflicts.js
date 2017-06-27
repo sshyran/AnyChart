@@ -92,6 +92,17 @@ anychart.core.resource.Conflicts = function(chart) {
    * @private
    */
   this.formatProvider_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hatchFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['height', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REAPPLICATION]
+  ]);
 };
 goog.inherits(anychart.core.resource.Conflicts, anychart.core.VisualBase);
 
@@ -459,30 +470,22 @@ anychart.core.resource.Conflicts.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hatchFill',
-      anychart.core.settings.hatchFillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REAPPLICATION);
+      anychart.core.settings.numberNormalizer);
 
   return map;
 })();
@@ -553,6 +556,38 @@ anychart.core.resource.Conflicts.prototype.setOption = function(name, value) {
  */
 anychart.core.resource.Conflicts.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Conflicts.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Conflicts.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Conflicts.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Conflicts.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Conflicts.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

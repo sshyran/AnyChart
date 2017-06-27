@@ -93,6 +93,20 @@ anychart.core.resource.ResourceList = function() {
       anychart.ConsistencyState.RESOURCE_LIST_TYPES_SETTINGS |
       anychart.ConsistencyState.RESOURCE_LIST_DESCRIPTIONS_SETTINGS |
       anychart.ConsistencyState.RESOURCE_LIST_TAGS_SETTINGS;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['stroke', anychart.ConsistencyState.APPEARANCE],
+    ['oddFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenFill', anychart.ConsistencyState.APPEARANCE],
+    ['drawTopLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS],
+    ['drawRightLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS],
+    ['drawBottomLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS],
+    ['drawLeftLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS]
+  ]);
 };
 goog.inherits(anychart.core.resource.ResourceList, anychart.core.VisualBaseWithBounds);
 
@@ -178,57 +192,43 @@ anychart.core.resource.ResourceList.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawTopLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawRightLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawBottomLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawLeftLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   return map;
 })();
@@ -294,6 +294,39 @@ anychart.core.resource.ResourceList.prototype.setOption = function(name, value) 
  */
 anychart.core.resource.ResourceList.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.ResourceList.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.ResourceList.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.ResourceList.prototype.getSignal = function(fieldName) {
+  // because all descriptors invalidates with NEEDS_REDRAW signal
+  return anychart.Signal.NEEDS_REDRAW;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.ResourceList.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.ResourceList.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

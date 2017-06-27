@@ -149,6 +149,27 @@ anychart.core.resource.Grid = function() {
    * @private
    */
   this.yScrollPosition_ = 0;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['horizontalStroke', anychart.ConsistencyState.APPEARANCE],
+    ['verticalStroke', anychart.ConsistencyState.APPEARANCE],
+    ['oddFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenFill', anychart.ConsistencyState.APPEARANCE],
+    ['oddHolidayFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenHolidayFill', anychart.ConsistencyState.APPEARANCE],
+    ['oddHatchFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenHatchFill', anychart.ConsistencyState.APPEARANCE],
+    ['oddHolidayHatchFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenHolidayHatchFill', anychart.ConsistencyState.APPEARANCE],
+    ['drawTopLine', anychart.ConsistencyState.RESOURCE_GRID_TICKS],
+    ['drawRightLine', anychart.ConsistencyState.RESOURCE_GRID_TICKS],
+    ['drawBottomLine', anychart.ConsistencyState.RESOURCE_GRID_TICKS],
+    ['drawLeftLine', anychart.ConsistencyState.RESOURCE_GRID_TICKS]
+  ]);
 };
 goog.inherits(anychart.core.resource.Grid, anychart.core.VisualBaseWithBounds);
 
@@ -198,100 +219,72 @@ anychart.core.resource.Grid.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'horizontalStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'verticalStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddHolidayFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenHolidayFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddHatchFill',
-      anychart.core.settings.hatchFillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenHatchFill',
-      anychart.core.settings.hatchFillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddHolidayHatchFill',
-      anychart.core.settings.hatchFillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenHolidayHatchFill',
-      anychart.core.settings.hatchFillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawTopLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_GRID_TICKS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawRightLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_GRID_TICKS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawBottomLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_GRID_TICKS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawLeftLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_GRID_TICKS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
   return map;
 })();
 anychart.core.settings.populate(anychart.core.resource.Grid, anychart.core.resource.Grid.DESCRIPTORS);
@@ -697,6 +690,39 @@ anychart.core.resource.Grid.prototype.setOption = function(name, value) {
  */
 anychart.core.resource.Grid.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Grid.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Grid.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Grid.prototype.getSignal = function(fieldName) {
+  // because all descriptors invalidates with NEEDS_REDRAW signal
+  return anychart.Signal.NEEDS_REDRAW;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Grid.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Grid.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

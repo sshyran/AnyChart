@@ -59,6 +59,38 @@ anychart.core.axes.Map = function() {
       anychart.ConsistencyState.AXIS_TICKS |
       anychart.ConsistencyState.BOUNDS |
       anychart.ConsistencyState.AXIS_OVERLAP;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['overlapMode',
+          anychart.ConsistencyState.APPEARANCE |
+          anychart.ConsistencyState.AXIS_TITLE |
+          anychart.ConsistencyState.AXIS_LABELS |
+          anychart.ConsistencyState.AXIS_TICKS |
+          anychart.ConsistencyState.BOUNDS |
+          anychart.ConsistencyState.AXIS_OVERLAP,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['drawFirstLabel',
+          anychart.ConsistencyState.APPEARANCE |
+          anychart.ConsistencyState.AXIS_TITLE |
+          anychart.ConsistencyState.AXIS_LABELS |
+          anychart.ConsistencyState.AXIS_TICKS |
+          anychart.ConsistencyState.BOUNDS |
+          anychart.ConsistencyState.AXIS_OVERLAP,
+          anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['drawLastLabel',
+          anychart.ConsistencyState.APPEARANCE |
+          anychart.ConsistencyState.AXIS_TITLE |
+          anychart.ConsistencyState.AXIS_LABELS |
+          anychart.ConsistencyState.AXIS_TICKS |
+          anychart.ConsistencyState.BOUNDS |
+          anychart.ConsistencyState.AXIS_OVERLAP,
+          anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
+  ]);
 };
 goog.inherits(anychart.core.axes.Map, anychart.core.VisualBase);
 
@@ -199,6 +231,38 @@ anychart.core.axes.Map.prototype.check = function(flags) {
 };
 
 
+/** @inheritDoc */
+anychart.core.axes.Map.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.axes.Map.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.axes.Map.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.axes.Map.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.axes.Map.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
+};
+
+
 //endregion
 //region --- IResolvable implementation
 /** @inheritDoc */
@@ -299,48 +363,25 @@ anychart.core.axes.Map.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'overlapMode',
-      anychart.enums.normalizeLabelsOverlapMode,
-      anychart.ConsistencyState.APPEARANCE |
-      anychart.ConsistencyState.AXIS_TITLE |
-      anychart.ConsistencyState.AXIS_LABELS |
-      anychart.ConsistencyState.AXIS_TICKS |
-      anychart.ConsistencyState.BOUNDS |
-      anychart.ConsistencyState.AXIS_OVERLAP,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeLabelsOverlapMode);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawFirstLabel',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.APPEARANCE |
-      anychart.ConsistencyState.AXIS_TITLE |
-      anychart.ConsistencyState.AXIS_LABELS |
-      anychart.ConsistencyState.AXIS_TICKS |
-      anychart.ConsistencyState.BOUNDS |
-      anychart.ConsistencyState.AXIS_OVERLAP,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawLastLabel',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.APPEARANCE |
-      anychart.ConsistencyState.AXIS_TITLE |
-      anychart.ConsistencyState.AXIS_LABELS |
-      anychart.ConsistencyState.AXIS_TICKS |
-      anychart.ConsistencyState.BOUNDS |
-      anychart.ConsistencyState.AXIS_OVERLAP,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.booleanNormalizer);
 
   return map;
 })();

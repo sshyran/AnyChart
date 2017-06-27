@@ -113,6 +113,19 @@ anychart.core.resource.resourceList.Item = function(resourceList) {
    * @type {number}
    */
   this.index = NaN;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['width', 0, 0],
+    ['imageSrc', 0, 0],
+    ['name', 0, 0],
+    ['type', 0, 0],
+    ['description', 0, anychart.Signal.NEEDS_REDRAW],
+    ['tags', 0, anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.resource.resourceList.Item, anychart.core.VisualBase);
 
@@ -169,6 +182,38 @@ anychart.core.resource.resourceList.Item.prototype.hasOwnOption = function(name)
 /** @inheritDoc */
 anychart.core.resource.resourceList.Item.prototype.setOption = function(name, value) {
   this.settings[name] = value;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.resourceList.Item.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.resourceList.Item.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.resourceList.Item.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.resourceList.Item.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.resourceList.Item.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 
@@ -294,49 +339,37 @@ anychart.core.resource.resourceList.Item.PROPERTY_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      0,
-      0);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'imageSrc',
-      anychart.core.settings.stringNormalizer,
-      0,
-      0);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'name',
-      anychart.core.settings.stringNormalizer,
-      0,
-      0);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'type',
-      anychart.core.settings.stringNormalizer,
-      0,
-      0);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'description',
-      anychart.core.settings.stringNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'tags',
-      anychart.core.settings.arrayNormalizer,
-      0,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.arrayNormalizer);
 
   return map;
 })();

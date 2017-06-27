@@ -99,25 +99,19 @@ anychart.core.annotations.BASE_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'color',
-      anychart.core.settings.colorNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.colorNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'allowEdit',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.ANNOTATIONS_INTERACTIVITY,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'hoverGap',
-      anychart.core.settings.naturalNumberNormalizer,
-      anychart.ConsistencyState.ANNOTATIONS_SHAPES,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.naturalNumberNormalizer);
 
   return map;
 })();

@@ -28,6 +28,15 @@ anychart.core.ui.Overlay = function() {
   this.defaultSettings = {};
 
   this.invalidate(anychart.ConsistencyState.ALL);
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['id'],
+    ['className']
+  ]);
 };
 goog.inherits(anychart.core.ui.Overlay, anychart.core.Base);
 
@@ -72,17 +81,13 @@ anychart.core.ui.Overlay.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'id',
-      anychart.core.settings.stringNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'className',
-      anychart.core.settings.stringNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.stringNormalizer);
 
   return map;
 })();
@@ -212,6 +217,40 @@ anychart.core.ui.Overlay.prototype.setOption = function(name, value) {
  */
 anychart.core.ui.Overlay.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Overlay.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Overlay.prototype.getConsistencyState = function(fieldName) {
+  // all properties invalidates APPEARANCE
+  return anychart.ConsistencyState.APPEARANCE;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Overlay.prototype.getSignal = function(fieldName) {
+  // all properties invalidates with NEEDS_REDRAW
+  return anychart.Signal.NEEDS_REDRAW;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Overlay.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Overlay.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

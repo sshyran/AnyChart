@@ -55,6 +55,17 @@ anychart.core.utils.Space = function(opt_spaceOrTopOrTopAndBottom, opt_rightOrRi
 
   if (goog.isDef(opt_spaceOrTopOrTopAndBottom) || goog.isDef(opt_rightOrRightAndLeft) || goog.isDef(opt_bottom) || goog.isDef(opt_left))
     this.set.apply(this, arguments);
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['left'],
+    ['top'],
+    ['bottom'],
+    ['right']
+  ]);
 };
 goog.inherits(anychart.core.utils.Space, anychart.core.Base);
 
@@ -90,33 +101,25 @@ anychart.core.utils.Space.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'left',
-      anychart.core.settings.numberOrZeroNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REAPPLICATION);
+      anychart.core.settings.numberOrZeroNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'top',
-      anychart.core.settings.numberOrZeroNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REAPPLICATION);
+      anychart.core.settings.numberOrZeroNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'bottom',
-      anychart.core.settings.numberOrZeroNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REAPPLICATION);
+      anychart.core.settings.numberOrZeroNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'right',
-      anychart.core.settings.numberOrZeroNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REAPPLICATION);
+      anychart.core.settings.numberOrZeroNormalizer);
 
   return map;
 })();
@@ -158,6 +161,40 @@ anychart.core.utils.Space.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.utils.Space.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.utils.Space.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.utils.Space.prototype.getConsistencyState = function(fieldName) {
+  // because all descriptors invalidates ONLY_DISPATCHING
+  return anychart.ConsistencyState.ONLY_DISPATCHING;
+};
+
+
+/** @inheritDoc */
+anychart.core.utils.Space.prototype.getSignal = function(fieldName) {
+  // because all descriptors invalidates with NEEDS_REAPPLICATION signal
+  return anychart.Signal.NEEDS_REAPPLICATION;
+};
+
+
+/** @inheritDoc */
+anychart.core.utils.Space.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.utils.Space.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

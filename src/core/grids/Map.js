@@ -81,6 +81,19 @@ anychart.core.grids.Map = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['stroke', anychart.ConsistencyState.APPEARANCE],
+    ['minorStroke', anychart.ConsistencyState.APPEARANCE],
+    ['oddFill', anychart.ConsistencyState.APPEARANCE],
+    ['evenFill', anychart.ConsistencyState.APPEARANCE],
+    ['drawFirstLine', anychart.ConsistencyState.GRIDS_POSITION],
+    ['drawLastLine', anychart.ConsistencyState.GRIDS_POSITION]
+  ]);
 };
 goog.inherits(anychart.core.grids.Map, anychart.core.VisualBase);
 
@@ -139,6 +152,39 @@ anychart.core.grids.Map.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.grids.Map.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.grids.Map.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.grids.Map.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.grids.Map.prototype.getSignal = function(fieldName) {
+  // all properties invalidates with NEEDS_REDRAW;
+  return anychart.Signal.NEEDS_REDRAW;
+};
+
+
+/** @inheritDoc */
+anychart.core.grids.Map.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.grids.Map.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 
@@ -243,49 +289,37 @@ anychart.core.grids.Map.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'minorStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'oddFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'evenFill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawFirstLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.GRIDS_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawLastLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.GRIDS_POSITION,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   return map;
 })();

@@ -63,6 +63,23 @@ anychart.core.resource.Activities = function(chart) {
    * @private
    */
   this.formatProvider_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['color', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hoverFill', 0, 0],
+    ['selectFill', 0, 0],
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hoverStroke', 0, 0],
+    ['selectStroke', 0, 0],
+    ['hatchFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hoverHatchFill', 0, 0],
+    ['selectHatchFill', 0, 0]
+  ]);
 };
 goog.inherits(anychart.core.resource.Activities, anychart.core.Base);
 
@@ -331,75 +348,55 @@ anychart.core.resource.Activities.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'color',
-      anychart.core.settings.colorNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.colorNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverFill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.fillOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectFill',
-      anychart.core.settings.fillOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.fillOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.strokeOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.strokeOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'hoverHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer,
-      0,
-      0);
+      anychart.core.settings.hatchFillOrFunctionNormalizer);
 
   return map;
 })();
@@ -659,6 +656,38 @@ anychart.core.resource.Activities.prototype.setOption = function(name, value) {
  */
 anychart.core.resource.Activities.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Activities.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Activities.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Activities.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Activities.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.Activities.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

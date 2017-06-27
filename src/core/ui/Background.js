@@ -56,6 +56,21 @@ anychart.core.ui.Background = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['fill', anychart.ConsistencyState.APPEARANCE],
+    ['stroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
+    ['topStroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
+    ['rightStroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
+    ['bottomStroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
+    ['leftStroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
+    ['disablePointerEvents', anychart.ConsistencyState.BACKGROUND_POINTER_EVENTS],
+    ['cornerType', anychart.ConsistencyState.BOUNDS]
+  ]);
 };
 goog.inherits(anychart.core.ui.Background, anychart.core.VisualBaseWithBounds);
 
@@ -93,65 +108,49 @@ anychart.core.ui.Background.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'topStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'rightStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'bottomStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'leftStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'disablePointerEvents',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.BACKGROUND_POINTER_EVENTS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'cornerType',
-      anychart.enums.normalizeBackgroundCornerType,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.enums.normalizeBackgroundCornerType);
 
   return map;
 })();
@@ -229,6 +228,39 @@ anychart.core.ui.Background.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.ui.Background.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Background.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Background.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Background.prototype.getSignal = function(fieldName) {
+  // all props invalidates with NEEDS_REDRAW
+  return anychart.Signal.NEEDS_REDRAW;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Background.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Background.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

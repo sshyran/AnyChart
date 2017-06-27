@@ -24,6 +24,19 @@ anychart.core.TagCloudStateSettings = function() {
    * @type {Object}
    */
   this.ownSettings = {};
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['fontFamily', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.BOUNDS_CHANGED],
+    ['fill', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW_APPEARANCE],
+    ['fontStyle', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.BOUNDS_CHANGED],
+    ['fontVariant', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.BOUNDS_CHANGED],
+    ['fontWeight', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.BOUNDS_CHANGED],
+    ['fontSize', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.BOUNDS_CHANGED]
+  ]);
 };
 goog.inherits(anychart.core.TagCloudStateSettings, anychart.core.Base);
 
@@ -49,49 +62,37 @@ anychart.core.TagCloudStateSettings.prototype.SIMPLE_PROPS_DESCRIPTORS = (functi
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fontFamily',
-      anychart.core.settings.stringNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fill',
-      anychart.core.settings.fillOrFunctionSimpleNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REDRAW_APPEARANCE);
+      anychart.core.settings.fillOrFunctionSimpleNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fontStyle',
-      anychart.enums.normalizeFontStyle,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeFontStyle);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fontVariant',
-      anychart.enums.normalizeFontVariant,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeFontVariant);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fontWeight',
-      anychart.core.settings.numberOrStringNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrStringNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'fontSize',
-      anychart.core.settings.numberOrPercentOrNullOrFunctionNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentOrNullOrFunctionNormalizer);
 
   return map;
 })();
@@ -176,6 +177,38 @@ anychart.core.TagCloudStateSettings.prototype.setOption = function(name, value) 
 /** @inheritDoc */
 anychart.core.TagCloudStateSettings.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.TagCloudStateSettings.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.TagCloudStateSettings.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.TagCloudStateSettings.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.TagCloudStateSettings.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.TagCloudStateSettings.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

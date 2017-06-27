@@ -122,6 +122,16 @@ anychart.core.annotations.Base = function(chartController) {
    * @protected
    */
   this.markersSupported = true;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['color', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['allowEdit', anychart.ConsistencyState.ANNOTATIONS_INTERACTIVITY, anychart.Signal.NEEDS_REDRAW],
+    ['hoverGap', anychart.ConsistencyState.ANNOTATIONS_SHAPES, anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.annotations.Base, anychart.core.VisualBaseWithBounds);
 anychart.core.settings.populate(anychart.core.annotations.Base, anychart.core.annotations.BASE_DESCRIPTORS);
@@ -1269,6 +1279,38 @@ anychart.core.annotations.Base.prototype.setOption = function(name, value) {
  */
 anychart.core.annotations.Base.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.annotations.Base.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.annotations.Base.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.annotations.Base.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.annotations.Base.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.annotations.Base.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

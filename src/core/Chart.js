@@ -212,6 +212,35 @@ anychart.core.Chart = function() {
   this.ownSettings = {};
 
   this.invalidate(anychart.ConsistencyState.ALL);
+
+  //region Init descriptors meta
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
+
+  /**
+   * @this {anychart.core.Chart}
+   */
+  function selectMarqueeFillBeforeInvalidation() {
+    if (this.inMarquee()) {
+      this.interactivityRect.fill(/** @type {acgraph.vector.Fill} */ (this.getOption('selectMarqueeFill')));
+    }
+  }
+  /**
+   * @this {anychart.core.Chart}
+   */
+  function selectMarqueeStrokeBeforeInvalidation() {
+    if (this.inMarquee()) {
+      this.interactivityRect.stroke(/** @type {acgraph.vector.Stroke} */ (this.getOption('selectMarqueeStroke')));
+    }
+  }
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['selectMarqueeFill', 0, 0, 0, selectMarqueeFillBeforeInvalidation],
+    ['selectMarqueeStroke', 0, 0, 0, selectMarqueeStrokeBeforeInvalidation]
+  ]);
+  //endregion
+
   this.resumeSignalsDispatching(false);
 };
 goog.inherits(anychart.core.Chart, anychart.core.VisualBaseWithBounds);
@@ -280,6 +309,37 @@ anychart.core.Chart.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.Chart.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.Chart.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.Chart.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.Chart.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.Chart.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.Chart.prototype.getHook = function(fieldName) {
+  return this.descriptorsMeta[fieldName].beforeInvalidationHook;
 };
 
 
@@ -1724,34 +1784,18 @@ anychart.core.Chart.prototype.invalidateHandler_ = function(event) {
 anychart.core.Chart.PROPERTY_DESCRIPTORS = (function() {
   /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
   var map = {};
-  function selectMarqueeFillBeforeInvalidation() {
-    if (this.inMarquee()) {
-      this.interactivityRect.fill(/** @type {acgraph.vector.Fill} */ (this.getOption('selectMarqueeFill')));
-    }
-  }
+
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectMarqueeFill',
-      anychart.core.settings.fillNormalizer,
-      0,
-      0,
-      0,
-      selectMarqueeFillBeforeInvalidation);
-  function selectMarqueeStrokeBeforeInvalidation() {
-    if (this.inMarquee()) {
-      this.interactivityRect.stroke(/** @type {acgraph.vector.Stroke} */ (this.getOption('selectMarqueeStroke')));
-    }
-  }
+      anychart.core.settings.fillNormalizer);
+
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'selectMarqueeStroke',
-      anychart.core.settings.strokeNormalizer,
-      0,
-      0,
-      0,
-      selectMarqueeStrokeBeforeInvalidation);
+      anychart.core.settings.strokeNormalizer);
   return map;
 })();
 anychart.core.settings.populate(anychart.core.Chart, anychart.core.Chart.PROPERTY_DESCRIPTORS);

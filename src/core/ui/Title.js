@@ -196,6 +196,23 @@ anychart.core.ui.Title = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.ConsistencyState.APPEARANCE,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['width', anychart.ConsistencyState.BOUNDS],
+    ['height', anychart.ConsistencyState.BOUNDS],
+    ['align', anychart.ConsistencyState.BOUNDS],
+    ['orientation', anychart.ConsistencyState.BOUNDS],
+    ['rotation', anychart.ConsistencyState.BOUNDS],
+    ['text', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS]
+  ]);
 };
 goog.inherits(anychart.core.ui.Title, anychart.core.VisualBase);
 
@@ -227,12 +244,7 @@ anychart.core.ui.Title.prototype.SUPPORTED_CONSISTENCY_STATES =
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.ui.Title.prototype.TEXT_DESCRIPTORS =
-    anychart.core.settings.createTextPropertiesDescriptors(
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.ConsistencyState.APPEARANCE,
-        anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-        anychart.Signal.NEEDS_REDRAW
-    );
+    anychart.core.settings.createTextPropertiesDescriptors();
 anychart.core.settings.populate(anychart.core.ui.Title, anychart.core.ui.Title.prototype.TEXT_DESCRIPTORS);
 
 
@@ -248,49 +260,37 @@ anychart.core.ui.Title.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'align',
-      anychart.enums.normalizeAlign,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeAlign);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'orientation',
-      anychart.enums.normalizeOrientation,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeOrientation);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'rotation',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'text',
-      anychart.core.settings.stringNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringNormalizer);
 
   return map;
 })();
@@ -388,6 +388,39 @@ anychart.core.ui.Title.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.ui.Title.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Title.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Title.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Title.prototype.getSignal = function(fieldName) {
+  // all props invalidates with NEEDS_REDRAW | BOUNDS_CHANGED
+  return anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Title.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Title.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 

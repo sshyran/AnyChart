@@ -25,7 +25,11 @@ anychart.core.StateSettings = function() {
    */
   this.themeSettings = {};
 
-  this.stateSignalHookMap = {};
+  /**
+   * Descriptors meta
+   * @type {Object}
+   */
+  this.descriptorsMeta = {};
 };
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
@@ -57,7 +61,6 @@ anychart.core.StateSettings.prototype.disposeInternal = function() {
 anychart.core.StateSettings.prototype.labels = function(opt_value) {
   if (!this.labels_) {
     this.labels_ = new anychart.core.ui.LabelsFactory();
-
     this.labels_.listenSignals(this.labelsInvalidated_, this);
     this.labels_.setParentEventTarget(this);
   }
@@ -78,12 +81,12 @@ anychart.core.StateSettings.prototype.labels = function(opt_value) {
  * @private
  */
 anychart.core.StateSettings.prototype.labelsInvalidated_ = function(event) {
-  var prop = this.stateSignalHookMap['labels'];
+  var meta = this.descriptorsMeta['labels'];
   if (event.hasSignal(anychart.Signal.NEEDS_REDRAW)) {
-    if (prop[2]) {
-      prop[2].call(prop[3] || this);
+    if (meta.beforeInvalidationHook) {
+      meta.beforeInvalidationHook.call(meta.context || this);
     }
-    this.invalidate(prop[0], prop[1]);
+    this.invalidate(meta.consistency, meta.signal);
   }
 };
 
@@ -123,6 +126,37 @@ anychart.core.StateSettings.prototype.setOption = function(name, value) {
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.getHookContext = function(fieldName) {
+  return this.descriptorsMeta[fieldName].context;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.getHook = function(fieldName) {
+  return this.descriptorsMeta[fieldName].beforeInvalidationHook;
 };
 //endregion
 //region --- Exports

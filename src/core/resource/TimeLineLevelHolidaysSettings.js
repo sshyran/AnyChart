@@ -52,6 +52,19 @@ anychart.core.resource.TimeLineLevelHolidaysSettings = function() {
   this.resolutionChainCache_ = null;
 
   this.markConsistent(anychart.ConsistencyState.ALL);
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+      anychart.ConsistencyState.ONLY_DISPATCHING,
+      anychart.ConsistencyState.ONLY_DISPATCHING,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['fill', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
+    ['format', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
+  ]);
 };
 goog.inherits(anychart.core.resource.TimeLineLevelHolidaysSettings, anychart.core.Base);
 
@@ -105,6 +118,38 @@ anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.setOption = funct
 /** @inheritDoc */
 anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 
@@ -206,18 +251,12 @@ anychart.core.resource.TimeLineLevelHolidaysSettings.prototype.parentInvalidated
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.resource.TimeLineLevelHolidaysSettings.TEXT_DESCRIPTORS = (function() {
-  var map = anychart.core.settings.createTextPropertiesDescriptors(
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-      anychart.Signal.NEEDS_REDRAW);
+  var map = anychart.core.settings.createTextPropertiesDescriptors();
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'format',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
   return map;
 })();
 anychart.core.settings.populate(anychart.core.resource.TimeLineLevelHolidaysSettings, anychart.core.resource.TimeLineLevelHolidaysSettings.TEXT_DESCRIPTORS);
@@ -235,9 +274,7 @@ anychart.core.resource.TimeLineLevelHolidaysSettings.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.ONLY_DISPATCHING,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   return map;
 })();

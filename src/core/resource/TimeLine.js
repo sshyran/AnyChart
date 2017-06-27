@@ -95,6 +95,25 @@ anychart.core.resource.TimeLine = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  /**
+   * @type {Object}
+   */
+  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['format', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['levelHeight', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['drawTopLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS, anychart.Signal.NEEDS_REDRAW],
+    ['drawRightLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS, anychart.Signal.NEEDS_REDRAW],
+    ['drawBottomLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS, anychart.Signal.NEEDS_REDRAW],
+    ['drawLeftLine', anychart.ConsistencyState.RESOURCE_LIST_ITEMS, anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.resource.TimeLine, anychart.core.VisualBaseWithBounds);
 
@@ -210,18 +229,12 @@ anychart.core.resource.TimeLine.prototype.SUPPORTED_SIGNALS =
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.resource.TimeLine.TEXT_DESCRIPTORS = (function() {
-  var map = anychart.core.settings.createTextPropertiesDescriptors(
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-      anychart.Signal.NEEDS_REDRAW);
+  var map = anychart.core.settings.createTextPropertiesDescriptors();
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'format',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
   return map;
 })();
 anychart.core.settings.populate(anychart.core.resource.TimeLine, anychart.core.resource.TimeLine.TEXT_DESCRIPTORS);
@@ -239,57 +252,43 @@ anychart.core.resource.TimeLine.DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'stroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'fill',
-      anychart.core.settings.fillNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.fillNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'levelHeight',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawTopLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawRightLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawBottomLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'drawLeftLine',
-      anychart.core.settings.booleanNormalizer,
-      anychart.ConsistencyState.RESOURCE_LIST_ITEMS,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.booleanNormalizer);
 
   return map;
 })();
@@ -451,6 +450,38 @@ anychart.core.resource.TimeLine.prototype.setOption = function(name, value) {
  */
 anychart.core.resource.TimeLine.prototype.check = function(flags) {
   return true;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLine.prototype.getCapabilities = function(fieldName) {
+  // no capabilities. check always returns true
+  return void 0;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLine.prototype.getConsistencyState = function(fieldName) {
+  return this.descriptorsMeta[fieldName].consistency;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLine.prototype.getSignal = function(fieldName) {
+  return this.descriptorsMeta[fieldName].signal;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLine.prototype.getHookContext = function(fieldName) {
+  return this;
+};
+
+
+/** @inheritDoc */
+anychart.core.resource.TimeLine.prototype.getHook = function(fieldName) {
+  // because all descriptors doesn't have hook.
+  return goog.nullFunction;
 };
 
 
