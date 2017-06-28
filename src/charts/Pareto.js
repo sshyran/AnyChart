@@ -557,8 +557,9 @@ anychart.charts.Pareto.prototype.setupByJSON = function(config, opt_default) {
   proto['data'] = proto.data;
   proto['xScale'] = proto.xScale;
   proto['yScale'] = proto.yScale;
-  proto['barsPadding'] = proto.barsPadding;
-  proto['barGroupsPadding'] = proto.barGroupsPadding;
+  // auto generated from ChartWithOrthogonalScales
+  // proto['barsPadding'] = proto.barsPadding;
+  // proto['barGroupsPadding'] = proto.barGroupsPadding;
   proto['crosshair'] = proto.crosshair;
   proto['maxBubbleSize'] = proto.maxBubbleSize;
   proto['minBubbleSize'] = proto.minBubbleSize;
@@ -595,7 +596,8 @@ anychart.charts.Pareto.prototype.setupByJSON = function(config, opt_default) {
   proto['markerPalette'] = proto.markerPalette;
   proto['hatchFillPalette'] = proto.hatchFillPalette;
   proto['getType'] = proto.getType;
-  proto['defaultSeriesType'] = proto.defaultSeriesType;
+  // auto from ChartWithSeries
+  // proto['defaultSeriesType'] = proto.defaultSeriesType;
   proto['addSeries'] = proto.addSeries;
   proto['getSeriesAt'] = proto.getSeriesAt;
   proto['getSeriesCount'] = proto.getSeriesCount;

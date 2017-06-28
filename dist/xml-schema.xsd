@@ -201,6 +201,7 @@
         <xsd:attribute name="connector_length" type="simple.NumberOrPercent" default="20%"/>
         <xsd:attribute name="outside_labels_critical_angle" type="xsd:double" default="60"/>
         <xsd:attribute name="connector_stroke" type="xsd:string" default="black 0.3"/>
+        <xsd:attribute name="mode3d" type="xsd:boolean"/>
         <xsd:attribute name="fill" type="xsd:string"/>
         <xsd:attribute name="hover_fill" type="xsd:string"/>
         <xsd:attribute name="stroke" type="xsd:string"/>
@@ -320,6 +321,7 @@
         <xsd:attribute name="circular_padding" type="simple.NumberOrPercent"/>
         <xsd:attribute name="enclose_with_straight_line" type="simple.Bool"/>
         <!-- anychart.charts.LinearGauge common attrs -->
+        <xsd:attribute name="default_pointer_type" type="xsd:string"/>
         <xsd:attribute name="global_offset" type="xsd:string"/>
         <xsd:attribute name="layout" type="enums.Layout"/>
         <xsd:attribute name="scale" type="simple.ScaleRef"/>
@@ -350,6 +352,8 @@
             <xsd:element minOccurs="0" maxOccurs="1" name="row_hover_fill" type="Fill"/>
             <xsd:element minOccurs="0" maxOccurs="1" name="row_selected_fill" type="Fill"/>
             <xsd:element minOccurs="0" maxOccurs="1" name="a11y" type="utils.A11y"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="row_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="column_stroke" type="Stroke"/>
         </xsd:all>
 
         <xsd:attributeGroup ref="attrs.VisualBase"/>
@@ -369,6 +373,8 @@
         <xsd:attribute name="header_height" type="xsd:double"/>
         <xsd:attribute name="row_hover_fill" type="xsd:string"/>
         <xsd:attribute name="row_selected_fill" type="xsd:string"/>
+        <xsd:attribute name="row_stroke" type="xsd:string"/>
+        <xsd:attribute name="column_stroke" type="xsd:string"/>
         <xsd:attribute name="splitter_position" type="simple.NumberOrPercent"/>
         <xsd:attribute name="default_row_height" type="xsd:double"/>
     </xsd:complexType>

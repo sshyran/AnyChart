@@ -3,6 +3,7 @@ goog.provide('anychart.core.RadarPolarChart');
 goog.require('anychart.core.ChartWithOrthogonalScales');
 goog.require('anychart.core.axes.Radial');
 goog.require('anychart.core.reporting');
+goog.require('anychart.core.settings');
 goog.require('anychart.enums');
 goog.require('anychart.palettes');
 goog.require('anychart.scales');
@@ -34,14 +35,6 @@ goog.inherits(anychart.core.RadarPolarChart, anychart.core.ChartWithOrthogonalSc
 
 
 /**
- * Start angle for the first slice of a pie chart.
- * @type {number}
- * @private
- */
-anychart.core.RadarPolarChart.prototype.startAngle_;
-
-
-/**
  * Supported consistency states. Adds AXES, AXES_MARKERS, GRIDS to anychart.core.ChartWithSeries states.
  * @type {number}
  */
@@ -58,49 +51,43 @@ anychart.core.RadarPolarChart.prototype.SUPPORTED_CONSISTENCY_STATES =
 //
 //------------------------------------------------------------------------------
 /**
- * Set chart start angle.
- * @example
- * var chart = anychart.polar([1, 1.2, 1.4, 1.6, 1.2]);
- * chart.startAngle(45);
- * chart.container(stage).draw();
- * @param {(string|number)=} opt_value .
- * @return {(number|anychart.core.RadarPolarChart)} .
+ * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
-anychart.core.RadarPolarChart.prototype.startAngle = function(opt_value) {
-  if (goog.isDef(opt_value)) {
-    opt_value = goog.math.standardAngle(anychart.utils.toNumber(opt_value) || 0);
-    if (this.startAngle_ != opt_value) {
-      this.startAngle_ = opt_value;
-      this.invalidate(anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW);
-    }
-    return this;
-  } else {
-    return this.startAngle_;
+anychart.core.RadarPolarChart.PROPERTY_DESCRIPTORS = (function() {
+  /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
+  var map = {};
+  function startAngleNormalizer(opt_value) {
+    return goog.math.standardAngle(anychart.utils.toNumber(opt_value) || 0);
   }
-};
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.SINGLE_ARG,
+      'startAngle',
+      startAngleNormalizer,
+      anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW);
 
-
-/**
- * Inner radius getter/setter. Can be in pixels or percent of main radius.
- * @param {(number|string)=} opt_value
- * @return {number|string|anychart.core.RadarPolarChart}
- */
-anychart.core.RadarPolarChart.prototype.innerRadius = function(opt_value) {
-  if (goog.isDef(opt_value)) {
-    var value = anychart.utils.normalizeNumberOrPercent(opt_value, this.innerRadius_);
-    if (this.innerRadius_ != value) {
-      this.innerRadius_ = value;
-      for (var i = 0; i < this.seriesList.length; i++) {
-        this.seriesList[i].invalidate(anychart.ConsistencyState.SERIES_POINTS);
-      }
-      this.invalidate(
-          anychart.ConsistencyState.BOUNDS |
-          anychart.ConsistencyState.SERIES_CHART_SERIES, anychart.Signal.NEEDS_REDRAW);
-    }
-    return this;
+  function innerRadiusNormalizer(opt_value) {
+    return anychart.utils.normalizeNumberOrPercent(opt_value, this.getOption('innerRadius'));
   }
-  return this.innerRadius_;
-};
+  function beforeInvalidation() {
+    for (var i = 0; i < this.seriesList.length; i++) {
+      this.seriesList[i].invalidate(anychart.ConsistencyState.SERIES_POINTS);
+    }
+  }
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.SINGLE_ARG,
+      'innerRadius',
+      innerRadiusNormalizer,
+      anychart.ConsistencyState.BOUNDS | anychart.ConsistencyState.SERIES_CHART_SERIES,
+      anychart.Signal.NEEDS_REDRAW,
+      0,
+      beforeInvalidation);
+
+  return map;
+})();
+anychart.core.settings.populate(anychart.core.RadarPolarChart, anychart.core.RadarPolarChart.PROPERTY_DESCRIPTORS);
 
 
 /** @inheritDoc */
@@ -342,8 +329,9 @@ anychart.core.RadarPolarChart.prototype.getAxisByIndex = function(index) {
 //------------------------------------------------------------------------------
 /** @inheritDoc */
 anychart.core.RadarPolarChart.prototype.setupSeriesBeforeDraw = function(series, opt_topAxisPadding, opt_rightAxisPadding, opt_bottomAxisPadding, opt_leftAxisPadding) {
-  if (series.getOwnOption('startAngle') != this.startAngle_) {
-    series.setOption('startAngle', this.startAngle_);
+  var startAngle = /** @type {number} */ (this.getOption('startAngle'));
+  if (series.getOwnOption('startAngle') != startAngle) {
+    series.setOption('startAngle', startAngle);
     series.invalidate(anychart.ConsistencyState.SERIES_POINTS);
   }
 };
@@ -388,12 +376,13 @@ anychart.core.RadarPolarChart.prototype.drawContent = function(bounds) {
     axisInvalidated = true;
   }
 
+  var startAngle = /** @type {number} */ (this.getOption('startAngle'));
   // calculate axes space first, the result is data bounds
   if (this.hasInvalidationState(anychart.ConsistencyState.BOUNDS)) {
     //total bounds of content area
     var contentAreaBounds = bounds.clone().round();
     axis = this.xAxis();
-    axis.startAngle(this.startAngle_);
+    axis.startAngle(startAngle);
     axis.parentBounds(contentAreaBounds);
     this.dataBounds = axis.getRemainingBounds().round();
 
@@ -404,6 +393,7 @@ anychart.core.RadarPolarChart.prototype.drawContent = function(bounds) {
     axisInvalidated = true;
   }
 
+  var innerRadius = /** @type {string|number} */ (this.getOption('innerRadius'));
   if (this.hasInvalidationState(anychart.ConsistencyState.AXES_CHART_GRIDS)) {
     var grids = goog.array.concat(this.grids_, this.minorGrids_);
 
@@ -415,9 +405,9 @@ anychart.core.RadarPolarChart.prototype.drawContent = function(bounds) {
           grid.invalidate(anychart.ConsistencyState.GRIDS_POSITION);
         }
         grid.parentBounds(this.dataBounds);
-        grid.innerRadius(this.innerRadius_);
+        grid.innerRadius(innerRadius);
         grid.container(this.rootElement);
-        grid.startAngle(this.startAngle_);
+        grid.startAngle(startAngle);
         grid.draw();
         grid.resumeSignalsDispatching(false);
       }
@@ -431,14 +421,14 @@ anychart.core.RadarPolarChart.prototype.drawContent = function(bounds) {
     axis = this.xAxis();
     axis.container(this.rootElement);
     // parent bounds and angle were already set for xAxis at BOUNDS
-    // axis.startAngle(this.startAngle_);
+    // axis.startAngle(startAngle);
     // axis.parentBounds(bounds.clone().round());
     axis.draw();
 
     axis = this.yAxis();
     axis.container(this.rootElement);
-    axis.startAngle(this.startAngle_);
-    axis.innerRadius(this.innerRadius_);
+    axis.startAngle(startAngle);
+    axis.innerRadius(innerRadius);
     axis.parentBounds(this.dataBounds.clone());
     axis.draw();
 
@@ -521,7 +511,7 @@ anychart.core.RadarPolarChart.prototype.getSeriesStatus = function(event) {
   } else if (this.interactivity().hoverMode() == anychart.enums.HoverMode.BY_X) {
     dx = x - cx;
     dy = y - cy;
-    angle = Math.PI / 2 + Math.atan2(dy, -dx) + goog.math.toRadians(this.startAngle_);
+    angle = Math.PI / 2 + Math.atan2(dy, -dx) + goog.math.toRadians(/** @type {number} */ (this.getOption('startAngle')));
     angle = goog.math.modulo(angle, Math.PI * 2);
 
     var ratio = 1 - (angle / (Math.PI * 2));
@@ -587,8 +577,7 @@ anychart.core.RadarPolarChart.prototype.serialize = function() {
 anychart.core.RadarPolarChart.prototype.setupByJSONWithScales = function(config, scalesInstances, opt_default) {
   anychart.core.RadarPolarChart.base(this, 'setupByJSONWithScales', config, scalesInstances, opt_default);
 
-  this.startAngle(config['startAngle']);
-  this.innerRadius(config['innerRadius']);
+  anychart.core.settings.deserialize(this, anychart.core.RadarPolarChart.PROPERTY_DESCRIPTORS, config);
   this.defaultGridSettings(config['defaultGridSettings']);
   this.defaultMinorGridSettings(config['defaultMinorGridSettings']);
 
@@ -612,8 +601,7 @@ anychart.core.RadarPolarChart.prototype.serializeWithScales = function(json, sca
   anychart.core.RadarPolarChart.base(this, 'serializeWithScales', json, scales, scaleIds);
 
   var axesIds = [];
-  json['startAngle'] = this.startAngle();
-  json['innerRadius'] = this.innerRadius();
+  anychart.core.settings.serialize(this, anychart.core.RadarPolarChart.PROPERTY_DESCRIPTORS, json);
 
   json['xAxis'] = this.serializeAxis_(/** @type {anychart.core.axes.Radar|anychart.core.axes.Polar} */(this.xAxis()), scales, scaleIds, axesIds);
   json['yAxis'] = this.serializeAxis_(/** @type {anychart.core.axes.Radial} */(this.yAxis()), scales, scaleIds, axesIds);
@@ -694,12 +682,13 @@ anychart.core.RadarPolarChart.prototype.serializeGrid_ = function(item, scales, 
   // proto['area'] = proto.area;//doc|ex
   // proto['line'] = proto.line;//doc|ex
   // proto['marker'] = proto.marker;//doc|ex
+  // proto['startAngle'] = proto.startAngle;//doc|ex
+  // proto['innerRadius'] = proto.innerRadius;
   proto['palette'] = proto.palette;//doc|ex
   proto['markerPalette'] = proto.markerPalette;//doc|ex
   proto['hatchFillPalette'] = proto.hatchFillPalette;
-  proto['startAngle'] = proto.startAngle;//doc|ex
-  proto['innerRadius'] = proto.innerRadius;
-  proto['defaultSeriesType'] = proto.defaultSeriesType;
+  // auto from ChartWithSeries
+  // proto['defaultSeriesType'] = proto.defaultSeriesType;
   proto['addSeries'] = proto.addSeries;
   proto['getSeriesAt'] = proto.getSeriesAt;
   proto['getSeriesCount'] = proto.getSeriesCount;

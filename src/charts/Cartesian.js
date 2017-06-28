@@ -1,6 +1,7 @@
 goog.provide('anychart.charts.Cartesian');
 goog.require('anychart.core.CartesianBase');
 goog.require('anychart.core.series');
+goog.require('anychart.core.settings');
 goog.require('anychart.core.shapeManagers');
 goog.require('anychart.enums');
 
@@ -368,8 +369,9 @@ anychart.chartTypesMap[anychart.enums.ChartTypes.CARTESIAN] = anychart.cartesian
   goog.exportSymbol('anychart.cartesian', anychart.cartesian);
   proto['xScale'] = proto.xScale;
   proto['yScale'] = proto.yScale;
-  proto['barsPadding'] = proto.barsPadding;
-  proto['barGroupsPadding'] = proto.barGroupsPadding;
+  // auto generated from ChartWithOrthogonalScales
+  // proto['barsPadding'] = proto.barsPadding;
+  // proto['barGroupsPadding'] = proto.barGroupsPadding;
   proto['crosshair'] = proto.crosshair;
   proto['maxBubbleSize'] = proto.maxBubbleSize;
   proto['minBubbleSize'] = proto.minBubbleSize;
@@ -409,7 +411,8 @@ anychart.chartTypesMap[anychart.enums.ChartTypes.CARTESIAN] = anychart.cartesian
   proto['markerPalette'] = proto.markerPalette;
   proto['hatchFillPalette'] = proto.hatchFillPalette;
   proto['getType'] = proto.getType;
-  proto['defaultSeriesType'] = proto.defaultSeriesType;
+  // auto from ChartWithSeries
+  // proto['defaultSeriesType'] = proto.defaultSeriesType;
   proto['addSeries'] = proto.addSeries;
   proto['getSeriesAt'] = proto.getSeriesAt;
   proto['getSeriesCount'] = proto.getSeriesCount;
@@ -419,10 +422,10 @@ anychart.chartTypesMap[anychart.enums.ChartTypes.CARTESIAN] = anychart.cartesian
   proto['getPlotBounds'] = proto.getPlotBounds;
   proto['xZoom'] = proto.xZoom;
   proto['xScroller'] = proto.xScroller;
-  proto['zAspect'] = proto.zAspect;
-  proto['zAngle'] = proto.zAngle;
-  proto['zDistribution'] = proto.zDistribution;
-  proto['zPadding'] = proto.zPadding;
+  //proto['zAspect'] = proto.zAspect;
+  //proto['zAngle'] = proto.zAngle;
+  //proto['zDistribution'] = proto.zDistribution;
+  //proto['zPadding'] = proto.zPadding;
   proto['getStat'] = proto.getStat;
   proto['annotations'] = proto.annotations;
   proto['getXScales'] = proto.getXScales;
