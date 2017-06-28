@@ -105,7 +105,6 @@ anychart.charts.TagCloud = function(opt_data, opt_settings) {
   /**
    * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['mode', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW],
     ['fromAngle', anychart.ConsistencyState.TAG_CLOUD_ANGLES, anychart.Signal.NEEDS_REDRAW],
