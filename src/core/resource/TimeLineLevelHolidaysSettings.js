@@ -54,7 +54,7 @@ anychart.core.resource.TimeLineLevelHolidaysSettings = function() {
   this.markConsistent(anychart.ConsistencyState.ALL);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
       anychart.ConsistencyState.ONLY_DISPATCHING,

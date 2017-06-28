@@ -15,25 +15,6 @@ goog.require('goog.math');
  *    handler: number,
  *    propName: string,
  *    normalizer: Function,
- *    capabilityCheck: number,
- *    consistency: (anychart.ConsistencyState|number),
- *    signal: (anychart.Signal|number),
- *    beforeInvalidationHook: Function
- * }|{
- *    handler: number,
- *    propName: string,
- *    normalizer: Function,
- *    consistency: (anychart.ConsistencyState|number),
- *    signal: (anychart.Signal|number),
- *    beforeInvalidationHook: Function
- * }|{
- *    handler: number,
- *    propName: string,
- *    normalizer: Function,
- *    consistency: (anychart.ConsistencyState|number),
- *    signal: (anychart.Signal|number),
- *    deprecatedPropName: string,
- *    beforeInvalidationHook: Function
  * }}
  */
 anychart.core.settings.PropertyDescriptor;
@@ -361,7 +342,7 @@ anychart.core.settings.serialize = function(target, descriptors, json, opt_warni
         );
       }
     }
-    if (!goog.isDef(val) && target.check(descriptor.capabilityCheck)) {
+    if (!goog.isDef(val) && target.check(/** @type {number} */ (target[name].getCapabilities()))) {
       val = target.getThemeOption(name);
     }
     if (goog.isDef(val) && !goog.isFunction(val)) {
@@ -419,7 +400,7 @@ anychart.core.settings.simpleHandler = function(fieldName, deprecatedFieldName, 
     opt_value = normalizer.call(this, opt_value);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
-      var supportCheck = this.getCapabilities(fieldName);
+      var supportCheck = /** @type {number} */ (this.getCapabilities(fieldName));
       var consistencyState = this.getConsistencyState(fieldName);
       var signal = this.getSignal(fieldName);
       var beforeInvalidationHook = this.getHook(fieldName);
@@ -476,7 +457,7 @@ anychart.core.settings.multiArgsHandler = function(fieldName, deprecatedFieldNam
     opt_value = arrayNormalizer.call(this, args);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
-      var supportCheck = this.getCapabilities(fieldName);
+      var supportCheck = /** @type {number} */ (this.getCapabilities(fieldName));
       var consistencyState = this.getConsistencyState(fieldName);
       var signal = this.getSignal(fieldName);
       var beforeInvalidationHook = this.getHook(fieldName);
@@ -907,7 +888,7 @@ anychart.core.settings.IObjectWithSettings.prototype.check = function(flags) {};
 /**
  * Returns capabilities that should be checked after option change.
  * @param {string} fieldName
- * @return {number} Capabilities
+ * @return {number|undefined} Capabilities
  */
 anychart.core.settings.IObjectWithSettings.prototype.getCapabilities = function(fieldName) {};
 

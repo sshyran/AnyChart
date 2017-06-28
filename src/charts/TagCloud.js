@@ -103,7 +103,7 @@ anychart.charts.TagCloud = function(opt_data, opt_settings) {
   this.data(opt_data || null, opt_settings);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

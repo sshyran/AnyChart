@@ -30,7 +30,7 @@ anychart.core.ui.Overlay = function() {
   this.invalidate(anychart.ConsistencyState.ALL);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

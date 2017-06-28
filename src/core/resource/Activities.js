@@ -65,7 +65,7 @@ anychart.core.resource.Activities = function(chart) {
   this.formatProvider_ = null;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

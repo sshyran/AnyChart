@@ -215,7 +215,7 @@ anychart.core.Chart = function() {
 
   //region Init descriptors meta
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
 

@@ -61,7 +61,7 @@ anychart.core.axes.Map = function() {
       anychart.ConsistencyState.AXIS_OVERLAP;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

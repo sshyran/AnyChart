@@ -115,7 +115,7 @@ anychart.core.resource.resourceList.Item = function(resourceList) {
   this.index = NaN;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

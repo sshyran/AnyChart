@@ -95,7 +95,7 @@ anychart.core.resource.ResourceList = function() {
       anychart.ConsistencyState.RESOURCE_LIST_TAGS_SETTINGS;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

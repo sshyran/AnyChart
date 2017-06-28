@@ -97,7 +97,7 @@ anychart.core.resource.TimeLine = function() {
   this.resolutionChainCache_ = null;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,

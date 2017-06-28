@@ -26,8 +26,7 @@ anychart.core.StateSettings = function() {
   this.themeSettings = {};
 
   /**
-   * Descriptors meta
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
 };

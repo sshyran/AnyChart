@@ -39,7 +39,7 @@ anychart.core.venn.Intersections = function(chart) {
   this.ownSettings = {};
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

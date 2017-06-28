@@ -150,7 +150,7 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   this.applyConfig(config, true);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

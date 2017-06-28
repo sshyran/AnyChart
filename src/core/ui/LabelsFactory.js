@@ -125,7 +125,7 @@ anychart.core.ui.LabelsFactory = function() {
   this.resumeSignalsDispatching(false);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
@@ -1417,7 +1417,7 @@ anychart.core.ui.LabelsFactory.Label = function() {
   this.markConsistent(anychart.ConsistencyState.LABELS_FACTORY_CACHE);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,

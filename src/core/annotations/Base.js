@@ -124,7 +124,7 @@ anychart.core.annotations.Base = function(chartController) {
   this.markersSupported = true;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, anychart.core.annotations.BASE_DESCRIPTORS_META);

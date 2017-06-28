@@ -148,7 +148,7 @@ anychart.core.ui.Tooltip = function(capability) {
   anychart.utils.tooltipsRegistry[String(goog.getUid(this))] = this;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
       anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,

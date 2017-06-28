@@ -61,7 +61,7 @@ anychart.core.grids.MapSettings = function(map) {
   this.markConsistent(anychart.ConsistencyState.ALL);
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

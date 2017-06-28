@@ -151,7 +151,7 @@ anychart.core.resource.Grid = function() {
   this.yScrollPosition_ = 0;
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [

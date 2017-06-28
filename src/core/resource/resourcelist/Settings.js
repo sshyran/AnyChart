@@ -28,7 +28,7 @@ anychart.core.resource.resourceList.Settings = function() {
   this.defaultSettings = {};
 
   /**
-   * @type {Object}
+   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = {};
 };
