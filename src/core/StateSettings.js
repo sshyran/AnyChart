@@ -155,7 +155,7 @@ anychart.core.StateSettings.prototype.getHookContext = function(fieldName) {
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getHook = function(fieldName) {
-  return this.descriptorsMeta[fieldName].beforeInvalidationHook;
+  return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
 };
 //endregion
 //region --- Exports

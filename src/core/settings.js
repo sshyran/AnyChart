@@ -342,7 +342,7 @@ anychart.core.settings.serialize = function(target, descriptors, json, opt_warni
         );
       }
     }
-    if (!goog.isDef(val) && target.check(/** @type {number} */ (target[name].getCapabilities()))) {
+    if (!goog.isDef(val) && target.check(/** @type {number} */ (target.getCapabilities(name)))) {
       val = target.getThemeOption(name);
     }
     if (goog.isDef(val) && !goog.isFunction(val)) {
