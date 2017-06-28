@@ -1827,6 +1827,47 @@ anychart.charts.Stock.prototype.createInteractivitySettings = function() {
 
 
 //endregion
+//region --- Crosshair
+//----------------------------------------------------------------------------------------------------------------------
+//
+//  Crosshair
+//
+//----------------------------------------------------------------------------------------------------------------------
+/**
+ *
+ * @param {(Object|boolean|null)=} opt_value
+ * @return {!(anychart.core.ui.Crosshair|anychart.charts.Stock)}
+ */
+anychart.charts.Stock.prototype.crosshair = function(opt_value) {
+  if (!this.crosshair_) {
+    this.crosshair_ = new anychart.core.ui.Crosshair();
+    this.crosshair_.enabled(false);
+    this.crosshair_.bindHandlers(this);
+    this.registerDisposable(this.crosshair_);
+    this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
+    this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
+  }
+
+  if (goog.isDef(opt_value)) {
+    this.crosshair_.setup(opt_value);
+    return this;
+  } else {
+    return this.crosshair_;
+  }
+};
+
+
+/**
+ * Listener for crosshair invalidation.
+ * @param {anychart.SignalEvent} event Invalidation event.
+ * @private
+ */
+anychart.charts.Stock.prototype.onCrosshairSignal_ = function(event) {
+  this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
+};
+
+
+//endregion
 //region Selection Marquee
 //------------------------------------------------------------------------------
 //

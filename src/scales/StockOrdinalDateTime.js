@@ -18,6 +18,12 @@ goog.inherits(anychart.scales.StockOrdinalDateTime, anychart.scales.StockScatter
 
 
 /** @inheritDoc */
+anychart.scales.StockOrdinalDateTime.prototype.getType = function() {
+  return anychart.enums.ScaleTypes.STOCK_ORDINAL_DATE_TIME;
+};
+
+
+/** @inheritDoc */
 anychart.scales.StockOrdinalDateTime.prototype.transform = function(value, opt_subrangeRatio) {
   return this.transformInternal(value, this.keyIndexTransformer.getIndexByKey(anychart.utils.normalizeTimestamp(value)));
 };

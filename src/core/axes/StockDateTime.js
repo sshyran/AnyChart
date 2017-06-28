@@ -295,6 +295,41 @@ anychart.core.axes.StockDateTime.prototype.scale = function(opt_value) {
 
 
 /**
+ * Currently does nothing. Method is added to support stock chart crosshair.
+ * @param {anychart.enums.Orientation=} opt_value - Currently sets nothing.
+ * @return {anychart.enums.Orientation|anychart.core.axes.StockDateTime} - Currently returns axis instance or anychart.enums.Orientation.BOTTOM.
+ */
+anychart.core.axes.StockDateTime.prototype.orientation = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    //TODO (A.Kudryavtsev): Currently does nothing. Method is added to support stock chart crosshair.
+    return this;
+  }
+  return anychart.enums.Orientation.BOTTOM;
+};
+
+
+anychart.core.axes.StockDateTime.prototype.getPixelBounds = function() {
+  var res = /** @type {anychart.math.Rect} */(this.parentBounds());
+  if (!res)
+    return new anychart.math.Rect(0, 0, 0, 0);
+  if (this.enabled()) {
+    res = res.clone();
+    res.top = res.top + res.height - this.height_ + 1;
+  }
+  return res;
+};
+
+
+/**
+ * Whether axis is horizontal.
+ * @return {boolean}
+ */
+anychart.core.axes.StockDateTime.prototype.isHorizontal = function() {
+  return true;
+};
+
+
+/**
  * Returns remaining bounds.
  * @return {!anychart.math.Rect}
  */

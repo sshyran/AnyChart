@@ -4668,7 +4668,14 @@ goog.provide('anychart.themes.defaultTheme');
         ],
         'yScale': 0,
         'zIndex': 10,
-        'yAxes': [{}]
+        'yAxes': [{}],
+        'crosshair': {
+          'enabled': true,
+          'displayMode': 'float',
+          'xStroke': colorStrokeExtraBright,
+          'yStroke': colorStrokeExtraBright,
+          'zIndex': 41
+        }
       },
       'padding': [20, 30, 20, 60],
       'plots': [{}],

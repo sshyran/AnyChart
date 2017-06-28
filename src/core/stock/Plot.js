@@ -10,6 +10,7 @@ goog.require('anychart.core.reporting');
 goog.require('anychart.core.series.Stock');
 goog.require('anychart.core.stock.indicators');
 goog.require('anychart.core.ui.Background');
+goog.require('anychart.core.ui.Crosshair');
 goog.require('anychart.core.ui.Legend');
 goog.require('anychart.enums');
 goog.require('anychart.format.Context');
@@ -50,6 +51,13 @@ anychart.core.stock.Plot = function(chart) {
    * @private
    */
   this.background_ = null;
+
+  /**
+   * Plot crosshair.
+   * @type {anychart.core.ui.Crosshair}
+   * @private
+   */
+  this.crosshair_ = null;
 
   /**
    * Series list.
@@ -184,7 +192,8 @@ anychart.core.stock.Plot.prototype.SUPPORTED_CONSISTENCY_STATES =
     anychart.ConsistencyState.STOCK_PLOT_BACKGROUND |
     anychart.ConsistencyState.STOCK_PLOT_PALETTE |
     anychart.ConsistencyState.STOCK_PLOT_ANNOTATIONS |
-    anychart.ConsistencyState.STOCK_PLOT_LEGEND;
+    anychart.ConsistencyState.STOCK_PLOT_LEGEND |
+    anychart.ConsistencyState.AXES_CHART_CROSSHAIR;
 
 
 /**
@@ -1574,6 +1583,19 @@ anychart.core.stock.Plot.prototype.draw = function() {
     this.markConsistent(anychart.ConsistencyState.STOCK_PLOT_ANNOTATIONS);
   }
 
+  if (this.hasInvalidationState(anychart.ConsistencyState.AXES_CHART_CROSSHAIR)) {
+    var crosshair = /** @type {anychart.core.ui.Crosshair} */(this.crosshair());
+    crosshair.suspendSignalsDispatching();
+    crosshair.parentBounds(this.getPlotBounds());
+    crosshair.container(this.rootLayer_);
+    crosshair.xAxis(this.xAxis_);
+    crosshair.yAxis(this.yAxes_[/** @type {number} */(this.crosshair_.yLabel().axisIndex())]);
+    crosshair.draw();
+    crosshair.resumeSignalsDispatching(false);
+
+    this.markConsistent(anychart.ConsistencyState.AXES_CHART_CROSSHAIR);
+  }
+
   this.resumeSignalsDispatching(false);
 
   // this is a debug code and should remain until we finally decide what to do with auto gaps
@@ -1912,30 +1934,34 @@ anychart.core.stock.Plot.prototype.prepareHighlight = function(value) {
 anychart.core.stock.Plot.prototype.highlight = function(value) {
   if (!this.rootLayer_ || !this.seriesBounds_) return;
 
-  var ratio = this.chart_.xScale().transform(value);
+  this.crosshair().suspendSignalsDispatching();
+  this.crosshair().parentBounds(this.getPlotBounds());
+  this.crosshair().resumeSignalsDispatching(false);
 
-  this.highlightedValue_ = value;
-
-  var thickness = acgraph.vector.getThickness(this.dateTimeHighlighterStroke_);
-  if (thickness && this.dateTimeHighlighterStroke_ != 'none' && ratio >= 0 && ratio <= 1) {
-    if (!this.dateTimeHighlighter_) {
-      this.dateTimeHighlighter_ = acgraph.path();
-      this.dateTimeHighlighter_.fill(null);
-      this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
-      this.dateTimeHighlighter_.disablePointerEvents(true);
-      this.dateTimeHighlighter_.zIndex(1000);
-    } else {
-      this.dateTimeHighlighter_.clear();
-    }
-    var x = this.seriesBounds_.left + ratio * this.seriesBounds_.width;
-    x = anychart.utils.applyPixelShift(x, thickness);
-    this.dateTimeHighlighter_.moveTo(x, this.seriesBounds_.top);
-    this.dateTimeHighlighter_.lineTo(x, this.seriesBounds_.getBottom());
-    if (!this.dateTimeHighlighter_.parent())
-      this.rootLayer_.addChild(this.dateTimeHighlighter_);
-  } else if (this.dateTimeHighlighter_) {
-    this.dateTimeHighlighter_.remove();
-  }
+  // var ratio = this.chart_.xScale().transform(value);
+  //
+  // this.highlightedValue_ = value;
+  //
+  // var thickness = acgraph.vector.getThickness(this.dateTimeHighlighterStroke_);
+  // if (thickness && this.dateTimeHighlighterStroke_ != 'none' && ratio >= 0 && ratio <= 1) {
+  //   if (!this.dateTimeHighlighter_) {
+  //     this.dateTimeHighlighter_ = acgraph.path();
+  //     this.dateTimeHighlighter_.fill(null);
+  //     this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
+  //     this.dateTimeHighlighter_.disablePointerEvents(true);
+  //     this.dateTimeHighlighter_.zIndex(1000);
+  //   } else {
+  //     this.dateTimeHighlighter_.clear();
+  //   }
+  //   var x = this.seriesBounds_.left + ratio * this.seriesBounds_.width;
+  //   x = anychart.utils.applyPixelShift(x, thickness);
+  //   this.dateTimeHighlighter_.moveTo(x, this.seriesBounds_.top);
+  //   this.dateTimeHighlighter_.lineTo(x, this.seriesBounds_.getBottom());
+  //   if (!this.dateTimeHighlighter_.parent())
+  //     this.rootLayer_.addChild(this.dateTimeHighlighter_);
+  // } else if (this.dateTimeHighlighter_) {
+  //   this.dateTimeHighlighter_.remove();
+  // }
 
   for (var i = 0; i < this.series_.length; i++) {
     var series = this.series_[i];
@@ -1996,6 +2022,7 @@ anychart.core.stock.Plot.prototype.initDragger_ = function(e) {
  */
 anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
   if (this.seriesBounds_) {
+    this.dispatchEvent(acgraph.events.EventType.MOUSEMOVE);
     var stageReferencePoint = this.container().getStage().getClientPosition();
     var x = e['clientX'] - stageReferencePoint.x - this.seriesBounds_.left;
     var y = e['clientY'] - stageReferencePoint.y - this.seriesBounds_.top;
@@ -2018,6 +2045,7 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
  * @private
  */
 anychart.core.stock.Plot.prototype.handlePlotMouseOut_ = function(e) {
+  this.dispatchEvent(acgraph.events.EventType.MOUSEOUT);
   this.frameHighlightRatio_ = NaN;
   if (!goog.isDef(this.frame_))
     this.frame_ = window.requestAnimationFrame(this.frameAction_);
@@ -2031,6 +2059,47 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOut_ = function(e) {
  */
 anychart.core.stock.Plot.prototype.handlePlotMouseDown_ = function(e) {
   this.annotations().unselect();
+};
+
+
+//endregion
+//region --- Crosshair
+//----------------------------------------------------------------------------------------------------------------------
+//
+//  Crosshair
+//
+//----------------------------------------------------------------------------------------------------------------------
+/**
+ *
+ * @param {(Object|boolean|null)=} opt_value
+ * @return {!(anychart.core.ui.Crosshair|anychart.core.stock.Plot)}
+ */
+anychart.core.stock.Plot.prototype.crosshair = function(opt_value) {
+  if (!this.crosshair_) {
+    this.crosshair_ = new anychart.core.ui.Crosshair();
+    this.crosshair_.enabled(true);
+    this.crosshair_.bindHandlers(this);
+    this.registerDisposable(this.crosshair_);
+    this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
+    this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
+  }
+
+  if (goog.isDef(opt_value)) {
+    this.crosshair_.setup(opt_value);
+    return this;
+  } else {
+    return this.crosshair_;
+  }
+};
+
+
+/**
+ * Listener for crosshair invalidation.
+ * @param {anychart.SignalEvent} event Invalidation event.
+ * @private
+ */
+anychart.core.stock.Plot.prototype.onCrosshairSignal_ = function(event) {
+  this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
 };
 
 
@@ -2558,6 +2627,8 @@ anychart.core.stock.Plot.prototype.setupByJSON = function(config, opt_default) {
       }
     }
   }
+
+  this.crosshair(config['crosshair']);
 };
 
 

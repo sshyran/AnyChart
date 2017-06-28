@@ -13,7 +13,7 @@ anychart.core.ui.Crosshair = function() {
   anychart.core.ui.Crosshair.base(this, 'constructor');
 
   /**
-   * @type {anychart.core.ChartWithAxes|anychart.charts.Map}
+   * @type {anychart.core.ChartWithAxes|anychart.charts.Map|anychart.charts.Stock|anychart.core.stock.Plot}
    * @protected
    */
   this.chart = null;
@@ -32,7 +32,7 @@ anychart.core.ui.Crosshair = function() {
   this.displayMode_ = anychart.enums.CrosshairDisplayMode.FLOAT;
 
   /**
-   * @type {anychart.core.axes.Linear|anychart.core.axes.Map}
+   * @type {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime}
    * @private
    */
   this.xAxis_ = null;
@@ -156,8 +156,8 @@ anychart.core.ui.Crosshair.prototype.displayMode = function(opt_value) {
 
 /**
  *
- * @param {(anychart.core.axes.Linear|anychart.core.axes.Map)=} opt_value
- * @return {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.ui.Crosshair}
+ * @param {(anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime)=} opt_value
+ * @return {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime|anychart.core.ui.Crosshair}
  */
 anychart.core.ui.Crosshair.prototype.xAxis = function(opt_value) {
   if (goog.isDef(opt_value)) {
@@ -362,7 +362,7 @@ anychart.core.ui.Crosshair.prototype.draw = function() {
 
 /**
  *
- * @param {(anychart.core.ChartWithAxes|anychart.charts.Map)=} opt_chart
+ * @param {(anychart.core.ChartWithAxes|anychart.charts.Map|anychart.core.stock.Plot)=} opt_chart
  */
 anychart.core.ui.Crosshair.prototype.bindHandlers = function(opt_chart) {
   if (opt_chart) {
@@ -731,6 +731,7 @@ anychart.core.ui.Crosshair.prototype.getLabelsFormatProvider = function(axis, ra
   var scaleValue = scale.inverseTransform(ratio);
 
   var labelText;
+  var tickValue;
   switch (scaleType) {
     case anychart.enums.ScaleTypes.LINEAR:
       labelText = +parseFloat(scaleValue).toFixed();
@@ -741,6 +742,8 @@ anychart.core.ui.Crosshair.prototype.getLabelsFormatProvider = function(axis, ra
     case anychart.enums.ScaleTypes.ORDINAL:
       labelText = String(scaleValue);
       break;
+    case anychart.enums.ScaleTypes.STOCK_SCATTER_DATE_TIME:
+    case anychart.enums.ScaleTypes.STOCK_ORDINAL_DATE_TIME:
     case anychart.enums.ScaleTypes.DATE_TIME:
       var date = new Date(scaleValue);
       var mm = date.getMonth() + 1;
@@ -751,6 +754,7 @@ anychart.core.ui.Crosshair.prototype.getLabelsFormatProvider = function(axis, ra
       dd = dd < 10 ? '0' + dd : '' + dd;
 
       labelText = mm + '-' + dd + '-' + yy;
+      tickValue = scaleValue;
 
       break;
   }
@@ -760,7 +764,8 @@ anychart.core.ui.Crosshair.prototype.getLabelsFormatProvider = function(axis, ra
     'rawValue': scaleValue,
     'max': scale.max ? scale.max : null,
     'min': scale.min ? scale.min : null,
-    'scale': scale
+    'scale': scale,
+    'tickValue': tickValue
   };
 };
 
