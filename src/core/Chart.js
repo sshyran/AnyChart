@@ -339,7 +339,7 @@ anychart.core.Chart.prototype.getHookContext = function(fieldName) {
 
 /** @inheritDoc */
 anychart.core.Chart.prototype.getHook = function(fieldName) {
-  return this.descriptorsMeta[fieldName].beforeInvalidationHook;
+  return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
 };
 
 
