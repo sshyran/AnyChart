@@ -127,11 +127,7 @@ anychart.core.annotations.Base = function(chartController) {
    * @type {Object}
    */
   this.descriptorsMeta = {};
-  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
-    ['color', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['allowEdit', anychart.ConsistencyState.ANNOTATIONS_INTERACTIVITY, anychart.Signal.NEEDS_REDRAW],
-    ['hoverGap', anychart.ConsistencyState.ANNOTATIONS_SHAPES, anychart.Signal.NEEDS_REDRAW]
-  ]);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, anychart.core.annotations.BASE_DESCRIPTORS_META);
 };
 goog.inherits(anychart.core.annotations.Base, anychart.core.VisualBaseWithBounds);
 anychart.core.settings.populate(anychart.core.annotations.Base, anychart.core.annotations.BASE_DESCRIPTORS);
