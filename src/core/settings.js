@@ -39,6 +39,19 @@ goog.require('goog.math');
 anychart.core.settings.PropertyDescriptor;
 
 
+/**
+ * Property descriptor meta.
+ * @typedef {{
+ *   consistency: number,
+ *   signal: number,
+ *   capabilities: number,
+ *   beforeInvalidationHook: Function,
+ *   context: *
+ * }}
+ */
+anychart.core.settings.PropertyDescriptorMeta;
+
+
 //region Creating descriptors
 /**
  * Creates descriptor.
@@ -66,7 +79,7 @@ anychart.core.settings.createDescriptor = function(map, handler, propName, norma
 
 
 /**
- * @param {!Object} map
+ * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} map
  * @param {string} propName
  * @param {number} consistency - Consistency to set.
  * @param {number} signal - Signal.
@@ -90,8 +103,8 @@ anychart.core.settings.createDescriptorMeta = function(map, propName, consistenc
 
 
 /**
- * @param {!Object} map
- * @param {!Array} metas
+ * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} map
+ * @param {!Array.<Array>} metas
  */
 anychart.core.settings.createDescriptorsMeta = function(map, metas) {
   for (var i = 0; i < metas.length; i++) {
@@ -252,7 +265,7 @@ anychart.core.settings.createTextPropertiesDescriptors = function() {
  * @param {number} nonBoundsState - State to invalidate without bounds.
  * @param {number} boundsChangedSignal - Signal for changed bounds.
  * @param {number} nonBoundsSignal - Signal for non-bounds changes.
- * @return {!Object} - Descriptors map with meta.
+ * @return {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} - Descriptors map with meta.
  */
 anychart.core.settings.createTextPropertiesDescriptorsMeta = function(invalidateBoundsState, nonBoundsState, boundsChangedSignal, nonBoundsSignal) {
   var map = {};
