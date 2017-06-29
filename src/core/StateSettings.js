@@ -7,10 +7,11 @@ goog.require('anychart.core.settings.IObjectWithSettings');
 
 /**
  * Class representing state settings (normal, hover, selected)
+ * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} descriptorsMeta Descriptors for state.
  * @implements {anychart.core.settings.IObjectWithSettings}
  * @constructor
  */
-anychart.core.StateSettings = function() {
+anychart.core.StateSettings = function(descriptorsMeta) {
   anychart.core.StateSettings.base(this, 'constructor');
 
   /**
@@ -28,7 +29,71 @@ anychart.core.StateSettings = function() {
   /**
    * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
-  this.descriptorsMeta = {};
+  this.descriptorsMeta = descriptorsMeta;
+  var a = [
+    'fill',
+    'negativeFill',
+    'risingFill',
+    'fallingFill',
+    'stroke',
+    'lowStroke',
+    'highStroke',
+    'negativeStroke',
+    'risingStroke',
+    'fallingStroke',
+    'medianStroke',
+    'stemStroke',
+    'whiskerStroke',
+    'hatchFill',
+    'negativeHatchFill',
+    'risingHatchFill',
+    'fallingHatchFill',
+    'whiskerWidth',
+    'type',
+    'size',
+
+    'hoverFill',
+    'hoverNegativeFill',
+    'hoverRisingFill',
+    'hoverFallingFill',
+    'hoverStroke',
+    'hoverLowStroke',
+    'hoverHighStroke',
+    'hoverNegativeStroke',
+    'hoverRisingStroke',
+    'hoverFallingStroke',
+    'hoverMedianStroke',
+    'hoverStemStroke',
+    'hoverWhiskerStroke',
+    'hoverHatchFill',
+    'hoverNegativeHatchFill',
+    'hoverRisingHatchFill',
+    'hoverFallingHatchFill',
+    'hoverWhiskerWidth',
+    'hoverType',
+    'hoverSize',
+
+    'selectFill',
+    'selectNegativeFill',
+    'selectRisingFill',
+    'selectFallingFill',
+    'selectStroke',
+    'selectLowStroke',
+    'selectHighStroke',
+    'selectNegativeStroke',
+    'selectRisingStroke',
+    'selectFallingStroke',
+    'selectMedianStroke',
+    'selectStemStroke',
+    'selectWhiskerStroke',
+    'selectHatchFill',
+    'selectNegativeHatchFill',
+    'selectRisingHatchFill',
+    'selectFallingHatchFill',
+    'selectWhiskerWidth',
+    'selectType',
+    'selectSize'
+  ];
 };
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
@@ -48,6 +113,22 @@ anychart.core.StateSettings.prototype.disposeInternal = function() {
 
 //endregion
 //region --- Descriptors
+/**
+ * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
+ */
+anychart.core.StateSettings.PROPERTY_DESCRIPTORS = (function() {
+  /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
+  var map = {};
+  /**
+   * @type {!Object.<string, Array>}
+   */
+  var descriptors = anychart.core.settings.descriptors;
+
+  anychart.core.settings.createDescriptor(map, descriptors.FILL);
+
+  return map;
+})();
+anychart.core.settings.populate(anychart.core.StateSettings, anychart.core.StateSettings.PROPERTY_DESCRIPTORS);
 
 
 //endregion
@@ -130,32 +211,46 @@ anychart.core.StateSettings.prototype.check = function(flags) {
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
+  if (fieldName in this.descriptorsMeta)
+    return this.descriptorsMeta[fieldName].capabilities;
+  else
+    return 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
+  if (fieldName in this.descriptorsMeta)
+    return this.descriptorsMeta[fieldName].consistency;
+  else
+    return 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
+  if (fieldName in this.descriptorsMeta)
+    return this.descriptorsMeta[fieldName].signal;
+  else
+    return 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getHookContext = function(fieldName) {
-  return this.descriptorsMeta[fieldName].context;
+  if (fieldName in this.descriptorsMeta)
+    return this.descriptorsMeta[fieldName].context;
+  else
+    return null;
 };
 
 
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.getHook = function(fieldName) {
-  return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
+  if (fieldName in this.descriptorsMeta)
+    return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
+  else
+    return goog.nullFunction;
 };
 //endregion
 //region --- Exports

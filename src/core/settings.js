@@ -15,6 +15,7 @@ goog.require('goog.math');
  *    handler: number,
  *    propName: string,
  *    normalizer: Function,
+ *    deprecatedPropName: (string|undefined)
  * }}
  */
 anychart.core.settings.PropertyDescriptor;
@@ -37,17 +38,19 @@ anychart.core.settings.PropertyDescriptorMeta;
 /**
  * Creates descriptor.
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptor>} map
- * @param {anychart.enums.PropertyHandlerType} handler - Handler type.
+ * @param {anychart.enums.PropertyHandlerType|Array} descriptorOrHandler - Handler type.
  * @param {string} propName - Property name.
  * @param {Function} normalizer - Normalizer function.
  * @param {string=} opt_methodName - Deprecated prop name.
  */
-anychart.core.settings.createDescriptor = function(map, handler, propName, normalizer, opt_methodName) {
+anychart.core.settings.createDescriptor = function(map, descriptorOrHandler, propName, normalizer, opt_methodName) {
+  if (goog.isArray(descriptorOrHandler))
+    anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptorOrHandler));
   /**
    * @type {anychart.core.settings.PropertyDescriptor}
    */
   var descriptor = {
-    handler: handler,
+    handler: /** @type {number} */ (descriptorOrHandler),
     propName: propName,
     normalizer: normalizer
   };
@@ -89,8 +92,7 @@ anychart.core.settings.createDescriptorMeta = function(map, propName, consistenc
  */
 anychart.core.settings.createDescriptorsMeta = function(map, metas) {
   for (var i = 0; i < metas.length; i++) {
-    var args = [].concat(map, metas[i]);
-    anychart.core.settings.createDescriptorMeta.apply(null, args);
+    anychart.core.settings.createDescriptorMeta.apply(null, goog.array.concat(map, metas[i]));
   }
 };
 
@@ -277,6 +279,20 @@ anychart.core.settings.createTextPropertiesDescriptorsMeta = function(invalidate
 
   return map;
 };
+
+
+//endregion
+//region Descriptors
+/**
+ * @type {!Object.<string, Array>}
+ */
+anychart.core.settings.descriptors = (function() {
+  var map = {};
+
+  map.FILL = [0, 'fill', anychart.core.settings.fillOrFunctionNormalizer];
+
+  return map;
+})();
 
 
 //endregion
