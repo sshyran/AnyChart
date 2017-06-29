@@ -28,7 +28,8 @@ anychart.core.resource.resourceList.TextSettings = function() {
     ['textIndent', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['vAlign', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['hAlign', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
-    ['textWrap', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
+    ['wordWrap', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
+    ['wordBreak', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['textOverflow', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['selectable', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['useHtml', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
@@ -132,8 +133,14 @@ anychart.core.resource.resourceList.TextSettings.PROPERTY_DESCRIPTORS = (functio
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
-      'textWrap',
-      anychart.enums.normalizeTextWrap);
+      'wordWrap',
+      anychart.core.settings.asIsNormalizer);
+
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.SINGLE_ARG,
+      'wordBreak',
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
@@ -199,7 +206,8 @@ anychart.core.resource.resourceList.TextSettings.prototype.serialize = function(
 //proto['textIndent'] = proto.textIndent;
 //proto['vAlign'] = proto.vAlign;
 //proto['hAlign'] = proto.hAlign;
-//proto['textWrap'] = proto.textWrap;
+//proto['wordWrap'] = proto.wordWrap;
+//proto['wordBreak'] = proto.wordBreak;
 //proto['textOverflow'] = proto.textOverflow;
 //proto['selectable'] = proto.selectable;
 //proto['useHtml'] = proto.useHtml;

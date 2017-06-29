@@ -211,8 +211,14 @@ anychart.core.settings.createTextPropertiesDescriptors = function() {
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
-      'textWrap',
-      anychart.enums.normalizeTextWrap);
+      'wordWrap',
+      anychart.core.settings.asIsNormalizer);
+
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.SINGLE_ARG,
+      'wordBreak',
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
@@ -270,7 +276,8 @@ anychart.core.settings.createTextPropertiesDescriptorsMeta = function(invalidate
     ['textIndent', invalidateBoundsState, boundsChangedSignal],
     ['vAlign', invalidateBoundsState, boundsChangedSignal],
     ['hAlign', invalidateBoundsState, boundsChangedSignal],
-    ['textWrap', invalidateBoundsState, boundsChangedSignal],
+    ['wordWrap', invalidateBoundsState, boundsChangedSignal],
+    ['wordBreak', invalidateBoundsState, boundsChangedSignal],
     ['textOverflow', invalidateBoundsState, boundsChangedSignal],
     ['selectable', nonBoundsState, nonBoundsSignal],
     ['disablePointerEvents', nonBoundsState, nonBoundsSignal],
