@@ -1761,22 +1761,10 @@ anychart.core.axes.Map.prototype.setupByJSON = function(config, opt_default) {
 anychart.core.axes.Map.prototype.serialize = function() {
   var json = {};
 
-  var zIndex;
-  if (this.hasOwnOption('zIndex')) {
-    zIndex = this.getOwnOption('zIndex');
-  }
-  if (!goog.isDef(zIndex)) {
-    zIndex = this.getThemeOption('zIndex');
-  }
+  var zIndex = anychart.core.Base.prototype.getOption.call(this, 'zIndex');
   if (goog.isDef(zIndex)) json['zIndex'] = zIndex;
 
-  var enabled;
-  if (this.hasOwnOption('enabled')) {
-    enabled = this.getOwnOption('enabled');
-  }
-  if (!goog.isDef(enabled)) {
-    enabled = this.getThemeOption('enabled');
-  }
+  var enabled = anychart.core.Base.prototype.getOption.call(this, 'enabled');
   json['enabled'] = goog.isDef(enabled) ? enabled : null;
 
   var titleConfig = this.title().serialize();

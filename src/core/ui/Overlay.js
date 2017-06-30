@@ -281,13 +281,7 @@ anychart.core.ui.Overlay.prototype.serialize = function() {
   var json = anychart.core.ui.Overlay.base(this, 'serialize');
   anychart.core.settings.serialize(this, anychart.core.ui.Overlay.DESCRIPTORS, json, 'Overlay ui element');
 
-  var enabled;
-  if (this.hasOwnOption('enabled')) {
-    enabled = this.getOwnOption('enabled');
-  }
-  if (!goog.isDef(enabled)) {
-    enabled = this.getThemeOption('enabled');
-  }
+  var enabled = anychart.core.Base.prototype.getOption.call(this, 'enabled');
   json['enabled'] = goog.isDef(enabled) ? enabled : null;
 
   return json;

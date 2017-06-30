@@ -2684,12 +2684,12 @@ anychart.core.ui.LabelsFactory.Label.prototype.getTextElement = function() {
 anychart.core.ui.LabelsFactory.Label.prototype.serialize = function() {
   var json = anychart.core.ui.LabelsFactory.Label.base(this, 'serialize');
   var val;
-  if (goog.isDef(this.hasOwnOption('background'))) {
+  if (goog.isDef(this.getOwnOption('background'))) {
     val = this.background().serialize();
     if (!goog.object.isEmpty(val))
       json['background'] = val;
   }
-  if (goog.isDef(this.hasOwnOption('padding'))) {
+  if (goog.isDef(this.getOwnOption('padding'))) {
     val = this.padding().serialize();
     if (!goog.object.isEmpty(val))
       json['padding'] = val;

@@ -508,46 +508,36 @@ anychart.core.Base.prototype.check = function(flags) {
 
 /** @inheritDoc */
 anychart.core.Base.prototype.getCapabilities = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].capabilities;
-  else
-    return 0;
+  var meta = this.descriptorsMeta[fieldName];
+  return meta ? (meta.capabilities || 0) : 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.Base.prototype.getConsistencyState = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].consistency;
-  else
-    return 0;
+  var meta = this.descriptorsMeta[fieldName];
+  return meta ? (meta.consistency || 0) : 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.Base.prototype.getSignal = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].signal;
-  else
-    return 0;
+  var meta = this.descriptorsMeta[fieldName];
+  return meta ? (meta.signal || 0) : 0;
 };
 
 
 /** @inheritDoc */
 anychart.core.Base.prototype.getHookContext = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].context;
-  else
-    return this;
+  var meta = this.descriptorsMeta[fieldName];
+  return meta ? meta.context : this;
 };
 
 
 /** @inheritDoc */
 anychart.core.Base.prototype.getHook = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
-  else
-    return goog.nullFunction;
+  var meta = this.descriptorsMeta[fieldName];
+  return meta ? (meta.beforeInvalidationHook || goog.nullFunction) : goog.nullFunction;
 };
 
 

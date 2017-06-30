@@ -63,6 +63,17 @@ anychart.core.settings.createDescriptor = function(map, descriptorOrHandler, pro
 
 
 /**
+ * @param {!Object.<anychart.core.settings.PropertyDescriptor>} map
+ * @param {!Array.<Array>} descriptors Descriptors.
+ */
+anychart.core.settings.createDescriptors = function(map, descriptors) {
+  for (var i = 0; i < descriptors.length; i++) {
+    anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptors[i]));
+  }
+};
+
+
+/**
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} map
  * @param {string} propName
  * @param {number} consistency - Consistency to set.
@@ -420,13 +431,10 @@ anychart.core.settings.simpleHandler = function(fieldName, deprecatedFieldName, 
     opt_value = normalizer.call(this, opt_value);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
-      var supportCheck = /** @type {number} */ (this.getCapabilities(fieldName));
-      var consistencyState = this.getConsistencyState(fieldName);
-      var signal = this.getSignal(fieldName);
-      var beforeInvalidationHook = this.getHook(fieldName);
-      var context = this.getHookContext(fieldName);
-      if (this.check(supportCheck)) {
-        beforeInvalidationHook.call(context || this);
+      if (this.check(/** @type {number} */ (this.getCapabilities(fieldName)))) {
+        this.getHook(fieldName).call(this.getHookContext(fieldName));
+        var signal = this.getSignal(fieldName);
+        var consistencyState = this.getConsistencyState(fieldName);
         if (consistencyState) {
           this.invalidate(consistencyState, signal);
         } else {
@@ -477,13 +485,10 @@ anychart.core.settings.multiArgsHandler = function(fieldName, deprecatedFieldNam
     opt_value = arrayNormalizer.call(this, args);
     if (this.getOwnOption(fieldName) !== opt_value) {
       this.setOption(fieldName, opt_value);
-      var supportCheck = /** @type {number} */ (this.getCapabilities(fieldName));
-      var consistencyState = this.getConsistencyState(fieldName);
-      var signal = this.getSignal(fieldName);
-      var beforeInvalidationHook = this.getHook(fieldName);
-      var context = this.getHookContext(fieldName);
-      if (this.check(supportCheck)) {
-        beforeInvalidationHook.call(context || this);
+      if (this.check(/** @type {number} */ (this.getCapabilities(fieldName)))) {
+        this.getHook(fieldName).call(this.getHookContext(fieldName));
+        var signal = this.getSignal(fieldName);
+        var consistencyState = this.getConsistencyState(fieldName);
         if (consistencyState) {
           this.invalidate(consistencyState, signal);
         } else {
