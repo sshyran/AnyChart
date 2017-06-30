@@ -890,8 +890,7 @@ anychart.core.ui.Title.prototype.calcActualBounds_ = function() {
   textBounds = this.text_.getBounds();
 
 
-  var width = this.getOwnOption('width');
-  width = width ? width : (this.autoWidth_ || null);
+  var width = this.hasOwnOption('width') ? this.getOwnOption('width') : (this.autoWidth_ || null);
   if (goog.isNull(width)) {
     this.textWidth_ = textBounds.width;
     this.backgroundWidth_ = padding.widenWidth(this.textWidth_);
@@ -911,8 +910,7 @@ anychart.core.ui.Title.prototype.calcActualBounds_ = function() {
   this.text_.setTransformationMatrix(1, 0, 0, 1, 0, 0);
   textBounds = this.text_.getBounds();
 
-  var height = this.getOwnOption('height');
-  height = height ? height : (this.autoHeight_ || null);
+  var height = this.hasOwnOption('height') ? this.getOwnOption('height') : (this.autoHeight_ || null);
   if (goog.isNull(height)) {
     this.textHeight_ = textBounds.height;
     this.backgroundHeight_ = padding.widenHeight(this.textHeight_);
