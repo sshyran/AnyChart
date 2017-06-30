@@ -8,23 +8,11 @@ goog.require('anychart.core.settings.IObjectWithSettings');
 /**
  * Class representing state settings (normal, hover, selected)
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} descriptorsMeta Descriptors for state.
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @constructor
+ * @extends {anychart.core.Base}
  */
 anychart.core.StateSettings = function(descriptorsMeta) {
   anychart.core.StateSettings.base(this, 'constructor');
-
-  /**
-   * Own settings.
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
 
   /**
    * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
@@ -171,87 +159,6 @@ anychart.core.StateSettings.prototype.labelsInvalidated_ = function(event) {
 };
 
 
-//endregion
-//region --- IObjectWithSettings implementation
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getOption = function(name) {
-  return goog.isDef(this.ownSettings[name]) ? this.ownSettings[name] : this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getCapabilities = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].capabilities;
-  else
-    return 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getConsistencyState = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].consistency;
-  else
-    return 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getSignal = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].signal;
-  else
-    return 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getHookContext = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].context;
-  else
-    return null;
-};
-
-
-/** @inheritDoc */
-anychart.core.StateSettings.prototype.getHook = function(fieldName) {
-  if (fieldName in this.descriptorsMeta)
-    return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
-  else
-    return goog.nullFunction;
-};
 //endregion
 //region --- Exports
 //endregion

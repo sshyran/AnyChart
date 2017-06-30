@@ -15,7 +15,6 @@ goog.require('anychart.core.utils.Padding');
  * Resource Chart Timeline element.
  * @constructor
  * @extends {anychart.core.VisualBaseWithBounds}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  */
 anychart.core.resource.TimeLine = function() {
@@ -71,18 +70,6 @@ anychart.core.resource.TimeLine = function() {
   this.xScale_ = null;
 
   /**
-   * Settings holder.
-   * @type {!Object}
-   */
-  this.settings = {};
-
-  /**
-   * Default settings holder.
-   * @type {!Object}
-   */
-  this.defaultSettings = {};
-
-  /**
    * Parent title.
    * @type {anychart.core.resource.TimeLine}
    * @private                                                                                        `
@@ -96,10 +83,7 @@ anychart.core.resource.TimeLine = function() {
    */
   this.resolutionChainCache_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
@@ -394,96 +378,10 @@ anychart.core.resource.TimeLine.prototype.overlay = function(opt_value) {
 
 
 //endregion
-//region --- IObjectWithSettings impl
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.TimeLine.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+//region --- IObjectWithSettings overrides
+/** @inheritDoc */
 anychart.core.resource.TimeLine.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.TimeLine.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * Returns option value by priorities.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.TimeLine.prototype.getOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.resource.TimeLine.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.resource.TimeLine.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.TimeLine.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.TimeLine.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.TimeLine.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.TimeLine.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.TimeLine.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
@@ -504,7 +402,7 @@ anychart.core.resource.TimeLine.prototype.getResolutionChain = anychart.core.set
 
 /** @inheritDoc */
 anychart.core.resource.TimeLine.prototype.getLowPriorityResolutionChain = function() {
-  var sett = [this.defaultSettings];
+  var sett = [this.themeSettings];
   if (this.parent_) {
     sett = goog.array.concat(sett, this.parent_.getLowPriorityResolutionChain());
   }
@@ -514,7 +412,7 @@ anychart.core.resource.TimeLine.prototype.getLowPriorityResolutionChain = functi
 
 /** @inheritDoc */
 anychart.core.resource.TimeLine.prototype.getHighPriorityResolutionChain = function() {
-  var sett = [this.settings];
+  var sett = [this.ownSettings];
   if (this.parent_) {
     sett = goog.array.concat(sett, this.parent_.getHighPriorityResolutionChain());
   }
@@ -1208,7 +1106,7 @@ anychart.core.resource.TimeLine.prototype.setupSpecial = function(isDefault, var
   var arg0 = arguments[1];
   if (goog.isBoolean(arg0) || goog.isNull(arg0)) {
     if (isDefault)
-      this.defaultSettings['enabled'] = !!arg0;
+      this.themeSettings['enabled'] = !!arg0;
     else
       this.enabled(!!arg0);
     return true;
@@ -1222,8 +1120,8 @@ anychart.core.resource.TimeLine.prototype.setupSpecial = function(isDefault, var
  * @param {!Object} config
  */
 anychart.core.resource.TimeLine.prototype.setThemeSettings = function(config) {
-  anychart.core.settings.copy(this.defaultSettings, anychart.core.resource.TimeLine.DESCRIPTORS, config);
-  anychart.core.settings.copy(this.defaultSettings, anychart.core.resource.TimeLine.TEXT_DESCRIPTORS, config);
+  anychart.core.settings.copy(this.themeSettings, anychart.core.resource.TimeLine.DESCRIPTORS, config);
+  anychart.core.settings.copy(this.themeSettings, anychart.core.resource.TimeLine.TEXT_DESCRIPTORS, config);
 };
 
 

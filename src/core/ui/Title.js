@@ -38,7 +38,6 @@ goog.require('goog.math.AffineTransform');
  *     .draw();
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @implements {anychart.core.IStandaloneBackend}
  */
@@ -147,21 +146,6 @@ anychart.core.ui.Title = function() {
    */
   this.transformation_ = null;
 
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-
   /**
    * Auto values of settings set by external controller.
    * @type {!Object}
@@ -197,10 +181,7 @@ anychart.core.ui.Title = function() {
    */
   this.resolutionChainCache_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.ConsistencyState.APPEARANCE,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
@@ -358,69 +339,23 @@ anychart.core.ui.Title.prototype.getHighPriorityResolutionChain = function() {
 //endregion
 //region -- IObjectWithSettings implementation
 /** @inheritDoc */
-anychart.core.ui.Title.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.ui.Title.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.ui.Title.prototype.getOption = anychart.core.settings.getOption;
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
 
 
 /** @inheritDoc */
 anychart.core.ui.Title.prototype.getSignal = function(fieldName) {
   // all props invalidates with NEEDS_REDRAW | BOUNDS_CHANGED
   return anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

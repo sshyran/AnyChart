@@ -12,7 +12,6 @@ goog.require('anychart.utils');
 
 /**
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @extends {anychart.core.VisualBase}
  */
@@ -25,18 +24,6 @@ anychart.core.axes.MapTicks = function() {
    * @private
    */
   this.orientation_;
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
 
   /**
    * Parent title.
@@ -62,10 +49,6 @@ anychart.core.axes.MapTicks = function() {
   this.bindHandlersToGraphics(this.path);
   this.registerDisposable(this.path);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['stroke', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['length', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
@@ -91,71 +74,13 @@ anychart.core.axes.MapTicks.prototype.SUPPORTED_CONSISTENCY_STATES = anychart.co
 
 
 //endregion
-//region --- IObjectWithSettings implementation
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+//region --- IObjectWithSettings overrides
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.axes.MapTicks.prototype.getOption = anychart.core.settings.getOption;
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapTicks.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
-};
 
 
 //endregion

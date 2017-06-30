@@ -26,7 +26,6 @@ goog.require('goog.object');
  *  DEV NOTE: Use this parameter in constructor function only!
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  */
 anychart.core.ui.Tooltip = function(capability) {
@@ -38,18 +37,6 @@ anychart.core.ui.Tooltip = function(capability) {
    * @type {number}
    */
   this.capability = capability;
-
-  /**
-   * Settings storage.
-   * @type {!Object}
-   */
-  this.ownSettings = {};
-
-  /**
-   * Theme settings.
-   * @type {!Object}
-   */
-  this.themeSettings = {};
 
   /**
    * Pixel bounds cache.
@@ -147,10 +134,7 @@ anychart.core.ui.Tooltip = function(capability) {
 
   anychart.utils.tooltipsRegistry[String(goog.getUid(this))] = this;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
       anychart.core.ui.Tooltip.TOOLTIP_BOUNDS_STATE,
       anychart.ConsistencyState.TOOLTIP_CONTENT | anychart.ConsistencyState.TOOLTIP_TITLE,
       anychart.Signal.NEEDS_REDRAW,
@@ -2157,91 +2141,26 @@ anychart.core.ui.Tooltip.prototype.parentInvalidated_ = function(e) {
 //  IObjectWithSettings impl
 //
 //----------------------------------------------------------------------------------------------------------------------
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.Tooltip.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.ui.Tooltip.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
 /**
- * Returns option value from the theme if any.
+ * @override
  * @param {string} name
  * @return {*}
  */
-anychart.core.ui.Tooltip.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.ui.Tooltip.prototype.getOption = anychart.core.settings.getOption;
 
 
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.ui.Tooltip.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.ui.Tooltip.prototype.check = function(flags) {
   if (goog.isDef(flags)) {
     return !!(flags & this.capability);
   }
   return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Tooltip.prototype.getCapabilities = function(fieldName) {
-  return this.descriptorsMeta[fieldName].capabilities;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Tooltip.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Tooltip.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Tooltip.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Tooltip.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

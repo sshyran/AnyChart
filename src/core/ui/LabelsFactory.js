@@ -22,7 +22,6 @@ goog.require('goog.math.Coordinate');
  * Any individual label can be changed after all labels are displayed.
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @implements {anychart.core.IStandaloneBackend}
  */
@@ -103,18 +102,6 @@ anychart.core.ui.LabelsFactory = function() {
   ];
 
   /**
-   * Theme settings.
-   * @type {!Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {!Object}
-   */
-  this.ownSettings = {};
-
-  /**
    * Auto values of settings set by external controller.
    * @type {!Object}
    */
@@ -124,10 +111,7 @@ anychart.core.ui.LabelsFactory = function() {
 
   this.resumeSignalsDispatching(false);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
@@ -648,24 +632,16 @@ anychart.core.ui.LabelsFactory.prototype.getHighPriorityResolutionChain = functi
 //endregion
 //region --- IObjectWithSettings implementation
 /** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.ui.LabelsFactory.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.ui.LabelsFactory.prototype.getOption = anychart.core.settings.getOption;
 
 
@@ -685,50 +661,6 @@ anychart.core.ui.LabelsFactory.prototype.getOwnAndAutoOption = function(name) {
     }
   }
   return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 
@@ -1328,7 +1260,6 @@ anychart.core.ui.LabelsFactory.prototype.setupByJSON = function(config, opt_defa
  * Class for creation of sets of similar labels and management of such sets.
  * Any individual label can be changed after all labels are displayed.
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @extends {anychart.core.VisualBase}
  */
@@ -1375,12 +1306,6 @@ anychart.core.ui.LabelsFactory.Label = function() {
   this.states_ = {};
 
   /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-  /**
    * Auto values of settings set by external controller.
    * @type {!Object}
    */
@@ -1416,10 +1341,7 @@ anychart.core.ui.LabelsFactory.Label = function() {
 
   this.markConsistent(anychart.ConsistencyState.LABELS_FACTORY_CACHE);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = anychart.core.settings.createTextPropertiesDescriptorsMeta(
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
@@ -1989,28 +1911,14 @@ anychart.core.ui.LabelsFactory.Label.prototype.getHighPriorityResolutionChain = 
 
 //endregion
 //region --- IObjectWithSettings implementation
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.LabelsFactory.Label.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.ui.LabelsFactory.Label.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
 /**
- * Returns option value by priorities.
+ * @override
  * @param {string} name
  * @return {*}
  */
@@ -2027,58 +1935,6 @@ anychart.core.ui.LabelsFactory.Label.prototype.getOwnAndAutoOption = anychart.co
 
 /** @inheritDoc */
 anychart.core.ui.LabelsFactory.Label.prototype.getThemeOption = anychart.core.ui.LabelsFactory.Label.prototype.getOwnOption;
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.ui.LabelsFactory.Label.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.ui.LabelsFactory.Label.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.Label.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.Label.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.Label.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.Label.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.Label.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
-};
 
 
 //endregion

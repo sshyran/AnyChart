@@ -59,25 +59,12 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   this.plot = plot;
 
   /**
-   * Visual settings storage.
-   * @type {!Object}
-   * @protected
-   */
-  this.settings = {};
-
-  /**
    * Auto values of settings set by external controller.
    * @type {!Object}
    */
   this.autoSettings = {};
   this.autoSettings['pointWidth'] = '90%';
   this.autoSettings['isVertical'] = this.chart.isVertical();
-
-  /**
-   * Default (theme) settings holder.
-   * @type {!Object}
-   */
-  this.defaultSettings = {};
 
   /**
    * Series clip.
@@ -149,10 +136,6 @@ anychart.core.series.Base = function(chart, plot, type, config) {
 
   this.applyConfig(config, true);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['fill',
       anychart.ConsistencyState.SERIES_COLOR,
@@ -660,7 +643,7 @@ anychart.core.series.Base.prototype.applyConfig = function(config, opt_reapplyCl
 
   this.recreateShapeManager();
 
-  this.defaultSettings = this.plot.defaultSeriesSettings()[this.type_] || {};
+  this.themeSettings = this.plot.defaultSeriesSettings()[this.type_] || {};
 
   if (this.supportsOutliers()) {
     this.indexToMarkerIndexes_ = {};
@@ -671,7 +654,7 @@ anychart.core.series.Base.prototype.applyConfig = function(config, opt_reapplyCl
   this.autoSettings['xPointPosition'] = 0.5;
 
   this.suspendSignalsDispatching();
-  this.applyDefaultsToElements(this.defaultSettings, true, true, opt_reapplyClip);
+  this.applyDefaultsToElements(this.themeSettings, true, true, opt_reapplyClip);
   this.resumeSignalsDispatching(false);
   // here should markers/labels/errors/outliers setup be
 
@@ -1926,91 +1909,22 @@ anychart.core.series.Base.prototype.getPointOption = function(name) {
 };
 
 
-/**
- * Returns option value if it was set directly to the series.
- * @param {string} name
- * @return {*}
- */
-anychart.core.series.Base.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.series.Base.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * RReturns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.series.Base.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
-/**
- * Returns an option value for the series.
- * @param {string} name
- * @return {*}
- */
+/** @inheritDoc */
 anychart.core.series.Base.prototype.getOption = function(name) {
-  var res = this.settings[name];
+  var res = this.ownSettings[name];
   if (!goog.isDefAndNotNull(res)) {
-    res = this.defaultSettings[name];
+    res = this.themeSettings[name];
     if (!goog.isDefAndNotNull(res)) {
       res = this.autoSettings[name];
     }
   }
   return res;
-};
-
-
-/** @inheritDoc */
-anychart.core.series.Base.prototype.getCapabilities = function(fieldName) {
-  return this.descriptorsMeta[fieldName].capabilities;
-};
-
-
-/** @inheritDoc */
-anychart.core.series.Base.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.series.Base.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.series.Base.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.series.Base.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
-};
-
-
-/**
- * Sets series option value.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.series.Base.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
 };
 
 
@@ -2030,9 +1944,9 @@ anychart.core.series.Base.prototype.resolveOption = function(name, point, normal
     val = normalizer(val);
   } else {
     name = opt_seriesName || name;
-    val = this.settings[name];
+    val = this.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
-      val = this.defaultSettings[name];
+      val = this.themeSettings[name];
       if (!goog.isDefAndNotNull(val))
         val = this.autoSettings[name];
       if (goog.isDef(val))
@@ -4542,9 +4456,9 @@ anychart.core.series.Base.prototype.disposeInternal = function() {
   delete this.chart;
   delete this.plot;
   delete this.iterator;
-  delete this.defaultSettings;
+  delete this.themeSettings;
   delete this.autoSettings;
-  delete this.settings;
+  delete this.ownSettings;
   delete this.shapeManager;
   delete this.drawer;
   delete this.markers_;

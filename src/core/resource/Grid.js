@@ -10,7 +10,6 @@ goog.require('anychart.core.ui.Overlay');
  * Resource Chart grid.
  * @constructor
  * @extends {anychart.core.VisualBaseWithBounds}
- * @implements {anychart.core.settings.IObjectWithSettings}
  */
 anychart.core.resource.Grid = function() {
   anychart.core.resource.Grid.base(this, 'constructor');
@@ -125,18 +124,6 @@ anychart.core.resource.Grid = function() {
   this.xScale_ = null;
 
   /**
-   * Settings holder.
-   * @type {Object}
-   */
-  this.settings = {};
-
-  /**
-   * Default settings holder.
-   * @type {Object}
-   */
-  this.defaultSettings = {};
-
-  /**
    * Heights array.
    * @type {Array.<number>}
    * @private
@@ -150,10 +137,6 @@ anychart.core.resource.Grid = function() {
    */
   this.yScrollPosition_ = 0;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['horizontalStroke', anychart.ConsistencyState.APPEARANCE],
     ['verticalStroke', anychart.ConsistencyState.APPEARANCE],
@@ -627,82 +610,15 @@ anychart.core.resource.Grid.prototype.remove = function() {
 
 
 //endregion
-//region --- IObjectWithSettings impl
+//region --- IObjectWithSettings overrides
 //----------------------------------------------------------------------------------------------------------------------
 //
-//  --- IObjectWithSettings impl
+//  --- IObjectWithSettings overrides
 //
 //----------------------------------------------------------------------------------------------------------------------
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Grid.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.resource.Grid.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Grid.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * Returns option value by priorities.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Grid.prototype.getOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.resource.Grid.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.resource.Grid.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Grid.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Grid.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
@@ -710,19 +626,6 @@ anychart.core.resource.Grid.prototype.getConsistencyState = function(fieldName) 
 anychart.core.resource.Grid.prototype.getSignal = function(fieldName) {
   // because all descriptors invalidates with NEEDS_REDRAW signal
   return anychart.Signal.NEEDS_REDRAW;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Grid.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Grid.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

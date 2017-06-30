@@ -14,7 +14,6 @@ goog.require('anychart.core.ui.Title');
  * Map axes settings.
  * @param {!anychart.charts.Map} map .
  * @extends {anychart.core.Base}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @constructor
  */
@@ -36,18 +35,6 @@ anychart.core.axes.MapSettings = function(map) {
   this.axes_ = [];
 
   /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-  /**
    * Parent title.
    * @type {anychart.core.axes.MapSettings}
    * @private
@@ -63,10 +50,6 @@ anychart.core.axes.MapSettings = function(map) {
 
   this.markConsistent(anychart.ConsistencyState.ALL);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['stroke', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW],
     ['overlapMode', anychart.ConsistencyState.ONLY_DISPATCHING, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
@@ -104,71 +87,13 @@ anychart.core.axes.MapSettings.prototype.SUPPORTED_SIGNALS =
 
 
 //endregion
-//region --- IObjectWithSettings implementation
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+//region --- IObjectWithSettings overrides
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.axes.MapSettings.prototype.getOption = anychart.core.settings.getOption;
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.axes.MapSettings.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
-};
 
 
 //endregion

@@ -13,24 +13,11 @@ goog.require('anychart.enums');
 /**
  * Map axes settings.
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @constructor
  */
 anychart.core.grids.Map = function() {
   anychart.core.grids.Map.base(this, 'constructor');
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
 
   /**
    * Parent title.
@@ -82,10 +69,6 @@ anychart.core.grids.Map = function() {
    */
   this.resolutionChainCache_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['stroke', anychart.ConsistencyState.APPEARANCE],
     ['minorStroke', anychart.ConsistencyState.APPEARANCE],
@@ -120,71 +103,19 @@ anychart.core.grids.Map.prototype.SUPPORTED_CONSISTENCY_STATES =
 
 
 //endregion
-//region --- IObjectWithSettings implementation
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+//region --- IObjectWithSettings overrides
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.grids.Map.prototype.getOption = anychart.core.settings.getOption;
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
 
 
 /** @inheritDoc */
 anychart.core.grids.Map.prototype.getSignal = function(fieldName) {
   // all properties invalidates with NEEDS_REDRAW;
   return anychart.Signal.NEEDS_REDRAW;
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.grids.Map.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

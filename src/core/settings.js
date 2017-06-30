@@ -250,14 +250,13 @@ anychart.core.settings.createTextPropertiesDescriptors = function() {
 
 /**
  * Creates text properties descriptors.
+ * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} map - Map with descriptors meta.
  * @param {number} invalidateBoundsState - State to invalidate bounds.
  * @param {number} nonBoundsState - State to invalidate without bounds.
  * @param {number} boundsChangedSignal - Signal for changed bounds.
  * @param {number} nonBoundsSignal - Signal for non-bounds changes.
- * @return {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} - Descriptors map with meta.
  */
-anychart.core.settings.createTextPropertiesDescriptorsMeta = function(invalidateBoundsState, nonBoundsState, boundsChangedSignal, nonBoundsSignal) {
-  var map = {};
+anychart.core.settings.createTextPropertiesDescriptorsMeta = function(map, invalidateBoundsState, nonBoundsState, boundsChangedSignal, nonBoundsSignal) {
   anychart.core.settings.createDescriptorsMeta(map, [
     ['minFontSize', invalidateBoundsState, boundsChangedSignal],
     ['maxFontSize', invalidateBoundsState, boundsChangedSignal],
@@ -283,8 +282,6 @@ anychart.core.settings.createTextPropertiesDescriptorsMeta = function(invalidate
     ['disablePointerEvents', nonBoundsState, nonBoundsSignal],
     ['useHtml', nonBoundsState, nonBoundsSignal]
   ]);
-
-  return map;
 };
 
 

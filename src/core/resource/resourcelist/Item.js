@@ -9,7 +9,6 @@ goog.require('anychart.core.ui.Label');
  * Class representing item in resource list.
  * @param {anychart.core.resource.ResourceList} resourceList
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @extends {anychart.core.VisualBase}
  */
 anychart.core.resource.resourceList.Item = function(resourceList) {
@@ -21,20 +20,6 @@ anychart.core.resource.resourceList.Item = function(resourceList) {
    * @private
    */
   this.resourceList_ = resourceList;
-
-  /**
-   * Settings storage.
-   * @type {!Object}
-   * @protected
-   */
-  this.settings = {};
-
-  /**
-   * Default settings.
-   * @type {!Object}
-   * @protected
-   */
-  this.defaultSettings = {};
 
   /**
    * Root layer of resource item.
@@ -114,10 +99,6 @@ anychart.core.resource.resourceList.Item = function(resourceList) {
    */
   this.index = NaN;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['width', 0, 0],
     ['imageSrc', 0, 0],
@@ -148,76 +129,6 @@ anychart.core.resource.resourceList.Item.prototype.SUPPORTED_CONSISTENCY_STATES 
 
 
 //endregion
-//region --- IObjectWithSettings IMPLEMENTATION ---
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getOption = function(name) {
-  return goog.isDef(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.settings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.resourceList.Item.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
-};
-
-
-//endregion
 //region --- ADDITIONAL SETTINGS METHODS ---
 /**
  * Sets default value to the instance.
@@ -225,7 +136,7 @@ anychart.core.resource.resourceList.Item.prototype.getHook = function(fieldName)
  * @param {*} value
  */
 anychart.core.resource.resourceList.Item.prototype.setThemeOption = function(name, value) {
-  this.defaultSettings[name] = value;
+  this.themeSettings[name] = value;
 };
 
 

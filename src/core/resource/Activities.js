@@ -13,7 +13,6 @@ goog.require('anychart.format.Context');
  * @param {anychart.charts.Resource} chart
  * @constructor
  * @extends {anychart.core.Base}
- * @implements {anychart.core.settings.IObjectWithSettings}
  */
 anychart.core.resource.Activities = function(chart) {
   anychart.core.resource.Activities.base(this, 'constructor');
@@ -24,18 +23,6 @@ anychart.core.resource.Activities = function(chart) {
    * @private
    */
   this.chart_ = chart;
-
-  /**
-   * Settings map.
-   * @type {Object}
-   */
-  this.settings = {};
-
-  /**
-   * Default settings map.
-   * @type {Object}
-   */
-  this.defaultSettings = {};
 
   /**
    * Fill resolver.
@@ -64,10 +51,6 @@ anychart.core.resource.Activities = function(chart) {
    */
   this.formatProvider_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['color', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
     ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
@@ -593,101 +576,15 @@ anychart.core.resource.Activities.prototype.resolveHatchFill = function(dataObj,
 
 
 //endregion
-//region --- IObjectWithSettings impl
+//region --- IObjectWithSettings overrides
 //----------------------------------------------------------------------------------------------------------------------
 //
-//  --- IObjectWithSettings impl
+//  --- IObjectWithSettings overrides
 //
 //----------------------------------------------------------------------------------------------------------------------
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Activities.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.resource.Activities.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Activities.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * Returns option value by priorities.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Activities.prototype.getOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.resource.Activities.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.resource.Activities.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Activities.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Activities.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Activities.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Activities.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Activities.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
@@ -703,9 +600,9 @@ anychart.core.resource.Activities.prototype.resolveOption = function(name, dataO
   if (goog.isDef(val)) {
     val = normalizer(val);
   } else {
-    val = this.settings[name];
+    val = this.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
-      val = this.defaultSettings[name];
+      val = this.themeSettings[name];
       if (goog.isDef(val))
         val = normalizer(val);
     }
@@ -740,7 +637,7 @@ anychart.core.resource.Activities.prototype.setupByJSON = function(config, opt_d
 
 /** @inheritDoc */
 anychart.core.resource.Activities.prototype.disposeInternal = function() {
-  this.settings = this.defaultSettings = this.strokeResolver_ = this.fillResolver_ = this.hatchFillResolver_ = null;
+  this.strokeResolver_ = this.fillResolver_ = this.hatchFillResolver_ = null;
   goog.disposeAll(this.labels_, this.clip_);
   this.labels_ = this.clip_ = null;
   anychart.core.resource.Activities.base(this, 'disposeInternal');

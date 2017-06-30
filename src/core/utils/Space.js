@@ -19,25 +19,10 @@ goog.require('anychart.utils');
  * @param {(string|number)=} opt_left Left space.
  * @constructor
  * @extends {anychart.core.Base}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  */
 anychart.core.utils.Space = function(opt_spaceOrTopOrTopAndBottom, opt_rightOrRightAndLeft, opt_bottom, opt_left) {
   anychart.core.utils.Space.base(this, 'constructor');
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
 
   /**
    * Parent.
@@ -56,10 +41,6 @@ anychart.core.utils.Space = function(opt_spaceOrTopOrTopAndBottom, opt_rightOrRi
   if (goog.isDef(opt_spaceOrTopOrTopAndBottom) || goog.isDef(opt_rightOrRightAndLeft) || goog.isDef(opt_bottom) || goog.isDef(opt_left))
     this.set.apply(this, arguments);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['left'],
     ['top'],
@@ -129,45 +110,14 @@ anychart.core.settings.populate(anychart.core.utils.Space, anychart.core.utils.S
 //endregion
 //region -- IObjectWithSettings implementation
 /** @inheritDoc */
-anychart.core.utils.Space.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.utils.Space.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
 /** @inheritDoc */
-anychart.core.utils.Space.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.utils.Space.prototype.getOption = function(name) {
   return anychart.core.settings.getOption.call(this, name) || 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.utils.Space.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.utils.Space.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.utils.Space.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
 };
 
 
@@ -182,19 +132,6 @@ anychart.core.utils.Space.prototype.getConsistencyState = function(fieldName) {
 anychart.core.utils.Space.prototype.getSignal = function(fieldName) {
   // because all descriptors invalidates with NEEDS_REAPPLICATION signal
   return anychart.Signal.NEEDS_REAPPLICATION;
-};
-
-
-/** @inheritDoc */
-anychart.core.utils.Space.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.utils.Space.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

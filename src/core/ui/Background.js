@@ -20,23 +20,10 @@ goog.require('goog.array');
  * @extends {anychart.core.VisualBaseWithBounds}
  * @implements {anychart.core.IStandaloneBackend}
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  */
 anychart.core.ui.Background = function() {
   anychart.core.ui.Background.base(this, 'constructor');
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
 
   /**
    * Parent title.
@@ -57,10 +44,6 @@ anychart.core.ui.Background = function() {
    */
   this.resolutionChainCache_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['fill', anychart.ConsistencyState.APPEARANCE],
     ['stroke', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS],
@@ -197,70 +180,18 @@ anychart.core.ui.Background.prototype.zIndex = function(opt_value) {
 
 //endregion
 //region -- IObjectWithSettings implementation
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.ui.Background.prototype.getOption = anychart.core.settings.getOption;
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
 
 
 /** @inheritDoc */
 anychart.core.ui.Background.prototype.getSignal = function(fieldName) {
   // all props invalidates with NEEDS_REDRAW
   return anychart.Signal.NEEDS_REDRAW;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Background.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 

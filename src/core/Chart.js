@@ -44,7 +44,6 @@ goog.forwardDeclare('anychart.ui.ContextMenu.Item');
 /**
  * Base class for all charts, contains the margins, the background and the title.
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @extends {anychart.core.VisualBaseWithBounds}
  */
 anychart.core.Chart = function() {
@@ -199,26 +198,9 @@ anychart.core.Chart = function() {
    */
   this.id_ = null;
 
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
   this.invalidate(anychart.ConsistencyState.ALL);
 
   //region Init descriptors meta
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
-
   /**
    * @this {anychart.core.Chart}
    */
@@ -275,75 +257,6 @@ anychart.core.Chart.prototype.SUPPORTED_CONSISTENCY_STATES =
 anychart.core.Chart.prototype.contentBounds;
 
 
-//region --- IObjectWithSettings
-/** @inheritDoc */
-anychart.core.Chart.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.hasOwnOption = function(name) {
-  return goog.isDef(this.ownSettings[name]);
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getOption = function(name) {
-  return goog.isDef(this.ownSettings[name]) ? this.ownSettings[name] : this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.Chart.prototype.getHook = function(fieldName) {
-  return this.descriptorsMeta[fieldName].beforeInvalidationHook || goog.nullFunction;
-};
-
-
-//endregion
 //region --- Testers
 //------------------------------------------------------------------------------
 //

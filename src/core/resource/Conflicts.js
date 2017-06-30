@@ -13,7 +13,6 @@ goog.require('anychart.math.Rect');
  * @param {anychart.charts.Resource} chart
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  */
 anychart.core.resource.Conflicts = function(chart) {
   anychart.core.resource.Conflicts.base(this, 'constructor');
@@ -24,18 +23,6 @@ anychart.core.resource.Conflicts = function(chart) {
    * @private
    */
   this.chart_ = chart;
-
-  /**
-   * Settings map.
-   * @type {Object}
-   */
-  this.settings = {};
-
-  /**
-   * Default settings map.
-   * @type {Object}
-   */
-  this.defaultSettings = {};
 
   /**
    * Layer for conflicts drawing.
@@ -93,10 +80,6 @@ anychart.core.resource.Conflicts = function(chart) {
    */
   this.formatProvider_ = null;
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
     ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
@@ -493,101 +476,15 @@ anychart.core.settings.populate(anychart.core.resource.Conflicts, anychart.core.
 
 
 //endregion
-//region --- IObjectWithSettings impl
+//region --- IObjectWithSettings overrides
 //----------------------------------------------------------------------------------------------------------------------
 //
-//  --- IObjectWithSettings impl
+//  --- IObjectWithSettings overrides
 //
 //----------------------------------------------------------------------------------------------------------------------
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Conflicts.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.resource.Conflicts.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Conflicts.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * Returns option value by priorities.
- * @param {string} name
- * @return {*}
- */
-anychart.core.resource.Conflicts.prototype.getOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.resource.Conflicts.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.resource.Conflicts.prototype.check = function(flags) {
-  return true;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Conflicts.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Conflicts.prototype.getConsistencyState = function(fieldName) {
-  return this.descriptorsMeta[fieldName].consistency;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Conflicts.prototype.getSignal = function(fieldName) {
-  return this.descriptorsMeta[fieldName].signal;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Conflicts.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.resource.Conflicts.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
@@ -603,9 +500,9 @@ anychart.core.resource.Conflicts.prototype.resolveOption = function(name, interv
   if (goog.isDef(val)) {
     val = normalizer(val);
   } else {
-    val = this.settings[name];
+    val = this.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
-      val = this.defaultSettings[name];
+      val = this.themeSettings[name];
       if (goog.isDef(val))
         val = normalizer(val);
     }

@@ -9,30 +9,13 @@ goog.require('anychart.core.settings');
 /**
  * Overlay element class.
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @extends {anychart.core.Base}
  */
 anychart.core.ui.Overlay = function() {
   anychart.core.ui.Overlay.base(this, 'constructor');
 
-  /**
-   * Settings holder.
-   * @type {!Object}
-   */
-  this.settings = {};
-
-  /**
-   * Default settings holder.
-   * @type {!Object}
-   */
-  this.defaultSettings = {};
-
   this.invalidate(anychart.ConsistencyState.ALL);
 
-  /**
-   * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
-   */
-  this.descriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['id'],
     ['className']
@@ -101,8 +84,8 @@ anychart.core.settings.populate(anychart.core.ui.Overlay, anychart.core.ui.Overl
  */
 anychart.core.ui.Overlay.prototype.enabled = function(opt_value) {
   if (goog.isDef(opt_value)) {
-    if (this.settings['enabled'] != opt_value) {
-      var enabled = this.settings['enabled'] = opt_value;
+    if (this.ownSettings['enabled'] != opt_value) {
+      var enabled = this.ownSettings['enabled'] = opt_value;
       this.invalidate(anychart.ConsistencyState.ENABLED, anychart.Signal.NEEDS_REDRAW);
       if (enabled) {
         this.doubleSuspension = false;
@@ -160,70 +143,9 @@ anychart.core.ui.Overlay.prototype.setBounds = function(value) {
 
 //endregion
 //region --- IObjectWithSettings impl
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.Overlay.prototype.getOwnOption = function(name) {
-  return this.settings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
-anychart.core.ui.Overlay.prototype.hasOwnOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]);
-};
-
-
-/**
- * Returns option value from the theme if any.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.Overlay.prototype.getThemeOption = function(name) {
-  return this.defaultSettings[name];
-};
-
-
-/**
- * Returns option value by priorities.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.Overlay.prototype.getOption = function(name) {
-  return goog.isDefAndNotNull(this.settings[name]) ? this.settings[name] : this.defaultSettings[name];
-};
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.ui.Overlay.prototype.setOption = function(name, value) {
-  this.settings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.ui.Overlay.prototype.check = function(flags) {
-  return true;
-};
-
-
 /** @inheritDoc */
-anychart.core.ui.Overlay.prototype.getCapabilities = function(fieldName) {
-  // no capabilities. check always returns true
-  return void 0;
+anychart.core.ui.Overlay.prototype.hasOwnOption = function(name) {
+  return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
@@ -238,19 +160,6 @@ anychart.core.ui.Overlay.prototype.getConsistencyState = function(fieldName) {
 anychart.core.ui.Overlay.prototype.getSignal = function(fieldName) {
   // all properties invalidates with NEEDS_REDRAW
   return anychart.Signal.NEEDS_REDRAW;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Overlay.prototype.getHookContext = function(fieldName) {
-  return this;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Overlay.prototype.getHook = function(fieldName) {
-  // because all descriptors doesn't have hook.
-  return goog.nullFunction;
 };
 
 
@@ -347,7 +256,7 @@ anychart.core.ui.Overlay.prototype.setupSpecial = function(isDefault, var_args) 
   var arg0 = arguments[1];
   if (goog.isBoolean(arg0) || goog.isNull(arg0)) {
     if (isDefault)
-      this.defaultSettings['enabled'] = !!arg0;
+      this.themeSettings['enabled'] = !!arg0;
     else
       this.enabled(!!arg0);
     return true;
@@ -361,9 +270,9 @@ anychart.core.ui.Overlay.prototype.setupSpecial = function(isDefault, var_args) 
  * @param {!Object} config
  */
 anychart.core.ui.Overlay.prototype.setThemeSettings = function(config) {
-  anychart.core.settings.copy(this.defaultSettings, anychart.core.ui.Overlay.DESCRIPTORS, config);
+  anychart.core.settings.copy(this.themeSettings, anychart.core.ui.Overlay.DESCRIPTORS, config);
   if ('enabled' in config)
-    this.defaultSettings['enabled'] = config['enabled'];
+    this.themeSettings['enabled'] = config['enabled'];
 };
 
 
