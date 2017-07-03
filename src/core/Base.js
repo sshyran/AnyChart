@@ -509,7 +509,7 @@ anychart.core.Base.prototype.check = function(flags) {
 /** @inheritDoc */
 anychart.core.Base.prototype.getCapabilities = function(fieldName) {
   var meta = this.descriptorsMeta[fieldName];
-  return meta ? (meta.capabilities || 0) : 0;
+  return meta ? meta.capabilities : 0;
 };
 
 
