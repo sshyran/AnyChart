@@ -616,11 +616,11 @@ anychart.core.ui.Separator.prototype.enabled = function(opt_value) {
 anychart.core.ui.Separator.prototype.serialize = function() {
   var json = {};
 
-  var zIndex = anychart.core.axes.MapTicks.base(this, 'getOption', 'zIndex');
+  var zIndex = anychart.core.Base.prototype.getOption.call(this, 'zIndex');
   if (goog.isDef(zIndex))
     json['zIndex'] = zIndex;
 
-  var enabled = anychart.core.axes.MapTicks.base(this, 'getOption', 'enabled');
+  var enabled = anychart.core.Base.prototype.getOption.call(this, 'enabled');
   if (goog.isDef(enabled))
     json['enabled'] = enabled;
 
