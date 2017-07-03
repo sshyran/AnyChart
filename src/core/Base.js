@@ -530,7 +530,7 @@ anychart.core.Base.prototype.getSignal = function(fieldName) {
 /** @inheritDoc */
 anychart.core.Base.prototype.getHookContext = function(fieldName) {
   var meta = this.descriptorsMeta[fieldName];
-  return meta ? meta.context : this;
+  return meta ? (meta.context || this) : this;
 };
 
 
