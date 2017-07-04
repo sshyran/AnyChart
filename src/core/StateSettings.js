@@ -6,13 +6,19 @@ goog.require('anychart.core.settings.IObjectWithSettings');
 
 
 /**
- * Class representing state settings (normal, hover, selected)
+ * Class representing state settings (normal, hovered, selected)
+ * @param {anychart.core.settings.IObjectWithSettings} stateHolder State holder.
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} descriptorsMeta Descriptors for state.
  * @constructor
  * @extends {anychart.core.Base}
  */
-anychart.core.StateSettings = function(descriptorsMeta) {
+anychart.core.StateSettings = function(stateHolder, descriptorsMeta) {
   anychart.core.StateSettings.base(this, 'constructor');
+
+  /**
+   * @type {anychart.core.settings.IObjectWithSettings}
+   */
+  this.stateHolder = stateHolder;
 
   /**
    * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
@@ -86,10 +92,10 @@ anychart.core.StateSettings = function(descriptorsMeta) {
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
 
-/**
- * .
- */
-anychart.core.StateSettings.prototype.dummy = function() {};
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.invalidate = function(state, opt_signal) {
+  return this.stateHolder.invalidate(state, opt_signal);
+};
 
 
 //region --- Setup / Serialize / Dispose
