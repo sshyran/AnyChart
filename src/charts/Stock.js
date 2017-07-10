@@ -10,6 +10,7 @@ goog.require('anychart.core.stock.Controller');
 goog.require('anychart.core.stock.IKeyIndexTransformer');
 goog.require('anychart.core.stock.Plot');
 goog.require('anychart.core.stock.Scroller');
+goog.require('anychart.core.ui.Crosshair');
 goog.require('anychart.core.ui.Tooltip');
 goog.require('anychart.core.utils.StockInteractivity');
 goog.require('anychart.enums');
@@ -236,9 +237,9 @@ anychart.charts.Stock.prototype.createSeriesConfig = function(allowColoring) {
       // anychart.core.series.Capabilities.ALLOW_INTERACTIVITY |
       // anychart.core.series.Capabilities.ALLOW_POINT_SETTINGS |
       // anychart.core.series.Capabilities.ALLOW_ERROR |
-      anychart.core.series.Capabilities.SUPPORTS_MARKERS |
-      // anychart.core.series.Capabilities.SUPPORTS_LABELS |
-      0);
+  anychart.core.series.Capabilities.SUPPORTS_MARKERS |
+  // anychart.core.series.Capabilities.SUPPORTS_LABELS |
+  0);
   capabilities |= (allowColoring && anychart.core.series.Capabilities.ALLOW_POINT_SETTINGS);
   var discreteShapeManager = allowColoring ? anychart.enums.ShapeManagerTypes.PER_POINT : anychart.enums.ShapeManagerTypes.PER_SERIES;
   res[anychart.enums.StockSeriesType.AREA] = {
@@ -616,8 +617,7 @@ anychart.charts.Stock.prototype.scroller = function(opt_value) {
  * @param {boolean=} opt_dispatchEvent
  * @return {anychart.charts.Stock}
  */
-anychart.charts.Stock.prototype.selectRange = function(
-    typeOrUnitOrStart, opt_endOrCountOrDispatchEvent, opt_anchorOrDispatchEvent, opt_dispatchEvent) {
+anychart.charts.Stock.prototype.selectRange = function(typeOrUnitOrStart, opt_endOrCountOrDispatchEvent, opt_anchorOrDispatchEvent, opt_dispatchEvent) {
   var type, unit;
   var offset, year, month;
 
@@ -1803,7 +1803,10 @@ anychart.charts.Stock.prototype.highlightAtRatio_ = function(ratio, clientX, cli
     tooltip.showForSeriesPoints(points, clientX, clientY, null, false, {
       'hoveredDate': {value: value, type: anychart.enums.TokenType.DATE_TIME},
       'dataIntervalUnit': {value: grouping.getCurrentDataInterval()['unit'], type: anychart.enums.TokenType.STRING},
-      'dataIntervalUnitCount': {value: grouping.getCurrentDataInterval()['count'], type: anychart.enums.TokenType.NUMBER},
+      'dataIntervalUnitCount': {
+        value: grouping.getCurrentDataInterval()['count'],
+        type: anychart.enums.TokenType.NUMBER
+      },
       'isGrouped': {value: grouping.isGrouped()}
     });
   }
@@ -1823,6 +1826,35 @@ anychart.charts.Stock.prototype.unhighlight_ = function() {
     }
     this.tooltip().hide();
   }
+};
+
+
+/**
+ * Highlights plots by crosshair.
+ * @param {anychart.core.stock.Plot} exclusion - Plot that must not be highlighted, the source of mouse event.
+ * @param {number} mouseX - Mouse x coordinate.
+ */
+anychart.charts.Stock.prototype.highlightPlots = function(exclusion, mouseX) {
+  for (var i = 0; i < this.plots_.length; i++) {
+    var plot = this.plots_[i];
+    var lastPlot = i == this.plots_.length - 1;
+    plot.crosshair().xLabelAutoEnabled(lastPlot);
+    if (plot != exclusion) {
+      plot.crosshair().autoHighlightX(mouseX, lastPlot);
+    }
+  }
+};
+
+
+/**
+ * Removes crosshair from plots.
+ */
+anychart.charts.Stock.prototype.unhighlightPlots = function() {
+  for (var i = 0; i < this.plots_.length; i++) {
+    if (this.plots_[i])
+      this.plots_[i].unhighlight();
+  }
+  this.tooltip().hide();
 };
 
 
@@ -1848,7 +1880,7 @@ anychart.charts.Stock.prototype.crosshair = function(opt_value) {
   if (!this.crosshair_) {
     this.crosshair_ = new anychart.core.ui.Crosshair();
     this.crosshair_.enabled(false);
-    this.crosshair_.bindHandlers(this);
+    // this.crosshair_.bindHandlers(this);
     this.registerDisposable(this.crosshair_);
     this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
     this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
@@ -2071,8 +2103,8 @@ anychart.charts.Stock.prototype.handleMouseWheel_ = function(e) {
   if (!inBounds && this.scroller_ && this.scroller_.isVisible()) {
     boundsItem = this.scroller_.getPixelBounds();
     inBounds = (boundsItem &&
-        boundsItem.left <= x && x <= boundsItem.left + boundsItem.width &&
-        boundsItem.top <= y && y <= boundsItem.top + boundsItem.height);
+    boundsItem.left <= x && x <= boundsItem.left + boundsItem.width &&
+    boundsItem.top <= y && y <= boundsItem.top + boundsItem.height);
   }
   if (inBounds) {
     var doZoom,
@@ -2316,9 +2348,9 @@ anychart.charts.Stock.prototype.scrollerChangeHandler_ = function(e) {
   var last = e['endKey'];
   var source = this.transformScrollerSource_(e['source']);
   if (this.dispatchRangeChange_(
-      anychart.enums.EventType.SELECTED_RANGE_BEFORE_CHANGE,
-      source,
-      Math.min(first, last), Math.max(first, last))) {
+          anychart.enums.EventType.SELECTED_RANGE_BEFORE_CHANGE,
+          source,
+          Math.min(first, last), Math.max(first, last))) {
     this.selectRangeInternal_(first, last);
     this.dispatchRangeChange_(anychart.enums.EventType.SELECTED_RANGE_CHANGE, source);
   }
@@ -2456,8 +2488,8 @@ anychart.charts.Stock.prototype.limitDragRatio = function(ratio, anchor) {
  */
 anychart.charts.Stock.prototype.askDragStart = function() {
   var res = !this.inMarquee() && this.dispatchRangeChange_(
-      anychart.enums.EventType.SELECTED_RANGE_CHANGE_START,
-      anychart.enums.StockRangeChangeSource.PLOT_DRAG);
+          anychart.enums.EventType.SELECTED_RANGE_CHANGE_START,
+          anychart.enums.StockRangeChangeSource.PLOT_DRAG);
   if (res) {
     this.preventHighlight();
     goog.style.setStyle(document['body'], 'cursor', acgraph.vector.Cursor.EW_RESIZE);
@@ -2507,7 +2539,9 @@ anychart.charts.Stock.prototype.serialize = function() {
   json['scrollerGrouping'] = this.scrollerGrouping().serialize();
   json['xScale'] = this.xScale().serialize();
   json['scroller'] = this.scroller().serialize();
-  json['plots'] = goog.array.map(this.plots_, function(element) { return element ? element.serialize() : null; });
+  json['plots'] = goog.array.map(this.plots_, function(element) {
+    return element ? element.serialize() : null;
+  });
 
   anychart.core.settings.serialize(this, anychart.charts.Stock.PROPERTY_DESCRIPTORS, json);
   json['interactivity'] = this.interactivity().serialize();

@@ -532,17 +532,17 @@ anychart.core.ui.Paginator.prototype.draw = function() {
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.Paginator.prototype.applyTextSettings = function(textElement, isInitial) {
-  if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
-    if (!!this.settingsObj['useHtml'])
-      textElement.htmlText(this.settingsObj['text']);
-    else
-      textElement.text(this.settingsObj['text']);
-  }
-  anychart.core.ui.Paginator.base(this, 'applyTextSettings', textElement, isInitial);
-  this.changedSettings = {};
-};
+// /** @inheritDoc */
+// anychart.core.ui.Paginator.prototype.applyTextSettings = function(textElement, isInitial) {
+//   if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
+//     if (!!this.settingsObj['useHtml'])
+//       textElement.htmlText(this.settingsObj['text']);
+//     else
+//       textElement.text(this.settingsObj['text']);
+//   }
+//   anychart.core.ui.Paginator.base(this, 'applyTextSettings', textElement, isInitial);
+//   this.changedSettings = {};
+// };
 
 
 /**
@@ -553,21 +553,21 @@ anychart.core.ui.Paginator.prototype.applyTextSettings = function(textElement, i
  */
 anychart.core.ui.Paginator.prototype.measureMaxDimensions_ = function(opt_pageCount) {
   if (!this.boundsCache_) this.boundsCache_ = {};
-  var reCache = false;
-  for (var i in this.changedSettings) {
-    if (!(this.changedSettings[i] in this.notCauseBoundsChange)) {
-      reCache = true;
-      break;
-    }
-  }
+  // var reCache = false;
+  // for (var i in this.changedSettings) {
+  //   if (!(this.changedSettings[i] in this.notCauseBoundsChange)) {
+  //     reCache = true;
+  //     break;
+  //   }
+  // }
   var pageCount = goog.isDef(opt_pageCount) ? opt_pageCount : this.pageCount_;
   var cacheIndex = pageCount + this.layout_.substr(0, 1);
-  if (reCache || !this.boundsCache_[cacheIndex]) {
+  if (!this.boundsCache_[cacheIndex]) {
     var measureText = acgraph.text();
     measureText.attr('aria-hidden', 'true');
-    var stngs = this.changedSettings;
+    // var stngs = this.changedSettings;
     this.applyTextSettings(measureText, true);
-    this.changedSettings = stngs;
+    // this.changedSettings = stngs;
     var textStr = pageCount + ' / ' + pageCount;
     measureText.text(textStr);
     var bounds = measureText.getBounds();

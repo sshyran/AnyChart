@@ -125,8 +125,20 @@ anychart.core.ui.LabelBase = function() {
    */
   this.rootLayer_ = acgraph.layer();
   this.bindHandlersToGraphics(this.rootLayer_);
+
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['text', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
+  ]);
+
+
+  this.descriptorsMeta['disablePointerEvents'].beforeInvalidationHook = function() {
+    this.background()['disablePointerEvents'](this.getOwnOption('disablePointerEvents'));
+  };
+
+
 };
 goog.inherits(anychart.core.ui.LabelBase, anychart.core.Text);
+anychart.core.settings.populate(anychart.core.ui.LabelBase, anychart.core.Text.TEXT_DESCRIPTORS);
 
 
 /**
@@ -150,15 +162,15 @@ anychart.core.ui.LabelBase.prototype.SUPPORTED_CONSISTENCY_STATES =
 //  Text.
 //
 //----------------------------------------------------------------------------------------------------------------------
-/**
- * Getter/setter for text.
- * @param {string=} opt_value .
- * @return {!anychart.core.ui.LabelBase|string} .
- */
-anychart.core.ui.LabelBase.prototype.text = function(opt_value) {
-  if (goog.isDef(opt_value)) opt_value = goog.string.makeSafe(opt_value);
-  return /** @type {!anychart.core.ui.LabelBase|string} */(this.textSettings('text', opt_value));
-};
+// /**
+//  * Getter/setter for text.
+//  * @param {string=} opt_value .
+//  * @return {!anychart.core.ui.LabelBase|string} .
+//  */
+// anychart.core.ui.LabelBase.prototype.text = function(opt_value) {
+//   if (goog.isDef(opt_value)) opt_value = goog.string.makeSafe(opt_value);
+//   return /** @type {!anychart.core.ui.LabelBase|string} */(this.textSettings('text', opt_value));
+// };
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -513,22 +525,22 @@ anychart.core.ui.LabelBase.prototype.adjustFontSize = function(opt_adjustOrAdjus
 };
 
 
-/**
- * @inheritDoc
- */
-anychart.core.ui.LabelBase.prototype.disablePointerEvents = function(opt_value) {
-  if (goog.isDef(opt_value)) {
-    opt_value = !!opt_value;
-    if (opt_value != this.disablePointerEvents_) {
-      this.disablePointerEvents_ = opt_value;
-      anychart.core.ui.LabelBase.base(this, 'disablePointerEvents', opt_value);
-      this.background()['disablePointerEvents'](opt_value);
-    }
-    return this;
-  } else {
-    return this.disablePointerEvents_;
-  }
-};
+// /**
+//  * @inheritDoc
+//  */
+// anychart.core.ui.LabelBase.prototype.disablePointerEvents = function(opt_value) {
+//   if (goog.isDef(opt_value)) {
+//     opt_value = !!opt_value;
+//     if (opt_value != this.disablePointerEvents_) {
+//       this.disablePointerEvents_ = opt_value;
+//       anychart.core.ui.LabelBase.base(this, 'disablePointerEvents', opt_value);
+//       this.background()['disablePointerEvents'](opt_value);
+//     }
+//     return this;
+//   } else {
+//     return this.disablePointerEvents_;
+//   }
+// };
 
 
 /**
@@ -599,11 +611,11 @@ anychart.core.ui.LabelBase.prototype.calculateFontSize_ = function(originWidth, 
   /** @type {number} */
   var checked;
 
-  var settings = this.changedSettings;
+  // var settings = this.changedSettings;
   var text = acgraph.text();
   text.attr('aria-hidden', 'true');
   this.applyTextSettings(text, true);
-  this.changedSettings = settings;
+  // this.changedSettings = settings;
 
   // check if the maximal value is ok
   text.fontSize(this.maxFontSize_);
@@ -743,7 +755,7 @@ anychart.core.ui.LabelBase.prototype.calculateLabelBounds_ = function() {
   this.suspendSignalsDispatching();
   if (needAdjust) {
     var calculatedFontSize = this.calculateFontSize_(width, height);
-    this.fontSize(calculatedFontSize);
+    this['fontSize'](calculatedFontSize);
     this.textElement.fontSize(calculatedFontSize);
     if (autoWidth) {
       this.textElement.width(null);
@@ -758,7 +770,7 @@ anychart.core.ui.LabelBase.prototype.calculateLabelBounds_ = function() {
       this.backgroundHeight = padding.widenHeight(this.textHeight);
     }
   } else if (this.adjustByWidth_ || this.adjustByHeight_) {
-    this.fontSize(this.minFontSize_);
+    this['fontSize'](this.minFontSize_);
     this.textElement.fontSize(this.minFontSize_);
     if (autoWidth) {
       this.textElement.width(null);
@@ -954,17 +966,17 @@ anychart.core.ui.LabelBase.prototype.remove = function() {
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.LabelBase.prototype.applyTextSettings = function(textElement, isInitial) {
-  if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
-    if (!!this.settingsObj['useHtml'])
-      textElement.htmlText(this.settingsObj['text']);
-    else
-      textElement.text(this.settingsObj['text']);
-  }
-  anychart.core.ui.LabelBase.base(this, 'applyTextSettings', textElement, isInitial);
-  this.changedSettings = {};
-};
+// /** @inheritDoc */
+// anychart.core.ui.LabelBase.prototype.applyTextSettings = function(textElement, isInitial) {
+//   if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
+//     if (!!this.settingsObj['useHtml'])
+//       textElement.htmlText(this.settingsObj['text']);
+//     else
+//       textElement.text(this.settingsObj['text']);
+//   }
+//   anychart.core.ui.LabelBase.base(this, 'applyTextSettings', textElement, isInitial);
+//   this.changedSettings = {};
+// };
 
 
 /**
@@ -1009,6 +1021,8 @@ anychart.core.ui.LabelBase.prototype.getContentBounds = function() {
 /** @inheritDoc */
 anychart.core.ui.LabelBase.prototype.serialize = function() {
   var json = anychart.core.ui.LabelBase.base(this, 'serialize');
+  anychart.core.settings.serialize(this, anychart.core.Text.TEXT_DESCRIPTORS, json, 'Label Base');
+
   json['background'] = this.background().serialize();
   json['padding'] = this.padding().serialize();
   if (goog.isDefAndNotNull(this.width_))
@@ -1021,8 +1035,8 @@ anychart.core.ui.LabelBase.prototype.serialize = function() {
     json['offsetX'] = this.offsetX_;
   if (goog.isDefAndNotNull(this.offsetY_))
     json['offsetY'] = this.offsetY();
-  if (goog.isDef(this.text()))
-    json['text'] = this.text();
+  // if (goog.isDef(this.text()))
+  //   json['text'] = this.text();
   if (!isNaN(this.minFontSize_))
     json['minFontSize'] = this.minFontSize_;
   if (!isNaN(this.maxFontSize_))
@@ -1038,7 +1052,18 @@ anychart.core.ui.LabelBase.prototype.serialize = function() {
 anychart.core.ui.LabelBase.prototype.setupSpecial = function(isDefault, var_args) {
   var arg0 = arguments[1];
   if (goog.isString(arg0)) {
-    this.text(arg0);
+    // this.text(arg0);
+    if (isDefault) {
+      if (this.themeSettings['text'] !== arg0) {
+        this.themeSettings['text'] = arg0;
+        this.invalidate(anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      }
+    } else {
+      if (this.ownSettings['text'] !== arg0) {
+        this.ownSettings['text'] = arg0;
+        this.invalidate(anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      }
+    }
     this.enabled(true);
     return true;
   }
@@ -1049,6 +1074,12 @@ anychart.core.ui.LabelBase.prototype.setupSpecial = function(isDefault, var_args
 /** @inheritDoc */
 anychart.core.ui.LabelBase.prototype.setupByJSON = function(config, opt_default) {
   anychart.core.ui.LabelBase.base(this, 'setupByJSON', config, opt_default);
+
+  if (opt_default) {
+    anychart.core.settings.copy(this.themeSettings, anychart.core.Text.TEXT_DESCRIPTORS, config);
+  } else {
+    anychart.core.settings.deserialize(this, anychart.core.Text.TEXT_DESCRIPTORS, config);
+  }
 
   if ('background' in config)
     this.background(config['background']);
@@ -1061,7 +1092,7 @@ anychart.core.ui.LabelBase.prototype.setupByJSON = function(config, opt_default)
   this.anchor(config['anchor']);
   this.offsetX(config['offsetX']);
   this.offsetY(config['offsetY']);
-  this.text(config['text']);
+  // this.text(config['text']);
   this.minFontSize(config['minFontSize']);
   this.maxFontSize(config['maxFontSize']);
   this.adjustFontSize(config['adjustFontSize']);

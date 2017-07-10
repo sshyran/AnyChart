@@ -1990,6 +1990,7 @@ anychart.core.stock.Plot.prototype.unhighlight = function() {
       series.removeHighlight();
   }
 
+  this.crosshair().hide();
   if (this.legend_ && this.legend_.enabled()) {
     this.updateLegend_(null, this.chart_.getLastDate());
   }
@@ -2035,6 +2036,7 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
       if (!goog.isDef(this.frame_))
         this.frame_ = window.requestAnimationFrame(this.frameAction_);
     }
+    this.chart_.highlightPlots(this, e['clientX'] - stageReferencePoint.x);
   }
 };
 
@@ -2049,6 +2051,7 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOut_ = function(e) {
   this.frameHighlightRatio_ = NaN;
   if (!goog.isDef(this.frame_))
     this.frame_ = window.requestAnimationFrame(this.frameAction_);
+  this.chart_.unhighlightPlots();
 };
 
 

@@ -1845,7 +1845,7 @@ anychart.core.ui.Legend.prototype.draw = function() {
   this.clearLastDrawedPage_();
   if (this.hasInvalidationState(anychart.ConsistencyState.BOUNDS)) {
     // Reset items width (needs when container was resized) for DVF-2119
-    if (this.items_ && this.textOverflow() == acgraph.vector.Text.TextOverflow.ELLIPSIS) {
+    if (this.items_ && this.getOption('textOverflow') == acgraph.vector.Text.TextOverflow.ELLIPSIS) {
       for (var i = 0, len = this.items_.length; i < len; i++) {
         this.items_[i].parentBounds(null);
         this.items_[i].getTextElement().width(null);

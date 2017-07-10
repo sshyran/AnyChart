@@ -84,6 +84,14 @@ anychart.core.ui.Crosshair = function() {
 
   this.xLabel_.listenSignals(this.labelInvalidated, this);
   this.yLabel_.listenSignals(this.labelInvalidated, this);
+
+  /**
+   * This flag is used to auto enable or disable xLabel.
+   * Used to correctly show xLabels for stock plots.
+   * @type {boolean}
+   * @private
+   */
+  this.xLabelAutoEnabled_ = true;
 };
 goog.inherits(anychart.core.ui.Crosshair, anychart.core.VisualBase);
 
@@ -214,7 +222,7 @@ anychart.core.ui.Crosshair.prototype.yAxis = function(opt_value) {
 
 /**
  *
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map} axis
+ * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
  * @return {anychart.enums.Anchor}
  * @private
  */
@@ -476,7 +484,6 @@ anychart.core.ui.Crosshair.prototype.show = function(event) {
 
 /**
  * Handler for sticky mode.
- * @protected
  */
 anychart.core.ui.Crosshair.prototype.hide = function() {
   this.hideX();
@@ -490,7 +497,8 @@ anychart.core.ui.Crosshair.prototype.hide = function() {
  */
 anychart.core.ui.Crosshair.prototype.hideX = function() {
   this.xLine.clear();
-  this.xLabel_.container(null).remove();
+  this.xLabel_.container(null);
+  this.xLabel_.remove();
 };
 
 
@@ -500,13 +508,14 @@ anychart.core.ui.Crosshair.prototype.hideX = function() {
  */
 anychart.core.ui.Crosshair.prototype.hideY = function() {
   this.yLine.clear();
-  this.yLabel_.container(null).remove();
+  this.yLabel_.container(null);
+  this.yLabel_.remove();
 };
 
 
 /**
  * Checks whether scale for axis can return a value.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map} axis Axis.
+ * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis Axis.
  * @return {boolean} Is scale of axis can resolve defined ratio.
  */
 anychart.core.ui.Crosshair.prototype.canDrawForAxis = function(axis) {
@@ -550,32 +559,34 @@ anychart.core.ui.Crosshair.prototype.handleMouseOverAndMove = function(e) {
     }
 
     if (this.xAxis_ && this.canDrawForAxis(this.xAxis_)) {
-      if (this.xStroke_ && this.xStroke_ != 'none') {
-        var xLineCoord;
-        this.xLine.clear();
+      // if (this.xStroke_ && this.xStroke_ != 'none') {
+      //   var xLineCoord;
+      //   this.xLine.clear();
+      //
+      //   if (this.xAxis_.isHorizontal()) {
+      //     // one pixel shift with clamp
+      //     xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseX), bounds.getLeft(), bounds.getRight() - 1);
+      //     this.xLine
+      //         .moveTo(xLineCoord - shiftX, bounds.getTop())
+      //         .lineTo(xLineCoord - shiftX, bounds.getBottom());
+      //   } else {
+      //     xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseY), bounds.getTop(), bounds.getBottom() - 1);
+      //     this.xLine
+      //         .moveTo(bounds.getLeft(), xLineCoord - shiftY)
+      //         .lineTo(bounds.getRight(), xLineCoord - shiftY);
+      //   }
+      // }
+      this.drawXLine_(mouseX, mouseY);
 
-        if (this.xAxis_.isHorizontal()) {
-          // one pixel shift with clamp
-          xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseX), bounds.getLeft(), bounds.getRight() - 1);
-          this.xLine
-              .moveTo(xLineCoord - shiftX, bounds.getTop())
-              .lineTo(xLineCoord - shiftX, bounds.getBottom());
-        } else {
-          xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseY), bounds.getTop(), bounds.getBottom() - 1);
-          this.xLine
-              .moveTo(bounds.getLeft(), xLineCoord - shiftY)
-              .lineTo(bounds.getRight(), xLineCoord - shiftY);
-        }
-      }
-
-      if (this.xLabel_.enabled()) {
-        var xLabelFormatProvider = this.getLabelsFormatProvider(this.xAxis_, xRatio);
-        var xLabelFormat = this.xLabel_.format() || anychart.utils.DEFAULT_FORMATTER;
-        this.xLabel_.text(xLabelFormat.call(xLabelFormatProvider, xLabelFormatProvider));
-        var xLabelPosition = this.getLabelPosition_(this.xAxis_, this.xLabel_, mouseX, mouseY, xRatio);
-        this.xLabel_.x(/** @type {number}*/(xLabelPosition.x)).y(/** @type {number}*/(xLabelPosition.y));
-        this.xLabel_.container(container).draw();
-      }
+      // if (this.xLabel_.enabled()) {
+      //   var xLabelFormatProvider = this.getLabelsFormatProvider(this.xAxis_, xRatio);
+      //   var xLabelFormat = this.xLabel_.format() || anychart.utils.DEFAULT_FORMATTER;
+      //   this.xLabel_.text(xLabelFormat.call(xLabelFormatProvider, xLabelFormatProvider));
+      //   var xLabelPosition = this.getLabelPosition_(this.xAxis_, this.xLabel_, mouseX, mouseY, xRatio);
+      //   this.xLabel_.x(/** @type {number}*/(xLabelPosition.x)).y(/** @type {number}*/(xLabelPosition.y));
+      //   this.xLabel_.container(container).draw();
+      // }
+      this.drawXLabel_(mouseX, mouseY);
     } else {
       this.hideX();
     }
@@ -617,8 +628,94 @@ anychart.core.ui.Crosshair.prototype.handleMouseOverAndMove = function(e) {
 
 
 /**
+ * Draws xLabel.
+ * @param {number} mouseX - .
+ * @param {number} mouseY - .
+ * @private
+ */
+anychart.core.ui.Crosshair.prototype.drawXLabel_ = function(mouseX, mouseY) {
+  if (this.xLabel_.enabled() && this.xLabelAutoEnabled_) {
+    var bounds = this.parentBounds();
+    var width = bounds.getRight() - bounds.getLeft();
+    var dataPlotOffsetX = mouseX - bounds.getLeft();
+    var xRatio = dataPlotOffsetX / width;
+
+    var xLabelFormatProvider = this.getLabelsFormatProvider(this.xAxis_, xRatio);
+    var xLabelFormat = this.xLabel_.format() || anychart.utils.DEFAULT_FORMATTER;
+    this.xLabel_.text(xLabelFormat.call(xLabelFormatProvider, xLabelFormatProvider));
+    var xLabelPosition = this.getLabelPosition_(this.xAxis_, this.xLabel_, mouseX, mouseY, xRatio);
+    this.xLabel_.x(/** @type {number}*/(xLabelPosition.x)).y(/** @type {number}*/(xLabelPosition.y));
+    this.xLabel_.container(/** @type {acgraph.vector.ILayer} */(this.container())).draw();
+  }
+};
+
+
+/**
+ * See variable description.
+ * @param {boolean=} opt_value - Value ti set.
+ * @return {boolean}
+ */
+anychart.core.ui.Crosshair.prototype.xLabelAutoEnabled = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.xLabelAutoEnabled_ = opt_value;
+  }
+  return this.xLabelAutoEnabled_;
+};
+
+
+/**
+ * Draws X line.
+ * @param {number} mouseX - .
+ * @param {number} mouseY - .
+ * @private
+ */
+anychart.core.ui.Crosshair.prototype.drawXLine_ = function(mouseX, mouseY) {
+  if (this.xStroke_ && this.xStroke_ != 'none') {
+    var bounds = this.parentBounds();
+    var dataPlotOffsetX = mouseX - bounds.getLeft();
+    var width = bounds.getRight() - bounds.getLeft();
+    var xRatio = dataPlotOffsetX / width;
+    var shiftX = this.xLine.strokeThickness() % 2 == 0 ? 0 : -.5;
+    var shiftY = this.yLine.strokeThickness() % 2 == 0 ? 0 : -.5;
+
+    var xLineCoord;
+    this.xLine.clear();
+
+    if (this.xAxis_.isHorizontal()) {
+      // one pixel shift with clamp
+      xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseX), bounds.getLeft(), bounds.getRight() - 1);
+      this.xLine
+          .moveTo(xLineCoord - shiftX, bounds.getTop())
+          .lineTo(xLineCoord - shiftX, bounds.getBottom());
+    } else {
+      xLineCoord = goog.math.clamp(this.prepareCoordinate_(this.xAxis_, xRatio, mouseY), bounds.getTop(), bounds.getBottom() - 1);
+      this.xLine
+          .moveTo(bounds.getLeft(), xLineCoord - shiftY)
+          .lineTo(bounds.getRight(), xLineCoord - shiftY);
+    }
+  }
+};
+
+
+/**
+ * For Shock chart: highlights vertical line.
+ * @param {number} x - X coordinate got from plot mouse move event.
+ * @param {boolean=} opt_showXLabel - Whether to show xLabel.
+ */
+anychart.core.ui.Crosshair.prototype.autoHighlightX = function(x, opt_showXLabel) {
+  this.hideY();
+  if (opt_showXLabel) {
+    this.drawXLabel_(x, 0);
+  } else {
+    this.xLabel_.container(null).remove();
+  }
+  this.drawXLine_(x, 0);
+};
+
+
+/**
  * Get the coordinate on the axis scale, given the type of scale.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map} axis
+ * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
  * @param {number} ratio Current ratio.
  * @param {number} coord Current mouse coordinate.
  * @return {number}
@@ -640,7 +737,7 @@ anychart.core.ui.Crosshair.prototype.prepareCoordinate_ = function(axis, ratio, 
 
 /**
  * Get the label position, given the type of scale and axis orientation.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map} axis
+ * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
  * @param {anychart.core.ui.CrosshairLabel} label
  * @param {number} mouseX
  * @param {number} mouseY
@@ -718,7 +815,7 @@ anychart.core.ui.Crosshair.prototype.isLabelAnchorTop = function(label) {
 
 /**
  * Gets format provider for label.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map} axis
+ * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
  * @param {number} ratio
  * @return {Object} Labels format provider.
  * @protected

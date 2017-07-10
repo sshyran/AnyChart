@@ -72,9 +72,20 @@ anychart.core.ui.LegendItem = function() {
     'fontColor': '#999'
   };
 
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['text', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
+  ]);
+
+  this.descriptorsMeta['fontColor'].beforeInvalidationHook = function() {
+    var fontColor = this.getOwnOption('fontColor');
+    if (goog.isDef(fontColor))
+      this.originalFontColor_ = fontColor;
+  };
+
   this.applyDefaults();
 };
 goog.inherits(anychart.core.ui.LegendItem, anychart.core.Text);
+anychart.core.settings.populate(anychart.core.ui.LegendItem, anychart.core.Text.TEXT_DESCRIPTORS);
 
 
 //region --- Class definitions
@@ -472,23 +483,23 @@ anychart.core.ui.LegendItem.prototype.iconSize = function(opt_value) {
 };
 
 
-/**
- * Getter/setter for legend item text.
- * @param {string=} opt_value Legend item text.
- * @return {(string|anychart.core.ui.LegendItem)} Legend item text or self for method chaining.
- */
-anychart.core.ui.LegendItem.prototype.text = function(opt_value) {
-  return /** @type {!anychart.core.ui.LegendItem|string} */(this.textSettings('text', opt_value));
-};
+// /**
+//  * Getter/setter for legend item text.
+//  * @param {string=} opt_value Legend item text.
+//  * @return {(string|anychart.core.ui.LegendItem)} Legend item text or self for method chaining.
+//  */
+// anychart.core.ui.LegendItem.prototype.text = function(opt_value) {
+//   return /** @type {!anychart.core.ui.LegendItem|string} */(this.textSettings('text', opt_value));
+// };
 
 
-/** @inheritDoc */
-anychart.core.ui.LegendItem.prototype.fontColor = function(opt_value) {
-  if (goog.isDef(opt_value))
-    this.originalFontColor_ = opt_value;
-
-  return anychart.core.ui.LegendItem.base(this, 'fontColor', opt_value);
-};
+// /** @inheritDoc */
+// anychart.core.ui.LegendItem.prototype.fontColor = function(opt_value) {
+//   if (goog.isDef(opt_value))
+//     this.originalFontColor_ = opt_value;
+//
+//   return anychart.core.ui.LegendItem.base(this, 'fontColor', opt_value);
+// };
 
 
 //endregion
@@ -893,17 +904,17 @@ anychart.core.ui.LegendItem.prototype.draw = function() {
 
 //endregion
 //region --- Aplying appearance
-/** @inheritDoc */
-anychart.core.ui.LegendItem.prototype.applyTextSettings = function(textElement, isInitial) {
-  if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
-    if (!!this.settingsObj['useHtml'])
-      textElement.htmlText(this.settingsObj['text']);
-    else
-      textElement.text(this.settingsObj['text']);
-  }
-  anychart.core.ui.LegendItem.base(this, 'applyTextSettings', textElement, isInitial);
-  this.changedSettings = {};
-};
+// /** @inheritDoc */
+// anychart.core.ui.LegendItem.prototype.applyTextSettings = function(textElement, isInitial) {
+//   if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
+//     if (!!this.settingsObj['useHtml'])
+//       textElement.htmlText(this.settingsObj['text']);
+//     else
+//       textElement.text(this.settingsObj['text']);
+//   }
+//   anychart.core.ui.LegendItem.base(this, 'applyTextSettings', textElement, isInitial);
+//   this.changedSettings = {};
+// };
 
 
 /**
@@ -932,7 +943,7 @@ anychart.core.ui.LegendItem.prototype.applyHover = function(hover) {
 anychart.core.ui.LegendItem.prototype.applyFontColor_ = function(hover, opt_isInitial) {
   if (!this.disabled_) {
     if (!this.originalFontColor_)
-      this.originalFontColor_ = this.fontColor();
+      this.originalFontColor_ = /** @type {(acgraph.vector.Fill|acgraph.vector.Stroke)} */ (this.getOption('fontColor'));
 
     this.textSettings('fontColor', hover ? anychart.color.lighten(this.originalFontColor_) : this.originalFontColor_);
   } else {
@@ -1197,7 +1208,8 @@ anychart.core.ui.LegendItem.prototype.applyDefaults = function() {
   this.iconTextSpacing_ = 5;
 
   // legend item default text
-  this.settingsObj['text'] = 'Legend Item';
+  // this.settingsObj['text'] = 'Legend Item';
+  this.ownSettings['text'] = 'Legend Item';
 };
 
 
@@ -1209,8 +1221,9 @@ anychart.core.ui.LegendItem.prototype.clear = function() {
   this.suspendSignalsDispatching();
   this.dropPixelBounds();
   this.applyDefaults();
-  this.settingsObj = {};
-  this.changedSettings = {};
+  this.ownSettings = {};
+  // this.settingsObj = {};
+  // this.changedSettings = {};
   this.prevSourceKey = this.sourceKey();
   this.prevSourceUid = this.sourceUid();
   this.sourceUid(NaN);
