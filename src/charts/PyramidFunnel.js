@@ -45,28 +45,10 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
   this.hatchFillPalette_ = null;
 
   /**
-   * @type {anychart.core.ui.MarkersFactory}
-   * @private
-   */
-  this.hoverMarkers_ = null;
-
-  /**
-   * @type {anychart.core.ui.MarkersFactory}
-   * @private
-   */
-  this.selectMarkers_ = null;
-
-  /**
    * @type {!anychart.data.Iterator}
    * @private
    */
   this.iterator_;
-
-  /**
-   * @type {anychart.core.ui.LabelsFactory}
-   * @private
-   */
-  this.labels_ = null;
 
   /**
    * List of all label domains
@@ -79,12 +61,6 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
    * @private
    */
   this.markerPalette_ = null;
-
-  /**
-   * @type {anychart.core.ui.MarkersFactory}
-   * @private
-   */
-  this.markers_ = null;
 
   /**
    * The minimum height of the point.
@@ -132,26 +108,28 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
       anychart.Signal.NEEDS_REDRAW],
     ['hatchFill',
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
-      anychart.Signal.NEEDS_REDRAW]
+      anychart.Signal.NEEDS_REDRAW],
+    ['labels', 0, 0, 0, this.labelsInvalidated_, this],
+    ['markers', 0, 0, 0, this.markersInvalidated_, this]
   ]);
-  this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta);
+  this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
   anychart.core.settings.populateAliases(anychart.charts.PyramidFunnel, ['fill', 'stroke', 'hatchFill'], this.normal_);
 
   var hoveredDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
-    ['hoverFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['hoverStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['hoverHatchFill', 0, 0]
+    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hatchFill', 0, 0]
   ]);
-  this.hovered_ = new anychart.core.StateSettings(this, hoveredDescriptorsMeta);
+  this.hovered_ = new anychart.core.StateSettings(this, hoveredDescriptorsMeta, anychart.PointState.HOVER);
 
   var selectedDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(selectedDescriptorsMeta, [
-    ['selectFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['selectStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['selectHatchFill', 0, 0]
+    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hatchFill', 0, 0]
   ]);
-  this.selected_ = new anychart.core.StateSettings(this, selectedDescriptorsMeta);
+  this.selected_ = new anychart.core.StateSettings(this, selectedDescriptorsMeta, anychart.PointState.SELECT);
 
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['baseWidth', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
@@ -190,6 +168,11 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
 goog.inherits(anychart.charts.PyramidFunnel, anychart.core.SeparateChart);
 
 
+/**
+ * Normal state settings.
+ * @param {Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
+ */
 anychart.charts.PyramidFunnel.prototype.normal = function(opt_value) {
   if (goog.isDef(opt_value)) {
     this.normal_.setupByJSON(opt_value);
@@ -199,6 +182,11 @@ anychart.charts.PyramidFunnel.prototype.normal = function(opt_value) {
 };
 
 
+/**
+ * Hovered state settings.
+ * @param {Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
+ */
 anychart.charts.PyramidFunnel.prototype.hovered = function(opt_value) {
   if (goog.isDef(opt_value)) {
     this.hovered_.setupByJSON(opt_value);
@@ -208,6 +196,11 @@ anychart.charts.PyramidFunnel.prototype.hovered = function(opt_value) {
 };
 
 
+/**
+ * Selected state settings.
+ * @param {Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
+ */
 anychart.charts.PyramidFunnel.prototype.selected = function(opt_value) {
   if (goog.isDef(opt_value)) {
     this.selected_.setupByJSON(opt_value);
@@ -279,7 +272,7 @@ anychart.charts.PyramidFunnel.OVERLAP_CORRECTION_ITERATION_COUNT_MAX_ = 10;
  *   labels animation - 450ms.
  * @type {number}
  */
-anychart.charts.PyramidFunnel.PIE_ANIMATION_DURATION_RATIO = 0.85;
+anychart.charts.PyramidFunnel.ANIMATION_DURATION_RATIO = 0.85;
 
 
 /**
@@ -852,7 +845,7 @@ anychart.charts.PyramidFunnel.prototype.drawContent = function(bounds) {
   }
 
   if (this.hasInvalidationState(anychart.ConsistencyState.PYRAMID_FUNNEL_MARKERS)) {
-    if (!this.markers().container()) this.markers_.container(this.rootElement);
+    if (!this.markers().container()) this.markers().container(this.rootElement);
     this.markers().clear();
 
     iterator.reset();
@@ -866,7 +859,7 @@ anychart.charts.PyramidFunnel.prototype.drawContent = function(bounds) {
   }
 
   if (this.hasInvalidationState(anychart.ConsistencyState.PYRAMID_FUNNEL_LABELS)) {
-    if (!this.labels().container()) this.labels_.container(this.rootElement);
+    if (!this.labels().container()) this.labels().container(this.rootElement);
     this.labels().clear();
     if (this.connectorsLayer_) {
       this.connectorsLayer_.clear();
@@ -1175,8 +1168,8 @@ anychart.charts.PyramidFunnel.prototype.doAnimation = function() {
       goog.dispose(this.animationQueue_);
       this.animationQueue_ = new anychart.animations.AnimationSerialQueue();
       var duration = /** @type {number} */(this.animation().duration());
-      var pyramidFunnelDuration = duration * anychart.charts.PyramidFunnel.PIE_ANIMATION_DURATION_RATIO;
-      var pyramidFunnelLabelDuration = duration * (1 - anychart.charts.PyramidFunnel.PIE_ANIMATION_DURATION_RATIO);
+      var pyramidFunnelDuration = duration * anychart.charts.PyramidFunnel.ANIMATION_DURATION_RATIO;
+      var pyramidFunnelLabelDuration = duration * (1 - anychart.charts.PyramidFunnel.ANIMATION_DURATION_RATIO);
 
       var pyramidFunnelAnimation = new anychart.animations.PyramidFunnelAnimation(this, pyramidFunnelDuration);
       var pyramidFunnelLabelAnimation = new anychart.animations.PyramidFunnelLabelAnimation(this, pyramidFunnelLabelDuration);
@@ -1793,21 +1786,7 @@ anychart.charts.PyramidFunnel.prototype.getColorResolutionContext = function(opt
  * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} .
  */
 anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
-  if (!this.labels_) {
-    this.labels_ = new anychart.core.ui.LabelsFactory();
-
-    this.labels_.listenSignals(this.labelsInvalidated_, this);
-    this.labels_.setParentEventTarget(this);
-    this.invalidate(anychart.ConsistencyState.PYRAMID_FUNNEL_LABELS, anychart.Signal.NEEDS_REDRAW);
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.labels_.setup(opt_value);
-    return this;
-  }
-  return this.labels_;
+  return this.normal_.labels(opt_value);
 };
 
 
@@ -1817,17 +1796,7 @@ anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
  * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} Labels instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
-  if (!this.hoverLabels_) {
-    this.hoverLabels_ = new anychart.core.ui.LabelsFactory();
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.hoverLabels_.setup(opt_value);
-    return this;
-  }
-  return this.hoverLabels_;
+  return this.hovered_.labels(opt_value);
 };
 
 
@@ -1837,17 +1806,7 @@ anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
  * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} Labels instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.selectLabels = function(opt_value) {
-  if (!this.selectLabels_) {
-    this.selectLabels_ = new anychart.core.ui.LabelsFactory();
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.selectLabels_.setup(opt_value);
-    return this;
-  }
-  return this.selectLabels_;
+  return this.selected_.labels(opt_value);
 };
 
 
@@ -1965,7 +1924,7 @@ anychart.charts.PyramidFunnel.prototype.drawLabel_ = function(pointState) {
     label.draw();
 
     //todo: this shit should be reworked when labelsFactory will be reworked
-    //if usual label isn't disabled and not drawn then it doesn't have container and hover label doesn't know nothing
+    //if usual label isn't disabled and not drawn then it doesn't have container and hover label knows nothing
     //about its DOM element and trying to apply itself setting to it. But nothing will happen because container is empty.
     if ((hovered || selected) && !label.container() && this.labels().getDomElement()) {
       label.container(this.labels().getDomElement());
@@ -2027,7 +1986,7 @@ anychart.charts.PyramidFunnel.prototype.createLabelsPositionProvider_ = function
   if (opt_label) {
     labelBounds = this.getTrueLabelBounds(opt_label, /** @type {anychart.PointState|number}*/(opt_pointState));
   } else {
-    labelBounds = this.labels_.measureWithTransform(this.createFormatProvider(), null, /** @type {Object} */(labelSettings));
+    labelBounds = this.labels().measureWithTransform(this.createFormatProvider(), null, /** @type {Object} */(labelSettings));
     labelBounds = anychart.math.Rect.fromCoordinateBox(labelBounds);
   }
 
@@ -2127,7 +2086,7 @@ anychart.charts.PyramidFunnel.prototype.getTrueLabelBounds = function(label, poi
   var iterator = this.getIterator();
   iterator.select(label.getIndex());
   label.formatProvider(this.createFormatProvider());
-  var labelBounds = this.labels_.measureWithTransform(label.formatProvider(), label.positionProvider(), /** @type {Object} */(labelSettings));
+  var labelBounds = this.labels().measureWithTransform(label.formatProvider(), label.positionProvider(), /** @type {Object} */(labelSettings));
 
   return anychart.math.Rect.fromCoordinateBox(labelBounds);
 };
@@ -2735,70 +2694,30 @@ anychart.charts.PyramidFunnel.prototype.updateConnector = function(label, pointS
 /**
  * Getter/setter for markers.
  * @param {(Object|boolean|null|string)=} opt_value Data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.charts.PyramidFunnel)} Markers instance or itself for chaining call.
+ * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.markers = function(opt_value) {
-  if (!this.markers_) {
-    this.markers_ = new anychart.core.ui.MarkersFactory();
-
-    this.markers_.listenSignals(this.markersInvalidated_, this);
-    this.markers_.setParentEventTarget(this);
-    this.registerDisposable(this.markers_);
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.markers_.setup(opt_value);
-    return this;
-  }
-  return this.markers_;
+  return this.normal_.markers(opt_value);
 };
 
 
 /**
  * Getter/setter for hoverMarkers.
  * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.charts.PyramidFunnel)} Markers instance or itself for chaining call.
+ * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.hoverMarkers = function(opt_value) {
-  if (!this.hoverMarkers_) {
-    this.hoverMarkers_ = new anychart.core.ui.MarkersFactory();
-
-    this.registerDisposable(this.hoverMarkers_);
-    // don't listen to it, for it will be reapplied at the next hover
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.hoverMarkers_.setup(opt_value);
-    return this;
-  }
-  return this.hoverMarkers_;
+  return this.hovered_.markers(opt_value);
 };
 
 
 /**
  * Getter/setter for series data markers on select.
  * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.charts.PyramidFunnel)} Markers instance or itself for chaining call.
+ * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.selectMarkers = function(opt_value) {
-  if (!this.selectMarkers_) {
-    this.selectMarkers_ = new anychart.core.ui.MarkersFactory();
-
-    this.registerDisposable(this.selectMarkers_);
-    // don't listen to it, for it will be reapplied at the next select
-  }
-
-  if (goog.isDef(opt_value)) {
-    if (goog.isObject(opt_value) && !('enabled' in opt_value))
-      opt_value['enabled'] = true;
-    this.selectMarkers_.setup(opt_value);
-    return this;
-  }
-  return this.selectMarkers_;
+  return this.selected_.markers(opt_value);
 };
 
 
@@ -3348,24 +3267,24 @@ anychart.charts.PyramidFunnel.prototype.serialize = function() {
   json['type'] = this.getType();
   json['data'] = this.data().serialize();
 
-  json['labels'] = this.labels().serialize();
-  json['hoverLabels'] = this.hoverLabels().getChangedSettings();
-  json['selectLabels'] = this.selectLabels().getChangedSettings();
-  if (goog.isNull(json['hoverLabels']['enabled'])) {
-    delete json['hoverLabels']['enabled'];
-  }
-  if (goog.isNull(json['selectLabels']['enabled'])) {
-    delete json['selectLabels']['enabled'];
-  }
+  //json['labels'] = this.labels().serialize();
+  //json['hoverLabels'] = this.hoverLabels().getChangedSettings();
+  //json['selectLabels'] = this.selectLabels().getChangedSettings();
+  //if (goog.isNull(json['hoverLabels']['enabled'])) {
+  //  delete json['hoverLabels']['enabled'];
+  //}
+  //if (goog.isNull(json['selectLabels']['enabled'])) {
+  //  delete json['selectLabels']['enabled'];
+  //}
 
   json['palette'] = this.palette().serialize();
   json['hatchFillPalette'] = this.hatchFillPalette().serialize();
   json['markerPalette'] = this.markerPalette().serialize();
   json['tooltip'] = this.tooltip().serialize();
 
-  json['markers'] = this.markers().serialize();
-  json['hoverMarkers'] = this.hoverMarkers().serialize();
-  json['selectMarkers'] = this.selectMarkers().serialize();
+  //json['markers'] = this.markers().serialize();
+  //json['hoverMarkers'] = this.hoverMarkers().serialize();
+  //json['selectMarkers'] = this.selectMarkers().serialize();
 
   anychart.core.settings.serialize(this, anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS, json);
   json['normal'] = this.normal_.serialize();
@@ -3399,13 +3318,13 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
   this.hatchFillPalette(config['hatchFillPalette']);
   this.markerPalette(config['markerPalette']);
 
-  this.labels().setupInternal(!!opt_default, config['labels']);
-  this.hoverLabels().setupInternal(!!opt_default, config['hoverLabels']);
-  this.selectLabels().setupInternal(!!opt_default, config['selectLabels']);
+  //this.labels().setupInternal(!!opt_default, config['labels']);
+  //this.hoverLabels().setupInternal(!!opt_default, config['hoverLabels']);
+  //this.selectLabels().setupInternal(!!opt_default, config['selectLabels']);
 
-  this.markers().setup(config['markers']);
-  this.hoverMarkers().setup(config['hoverMarkers']);
-  this.selectMarkers().setup(config['selectMarkers']);
+  //this.markers().setup(config['markers']);
+  //this.hoverMarkers().setup(config['hoverMarkers']);
+  //this.selectMarkers().setup(config['selectMarkers']);
 
   this.palette(config['palette']);
 
@@ -3418,7 +3337,7 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
  * @inheritDoc
  */
 anychart.charts.PyramidFunnel.prototype.disposeInternal = function() {
-  goog.disposeAll(this.animationQueue_, this.labels_, this.hoverLabels_, this.selectLabels_);
+  goog.disposeAll(this.animationQueue_);
   anychart.charts.PyramidFunnel.base(this, 'disposeInternal');
 };
 
@@ -3606,7 +3525,7 @@ anychart.charts.PyramidFunnel.LabelsDomain.prototype.getLabelBounds_ = function(
   var iterator = this.chart.getIterator();
   iterator.select(label.getIndex());
   label.formatProvider(this.chart.createFormatProvider());
-  var labelBounds = this.chart.labels_.measureWithTransform(label.formatProvider(), label.positionProvider(), /** @type {Object} */(labelSettings));
+  var labelBounds = this.chart.labels().measureWithTransform(label.formatProvider(), label.positionProvider(), /** @type {Object} */(labelSettings));
 
   return anychart.math.Rect.fromCoordinateBox(labelBounds);
 };

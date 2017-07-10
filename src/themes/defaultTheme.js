@@ -2238,15 +2238,48 @@ goog.provide('anychart.themes.defaultTheme');
       'normal': {
         'fill': returnSourceColor,
         'stroke': 'none',
-        'hatchFill': null
+        'hatchFill': null,
+        'labels': {
+          'enabled': true,
+          'fontColor': null,
+          'position': 'inside',
+          'disablePointerEvents': false,
+          'autoRotate': false,
+          'zIndex': 34,
+          /**
+           * @this {*}
+           * @return {*}
+           */
+          'format': function() {
+            return this['name'] ? this['name'] : this['x'];
+          }
+        },
+        'markers': {
+          'enabled': false,
+          'position': 'center',
+          'positionFormatter': returnValue,
+          'zIndex': 33
+        }
       },
       'hovered': {
         'fill': returnLightenSourceColor,
-        'stroke': returnSourceColor
+        'stroke': returnSourceColor,
+        'labels': {
+          'enabled': null
+        },
+        'markers': {
+          'enabled': null
+        }
       },
       'selected': {
         'fill': defaultSelectColor,
-        'stroke': defaultSelectStroke
+        'stroke': defaultSelectStroke,
+        'labels': {
+          'enabled': null
+        },
+        'markers': {
+          'enabled': null
+        }
       },
       //'fill': returnSourceColor,
       //'stroke': 'none',
@@ -2263,21 +2296,6 @@ goog.provide('anychart.themes.defaultTheme');
       'neckHeight': null,
       'pointsPadding': 0,
       'forceHoverLabels': false,
-      'labels': {
-        'enabled': true,
-        'fontColor': null,
-        'position': 'inside',
-        'disablePointerEvents': false,
-        'autoRotate': false,
-        'zIndex': 34,
-        /**
-         * @this {*}
-         * @return {*}
-         */
-        'format': function() {
-          return this['name'] ? this['name'] : this['x'];
-        }
-      },
       'outsideLabels': {
         'disablePointerEvents': false,
         'autoColor': fontColorBright
@@ -2286,28 +2304,10 @@ goog.provide('anychart.themes.defaultTheme');
         'disablePointerEvents': true,
         'autoColor': fontColorReversedNormal
       },
-      'hoverLabels': {
-        'enabled': null
-      },
-      'selectLabels': {
-        'enabled': null
-      },
       'legend': {
         'enabled': true,
         'padding': {'top': 10, 'right': 10, 'bottom': 0, 'left': 10},
         'position': 'bottom'
-      },
-      'markers': {
-        'enabled': false,
-        'position': 'center',
-        'positionFormatter': returnValue,
-        'zIndex': 33
-      },
-      'hoverMarkers': {
-        'enabled': null
-      },
-      'selectMarkers': {
-        'enabled': null
       },
       'tooltip': {
         'title': {'enabled': true},
@@ -2362,8 +2362,10 @@ goog.provide('anychart.themes.defaultTheme');
       'neckWidth': '30%',
       'neckHeight': '25%',
       'reversed': true,
-      'labels': {
-        'position': 'outsideLeftInColumn'
+      'normal': {
+        'labels': {
+          'position': 'outsideLeftInColumn'
+        }
       }
     },
     'pyramid': {
@@ -2373,8 +2375,10 @@ goog.provide('anychart.themes.defaultTheme');
       'legend': {
         'inverted': true
       },
-      'labels': {
-        'position': 'outsideLeftInColumn'
+      'normal': {
+        'labels': {
+          'position': 'outsideLeftInColumn'
+        }
       },
       'reversed': false
     },
