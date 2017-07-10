@@ -2235,12 +2235,26 @@ goog.provide('anychart.themes.defaultTheme');
       'animation': {
         'duration': 500
       },
-      'fill': returnSourceColor,
-      'stroke': 'none',
-      'hoverFill': returnLightenSourceColor,
-      'hoverStroke': returnSourceColor,
-      'selectFill': defaultSelectColor,
-      'selectStroke': defaultSelectStroke,
+      'normal': {
+        'fill': returnSourceColor,
+        'stroke': 'none',
+        'hatchFill': null
+      },
+      'hovered': {
+        'fill': returnLightenSourceColor,
+        'stroke': returnSourceColor
+      },
+      'selected': {
+        'fill': defaultSelectColor,
+        'stroke': defaultSelectStroke
+      },
+      //'fill': returnSourceColor,
+      //'stroke': 'none',
+      //'hatchFill': null,
+      //'hoverFill': returnLightenSourceColor,
+      //'hoverStroke': returnSourceColor,
+      //'selectFill': defaultSelectColor,
+      //'selectStroke': defaultSelectStroke,
       'connectorStroke': colorStrokeNormal,
       'overlapMode': 'noOverlap',
       'connectorLength': 20,
@@ -2248,7 +2262,6 @@ goog.provide('anychart.themes.defaultTheme');
       'neckWidth': null,
       'neckHeight': null,
       'pointsPadding': 0,
-      'hatchFill': null,
       'forceHoverLabels': false,
       'labels': {
         'enabled': true,

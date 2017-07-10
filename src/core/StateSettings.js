@@ -24,70 +24,6 @@ anychart.core.StateSettings = function(stateHolder, descriptorsMeta) {
    * @type {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>}
    */
   this.descriptorsMeta = descriptorsMeta;
-  var a = [
-    'fill',
-    'negativeFill',
-    'risingFill',
-    'fallingFill',
-    'stroke',
-    'lowStroke',
-    'highStroke',
-    'negativeStroke',
-    'risingStroke',
-    'fallingStroke',
-    'medianStroke',
-    'stemStroke',
-    'whiskerStroke',
-    'hatchFill',
-    'negativeHatchFill',
-    'risingHatchFill',
-    'fallingHatchFill',
-    'whiskerWidth',
-    'type',
-    'size',
-
-    'hoverFill',
-    'hoverNegativeFill',
-    'hoverRisingFill',
-    'hoverFallingFill',
-    'hoverStroke',
-    'hoverLowStroke',
-    'hoverHighStroke',
-    'hoverNegativeStroke',
-    'hoverRisingStroke',
-    'hoverFallingStroke',
-    'hoverMedianStroke',
-    'hoverStemStroke',
-    'hoverWhiskerStroke',
-    'hoverHatchFill',
-    'hoverNegativeHatchFill',
-    'hoverRisingHatchFill',
-    'hoverFallingHatchFill',
-    'hoverWhiskerWidth',
-    'hoverType',
-    'hoverSize',
-
-    'selectFill',
-    'selectNegativeFill',
-    'selectRisingFill',
-    'selectFallingFill',
-    'selectStroke',
-    'selectLowStroke',
-    'selectHighStroke',
-    'selectNegativeStroke',
-    'selectRisingStroke',
-    'selectFallingStroke',
-    'selectMedianStroke',
-    'selectStemStroke',
-    'selectWhiskerStroke',
-    'selectHatchFill',
-    'selectNegativeHatchFill',
-    'selectRisingHatchFill',
-    'selectFallingHatchFill',
-    'selectWhiskerWidth',
-    'selectType',
-    'selectSize'
-  ];
 };
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
@@ -105,6 +41,21 @@ anychart.core.StateSettings.prototype.disposeInternal = function() {
 };
 
 
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.serialize = function() {
+  var json = anychart.core.StateSettings.base(this, 'serialize');
+  anychart.core.settings.serialize(this, anychart.core.StateSettings.PROPERTY_DESCRIPTORS, json, 'State settings', this.descriptorsMeta);
+  return json;
+};
+
+
+/** @inheritDoc */
+anychart.core.StateSettings.prototype.setupByJSON = function(config, opt_default) {
+  anychart.core.StateSettings.base(this, 'setupByJSON', config, opt_default);
+  anychart.core.settings.deserialize(this, anychart.core.StateSettings.PROPERTY_DESCRIPTORS, config);
+};
+
+
 //endregion
 //region --- Descriptors
 /**
@@ -117,8 +68,37 @@ anychart.core.StateSettings.PROPERTY_DESCRIPTORS = (function() {
    * @type {!Object.<string, Array>}
    */
   var descriptors = anychart.core.settings.descriptors;
-
-  anychart.core.settings.createDescriptor(map, descriptors.FILL);
+  anychart.core.settings.createDescriptors(map, [
+    // standart coloring + series coloring
+    descriptors.FILL_FUNCTION,
+    descriptors.NEGATIVE_FILL,
+    descriptors.RISING_FILL,
+    descriptors.FALLING_FILL,
+    descriptors.STROKE_FUNCTION,
+    descriptors.LOW_STROKE,
+    descriptors.HIGH_STROKE,
+    descriptors.NEGATIVE_STROKE,
+    descriptors.RISING_STROKE,
+    descriptors.FALLING_STROKE,
+    descriptors.MEDIAN_STROKE,
+    descriptors.STEM_STROKE,
+    descriptors.WHISKER_STROKE,
+    descriptors.HATCH_FILL_FUNCTION,
+    descriptors.NEGATIVE_HATCH_FILL,
+    descriptors.RISING_HATCH_FILL,
+    descriptors.FALLING_HATCH_FILL,
+    descriptors.WHISKER_WIDTH,
+    // marker series
+    descriptors.TYPE,
+    // marker series + annotations
+    descriptors.SIZE,
+    // annotations
+    descriptors.TREND,
+    descriptors.GRID,
+    // linear gauge tank pointer
+    map.EMPTY_FILL,
+    map.EMPTY_HATCH_FILL
+  ]);
 
   return map;
 })();
@@ -135,7 +115,7 @@ anychart.core.settings.populate(anychart.core.StateSettings, anychart.core.State
 anychart.core.StateSettings.prototype.labels = function(opt_value) {
   if (!this.labels_) {
     this.labels_ = new anychart.core.ui.LabelsFactory();
-    this.labels_.listenSignals(this.labelsInvalidated_, this);
+    this.labels_.listenSignals(this.labelsInvalidated_, this.stateHolder);
     this.labels_.setParentEventTarget(this);
   }
 
@@ -156,12 +136,7 @@ anychart.core.StateSettings.prototype.labels = function(opt_value) {
  */
 anychart.core.StateSettings.prototype.labelsInvalidated_ = function(event) {
   var meta = this.descriptorsMeta['labels'];
-  if (event.hasSignal(anychart.Signal.NEEDS_REDRAW)) {
-    if (meta.beforeInvalidationHook) {
-      meta.beforeInvalidationHook.call(meta.context || this);
-    }
-    this.invalidate(meta.consistency, meta.signal);
-  }
+  this.invalidate(meta.getConsistencyState(), meta.getSignal());
 };
 
 

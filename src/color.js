@@ -616,6 +616,94 @@ anychart.color.getColor = function(colorNames, normalizer, isHatchFill, series, 
 };
 
 
+/**
+ * Returns a color resolver for passed color names and type.
+ * @param {(Array.<string>|null|boolean)} colorNames
+ * @param {anychart.enums.ColorType} colorType
+ * @return {function(anychart.core.IShapeManagerUser, number, boolean=, boolean=):acgraph.vector.AnyColor}
+ */
+anychart.color.getColorResolver2 = function(colorNames, colorType) {
+  var result;
+  if (!colorNames) return anychart.color.getNullColor;
+  if (goog.isArray(colorNames)) {
+    var hash = colorType + '|' + colorNames.join('|');
+    result = anychart.color.colorResolversCache[hash];
+    if (!result) {
+      /** @type {!Function} */
+      var normalizerFunc;
+      switch (colorType) {
+        case anychart.enums.ColorType.STROKE:
+          normalizerFunc = anychart.core.settings.strokeOrFunctionSimpleNormalizer;
+          break;
+        case anychart.enums.ColorType.HATCH_FILL:
+          normalizerFunc = anychart.core.settings.hatchFillOrFunctionSimpleNormalizer;
+          break;
+        default:
+        case anychart.enums.ColorType.FILL:
+          normalizerFunc = anychart.core.settings.fillOrFunctionSimpleNormalizer;
+          break;
+      }
+      anychart.color.colorResolversCache[hash] = result = goog.partial(anychart.color.getColor2,
+          colorNames, normalizerFunc, colorType == anychart.enums.ColorType.HATCH_FILL);
+    }
+  } else {
+    result = anychart.color.colorResolversCache['transparent'];
+    if (!result)
+      result = anychart.color.colorResolversCache['transparent'] = function() {return anychart.color.TRANSPARENT_HANDLER};
+  }
+  return result;
+};
+
+
+/**
+ * Returns final color or hatch fill for passed params.
+ * @param {Array.<string>} colorNames
+ * @param {!Function} normalizer
+ * @param {boolean} isHatchFill
+ * @param {anychart.core.IShapeManagerUser} series
+ * @param {number} state
+ * @param {boolean=} opt_ignorePointSettings
+ * @param {boolean=} opt_ignoreColorScale
+ * @return {acgraph.vector.Fill|acgraph.vector.Stroke|acgraph.vector.PatternFill}
+ */
+anychart.color.getColor2 = function(colorNames, normalizer, isHatchFill, series, state, opt_ignorePointSettings, opt_ignoreColorScale) {
+  var stateColor, context;
+  state = Math.min(state & (anychart.PointState.HOVER | anychart.PointState.SELECT),
+      anychart.PointState.SELECT);
+  if (state != anychart.PointState.NORMAL && colorNames.length > 1) {
+    stateColor = series.resolveOption(colorNames, state, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+    if (isHatchFill && stateColor === true)
+      stateColor = normalizer(series.getAutoHatchFill());
+    if (goog.isDef(stateColor)) {
+      if (!goog.isFunction(stateColor))
+        return /** @type {acgraph.vector.Fill|acgraph.vector.Stroke|acgraph.vector.PatternFill} */(stateColor);
+      else if (isHatchFill) { // hatch fills set as function some why cannot nest by initial implementation
+        context = series.getHatchFillResolutionContext(opt_ignorePointSettings);
+        return /** @type {acgraph.vector.PatternFill} */(normalizer(stateColor.call(context, context)));
+      }
+    }
+  }
+  // we can get here only if state color is undefined or is a function
+  var color = series.resolveOption(colorNames, 0, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+  if (isHatchFill && color === true)
+    color = normalizer(series.getAutoHatchFill());
+  if (goog.isFunction(color)) {
+    context = isHatchFill ?
+        series.getHatchFillResolutionContext(opt_ignorePointSettings) :
+        series.getColorResolutionContext(void 0, opt_ignorePointSettings, opt_ignoreColorScale);
+    color = /** @type {acgraph.vector.Fill|acgraph.vector.Stroke|acgraph.vector.PatternFill} */(normalizer(color.call(context, context)));
+  }
+  if (stateColor) { // it is a function and not a hatch fill here
+    context = series.getColorResolutionContext(
+        /** @type {acgraph.vector.Fill|acgraph.vector.Stroke} */(color),
+        opt_ignorePointSettings,
+        opt_ignoreColorScale);
+    color = normalizer(stateColor.call(context, context));
+  }
+  return /** @type {acgraph.vector.Fill|acgraph.vector.Stroke|acgraph.vector.PatternFill} */(color);
+};
+
+
 
 
 

@@ -46,19 +46,21 @@ anychart.core.settings.PropertyDescriptorMeta;
 anychart.core.settings.createDescriptor = function(map, descriptorOrHandler, propName, normalizer, opt_methodName) {
   if (goog.isArray(descriptorOrHandler))
     anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptorOrHandler));
-  /**
-   * @type {anychart.core.settings.PropertyDescriptor}
-   */
-  var descriptor = {
-    handler: /** @type {number} */ (descriptorOrHandler),
-    propName: propName,
-    normalizer: normalizer
-  };
-  var methodName = propName;
-  if (goog.isDef(opt_methodName)) {
-    methodName = descriptor.deprecatedPropName = opt_methodName;
+  else {
+    /**
+     * @type {anychart.core.settings.PropertyDescriptor}
+     */
+    var descriptor = {
+      handler: /** @type {number} */ (descriptorOrHandler),
+      propName: propName,
+      normalizer: normalizer
+    };
+    var methodName = propName;
+    if (goog.isDef(opt_methodName)) {
+      methodName = descriptor.deprecatedPropName = opt_methodName;
+    }
+    map[methodName] = descriptor;
   }
-  map[methodName] = descriptor;
 };
 
 
@@ -297,20 +299,6 @@ anychart.core.settings.createTextPropertiesDescriptorsMeta = function(map, inval
 
 
 //endregion
-//region Descriptors
-/**
- * @type {!Object.<string, Array>}
- */
-anychart.core.settings.descriptors = (function() {
-  var map = {};
-
-  map.FILL = [0, 'fill', anychart.core.settings.fillOrFunctionNormalizer];
-
-  return map;
-})();
-
-
-//endregion
 //region Functions to work with settings
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -330,6 +318,24 @@ anychart.core.settings.populate = function(classConstructor, descriptors) {
         descriptor.propName,
         descriptor.deprecatedPropName,
         descriptor.normalizer);
+  }
+};
+
+
+/**
+ * Populate aliases.
+ * @param {!Function} classConstructor
+ * @param {Array.<string>} aliases
+ * @param {anychart.core.settings.IObjectWithSettings} aliasTo
+ */
+anychart.core.settings.populateAliases = function(classConstructor, aliases, aliasTo) {
+  for (var i = 0; i < aliases.length; i++) {
+    var alias = aliases[i];
+    classConstructor.prototype[alias] = (function(propName) {
+      return function(args) {
+        return aliasTo[propName].apply(aliasTo, arguments);
+      }
+    })(alias);
   }
 };
 
@@ -357,12 +363,14 @@ anychart.core.settings.deserialize = function(target, descriptors, config) {
  * @param {!Object.<anychart.core.settings.PropertyDescriptor>} descriptors
  * @param {!Object} json
  * @param {string=} opt_warningPrefix
+ * @param {Object.<anychart.core.settings.PropertyDescriptorMeta>=} opt_descriptorsMeta
  */
-anychart.core.settings.serialize = function(target, descriptors, json, opt_warningPrefix) {
+anychart.core.settings.serialize = function(target, descriptors, json, opt_warningPrefix, opt_descriptorsMeta) {
   var name, val, descriptor;
-  for (name in descriptors) {
+  var list = goog.isDef(opt_descriptorsMeta) ? opt_descriptorsMeta : descriptors;
+  for (name in list) {
     val = undefined;
-    descriptor = descriptors[name];
+    descriptor = list[name];
     if (target.hasOwnOption(name)) {
       val = target.getOwnOption(name);
       if (goog.isFunction(val)) {
@@ -845,6 +853,58 @@ anychart.core.settings.arrayNormalizer = function(args) {
 anychart.core.settings.functionNormalizer = function(val) {
   return goog.isFunction(val) ? val : null;
 };
+//endregion
+//region Descriptors
+/**
+ * @type {!Object.<string, Array>}
+ */
+anychart.core.settings.descriptors = (function() {
+  var map = {};
+
+  map.FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'fill', anychart.core.settings.fillNormalizer];
+  map.FILL_FUNCTION = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'fill', anychart.core.settings.fillOrFunctionNormalizer];
+  map.FILL_FUNCTION_SIMPLE = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'fill', anychart.core.settings.fillOrFunctionSimpleNormalizer];
+  map.NEGATIVE_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'negativeFill', anychart.core.settings.fillOrFunctionNormalizer];
+  map.RISING_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'risingFill', anychart.core.settings.fillOrFunctionNormalizer];
+  map.FALLING_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'fallingFill', anychart.core.settings.fillOrFunctionNormalizer];
+
+  map.STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'stroke', anychart.core.settings.strokeNormalizer];
+  map.STROKE_FUNCTION = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'stroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.STROKE_FUNCTION_SIMPLE = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'stroke', anychart.core.settings.strokeOrFunctionSimpleNormalizer];
+  map.LOW_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'lowStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.HIGH_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'highStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.NEGATIVE_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'negativeStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.RISING_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'risingStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.FALLING_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'fallingStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.MEDIAN_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'medianStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.STEM_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'stemStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.WHISKER_STROKE = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'whiskerStroke', anychart.core.settings.strokeOrFunctionNormalizer];
+
+  map.HATCH_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'hatchFill', anychart.core.settings.hatchFillNormalizer];
+  map.HATCH_FILL_FUNCTION = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'hatchFill', anychart.core.settings.hatchFillOrFunctionNormalizer];
+  map.HATCH_FILL_FUNCTION_SIMPLE = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'hatchFill', anychart.core.settings.hatchFillOrFunctionSimpleNormalizer];
+  map.NEGATIVE_HATCH_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'negativeHatchFill', anychart.core.settings.hatchFillOrFunctionNormalizer];
+  map.RISING_HATCH_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'risingHatchFill', anychart.core.settings.hatchFillOrFunctionNormalizer];
+  map.FALLING_HATCH_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'fallingHatchFill', anychart.core.settings.hatchFillOrFunctionNormalizer];
+
+  map.WHISKER_WIDTH = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'whiskerWidth', anychart.core.settings.numberOrPercentNormalizer];
+
+  // marker series
+  map.TYPE = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'type', anychart.core.settings.markerTypeNormalizer];
+  map.SIZE = [anychart.enums.PropertyHandlerType.SINGLE_ARG, 'size', anychart.core.settings.numberNormalizer];
+
+  // annotations
+  map.TREND = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'trend', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.GRID = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'trend', anychart.core.settings.strokeOrFunctionNormalizer];
+
+  // linear gauge tank pointer
+  map.EMPTY_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'emptyFill', anychart.core.settings.fillOrFunctionNormalizer];
+  map.EMPTY_HATCH_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'emptyHatchFill', anychart.core.settings.hatchFillOrFunctionNormalizer];
+
+  return map;
+})();
+
+
 //endregion
 
 

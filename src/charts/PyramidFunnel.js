@@ -7,6 +7,7 @@ goog.require('anychart.color');
 goog.require('anychart.core.IShapeManagerUser');
 goog.require('anychart.core.Point');
 goog.require('anychart.core.SeparateChart');
+goog.require('anychart.core.StateSettings');
 goog.require('anychart.core.reporting');
 goog.require('anychart.core.settings');
 goog.require('anychart.core.ui.LabelsFactory');
@@ -121,6 +122,37 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
 
   this.data(opt_data || null, opt_csvSettings);
 
+  var normalDescriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(normalDescriptorsMeta, [
+    ['fill',
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
+      anychart.Signal.NEEDS_REDRAW],
+    ['stroke',
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
+      anychart.Signal.NEEDS_REDRAW],
+    ['hatchFill',
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
+      anychart.Signal.NEEDS_REDRAW]
+  ]);
+  this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta);
+  anychart.core.settings.populateAliases(anychart.charts.PyramidFunnel, ['fill', 'stroke', 'hatchFill'], this.normal_);
+
+  var hoveredDescriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
+    ['hoverFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hoverStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['hoverHatchFill', 0, 0]
+  ]);
+  this.hovered_ = new anychart.core.StateSettings(this, hoveredDescriptorsMeta);
+
+  var selectedDescriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(selectedDescriptorsMeta, [
+    ['selectFill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['selectStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['selectHatchFill', 0, 0]
+  ]);
+  this.selected_ = new anychart.core.StateSettings(this, selectedDescriptorsMeta);
+
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['baseWidth', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
     ['neckHeight', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
@@ -131,8 +163,8 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
     ['connectorLength',
       anychart.ConsistencyState.BOUNDS | anychart.ConsistencyState.PYRAMID_FUNNEL_LABELS,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
-    ['connectorStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['fill',
+    ['connectorStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW]
+    /*['fill',
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
       anychart.Signal.NEEDS_REDRAW],
     ['hoverFill',
@@ -150,12 +182,39 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
       anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
       anychart.Signal.NEEDS_REDRAW],
     ['hoverHatchFill', 0, 0],
-    ['selectHatchFill', 0, 0]
+    ['selectHatchFill', 0, 0]*/
   ]);
 
   this.resumeSignalsDispatching(false);
 };
 goog.inherits(anychart.charts.PyramidFunnel, anychart.core.SeparateChart);
+
+
+anychart.charts.PyramidFunnel.prototype.normal = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.normal_.setupByJSON(opt_value);
+    return this;
+  }
+  return this.normal_;
+};
+
+
+anychart.charts.PyramidFunnel.prototype.hovered = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.hovered_.setupByJSON(opt_value);
+    return this;
+  }
+  return this.hovered_;
+};
+
+
+anychart.charts.PyramidFunnel.prototype.selected = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.selected_.setupByJSON(opt_value);
+    return this;
+  }
+  return this.selected_;
+};
 
 
 /**
@@ -396,11 +455,11 @@ anychart.charts.PyramidFunnel.prototype.getDetachedIterator = function() {
 anychart.charts.PyramidFunnel.prototype.colorizePoint_ = function(pointState) {
   var point = /** @type {acgraph.vector.Path} */ (this.getIterator().meta('point'));
   if (goog.isDef(point)) {
-    var fillResolver = anychart.color.getColorResolver(['fill', 'hoverFill', 'selectFill'], anychart.enums.ColorType.FILL);
+    var fillResolver = anychart.color.getColorResolver2(['fill', 'hoverFill', 'selectFill'], anychart.enums.ColorType.FILL);
     var fillColor = /** @type {acgraph.vector.Fill} */ (fillResolver(this, pointState, false, true));
     point.fill(fillColor);
 
-    var strokeResolver = anychart.color.getColorResolver(['stroke', 'hoverStroke', 'selectStroke'], anychart.enums.ColorType.STROKE);
+    var strokeResolver = anychart.color.getColorResolver2(['stroke', 'hoverStroke', 'selectStroke'], anychart.enums.ColorType.STROKE);
     var strokeColor = /** @type {acgraph.vector.Stroke} */ (strokeResolver(this, pointState, false, true));
     point.stroke(strokeColor);
   }
@@ -643,10 +702,11 @@ anychart.charts.PyramidFunnel.prototype.selectFill = function(opt_fillOrColorOrK
 anychart.charts.PyramidFunnel.prototype.applyHatchFill = function(pointState) {
   var hatchPoint = /** @type {acgraph.vector.Path} */(this.getIterator().meta('hatchPoint'));
   if (goog.isDefAndNotNull(hatchPoint)) {
-    var hatchFillResolver = anychart.color.getColorResolver(['hatchFill', 'hoverHatchFill', 'selectHatchFill'], anychart.enums.ColorType.HATCH_FILL);
+    var hatchFillResolver = anychart.color.getColorResolver2(['hatchFill', 'hoverHatchFill', 'selectHatchFill'], anychart.enums.ColorType.HATCH_FILL);
+    var color = hatchFillResolver(this, pointState, false);
     hatchPoint
         .stroke(null)
-        .fill(hatchFillResolver(this, pointState, false));
+        .fill(color);
   }
 };
 
@@ -773,7 +833,7 @@ anychart.charts.PyramidFunnel.prototype.drawContent = function(bounds) {
     iterator.reset();
     while (iterator.advance()) {
       var index = iterator.getIndex();
-      if (iterator.get('selected'))
+      if (String(iterator.get('state')).toLowerCase() == 'selected')
         this.state.setPointState(anychart.PointState.SELECT, index);
 
       this.drawPoint_();
@@ -1079,7 +1139,7 @@ anychart.charts.PyramidFunnel.prototype.updatePointOnAnimate = function(point) {
     hatchPoint.clear();
     hatchPoint.deserialize(shape.serialize());
     var pointState = this.state.getPointStateByIndex(point.getIndex());
-    var hatchFillResolver = anychart.color.getColorResolver(['hatchFill', 'hoverHatchFill', 'selectHatchFill'], anychart.enums.ColorType.HATCH_FILL);
+    var hatchFillResolver = anychart.color.getColorResolver2(['hatchFill', 'hoverHatchFill', 'selectHatchFill'], anychart.enums.ColorType.HATCH_FILL);
     hatchPoint.stroke(null).fill(hatchFillResolver(this, pointState, false));
   }
 };
@@ -1665,69 +1725,25 @@ anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS = (function() {
 
   return map;
 })();
-
-
-/**
- * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
- */
-anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS = (function() {
-  /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
-  var map = {};
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'fill',
-      anychart.core.settings.fillOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'hoverFill',
-      anychart.core.settings.fillOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'selectFill',
-      anychart.core.settings.fillOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'stroke',
-      anychart.core.settings.strokeOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'hoverStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'selectStroke',
-      anychart.core.settings.strokeOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'hatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'hoverHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer);
-  anychart.core.settings.createDescriptor(
-      map,
-      anychart.enums.PropertyHandlerType.MULTI_ARG,
-      'selectHatchFill',
-      anychart.core.settings.hatchFillOrFunctionNormalizer);
-  return map;
-})();
 anychart.core.settings.populate(anychart.charts.PyramidFunnel, anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS);
-anychart.core.settings.populate(anychart.charts.PyramidFunnel, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS);
 
 
 //region --- anychart.core.IShapeManagerUser implementation
 /** @inheritDoc */
-anychart.charts.PyramidFunnel.prototype.resolveOption = function(name, point, normalizer, opt_seriesName) {
-  var val = point.get(name) || this.getOption(name);
+anychart.charts.PyramidFunnel.prototype.resolveOption = function(name, state, point, normalizer, opt_seriesName, opt_ignorePointSettings) {
+  var val;
+  var stateObject = state == 0 ? this.normal_ : state == 1 ? this.hovered_ : this.selected_;
+  if (opt_ignorePointSettings) {
+    val = stateObject.getOption(name[0]);
+  } else {
+    var pointStateName = state == 0 ? 'normal' : state == 1 ? 'hovered' : 'selected';
+    var pointStateObject = point.get(pointStateName);
+    var stateValue = stateObject.getOption(name[0]);
+    val = goog.isDef(stateValue) ? stateValue : point.get(name[state]);
+    if (goog.isDef(pointStateObject)) {
+      val = pointStateObject[name[0]] || val;
+    }
+  }
   if (goog.isDef(val))
     val = normalizer(val);
   return val;
@@ -1782,7 +1798,6 @@ anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
 
     this.labels_.listenSignals(this.labelsInvalidated_, this);
     this.labels_.setParentEventTarget(this);
-    this.registerDisposable(this.labels_);
     this.invalidate(anychart.ConsistencyState.PYRAMID_FUNNEL_LABELS, anychart.Signal.NEEDS_REDRAW);
   }
 
@@ -1804,7 +1819,6 @@ anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
 anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
   if (!this.hoverLabels_) {
     this.hoverLabels_ = new anychart.core.ui.LabelsFactory();
-    this.registerDisposable(this.hoverLabels_);
   }
 
   if (goog.isDef(opt_value)) {
@@ -1825,7 +1839,6 @@ anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
 anychart.charts.PyramidFunnel.prototype.selectLabels = function(opt_value) {
   if (!this.selectLabels_) {
     this.selectLabels_ = new anychart.core.ui.LabelsFactory();
-    this.registerDisposable(this.selectLabels_);
   }
 
   if (goog.isDef(opt_value)) {
@@ -2806,7 +2819,7 @@ anychart.charts.PyramidFunnel.prototype.markersInvalidated_ = function(event) {
  * @return {!acgraph.vector.Fill} Marker color for point.
  */
 anychart.charts.PyramidFunnel.prototype.getMarkerFill = function() {
-  var fillGetter = anychart.color.getColorResolver(['fill'], anychart.enums.ColorType.FILL);
+  var fillGetter = anychart.color.getColorResolver2(['fill'], anychart.enums.ColorType.FILL);
   var fill = /** @type {acgraph.vector.Fill} */(fillGetter(this, anychart.PointState.NORMAL, true, true));
   return /** @type {acgraph.vector.Fill} */(anychart.color.setOpacity(fill, 1, true));
 };
@@ -3232,9 +3245,9 @@ anychart.charts.PyramidFunnel.prototype.createLegendItemsProvider = function(sou
       itemText = String(goog.isDef(iterator.get('name')) ? iterator.get('name') : iterator.get('x'));
     }
 
-    var fillResolver = anychart.color.getColorResolver(['fill'], anychart.enums.ColorType.FILL);
-    var strokeResolver = anychart.color.getColorResolver(['stroke'], anychart.enums.ColorType.STROKE);
-    var hatchFillResolver = anychart.color.getColorResolver(['hatchFill'], anychart.enums.ColorType.HATCH_FILL);
+    var fillResolver = anychart.color.getColorResolver2(['fill'], anychart.enums.ColorType.FILL);
+    var strokeResolver = anychart.color.getColorResolver2(['stroke'], anychart.enums.ColorType.STROKE);
+    var hatchFillResolver = anychart.color.getColorResolver2(['hatchFill'], anychart.enums.ColorType.HATCH_FILL);
 
     var obj = {
       'enabled': true,
@@ -3355,7 +3368,10 @@ anychart.charts.PyramidFunnel.prototype.serialize = function() {
   json['selectMarkers'] = this.selectMarkers().serialize();
 
   anychart.core.settings.serialize(this, anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS, json);
-  anychart.core.settings.serialize(this, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS, json);
+  json['normal'] = this.normal_.serialize();
+  json['hovered'] = this.hovered_.serialize();
+  json['selected'] = this.selected_.serialize();
+  //anychart.core.settings.serialize(this, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS, json);
 
   return {'chart': json};
 };
@@ -3368,7 +3384,16 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
   anychart.charts.PyramidFunnel.base(this, 'setupByJSON', config, opt_default);
 
   anychart.core.settings.deserialize(this, anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS, config);
-  anychart.core.settings.deserialize(this, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS, config);
+  //anychart.core.settings.deserialize(this, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS, config);
+  if (config['normal']) {
+    this.normal_.setupByJSON(config['normal'], opt_default);
+  }
+  if (config['hovered']) {
+    this.hovered_.setupByJSON(config['hovered'], opt_default);
+  }
+  if (config['selected']) {
+    this.selected_.setupByJSON(config['selected'], opt_default);
+  }
   this.data(config['data']);
 
   this.hatchFillPalette(config['hatchFillPalette']);
@@ -3393,7 +3418,7 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
  * @inheritDoc
  */
 anychart.charts.PyramidFunnel.prototype.disposeInternal = function() {
-  goog.dispose(this.animationQueue_);
+  goog.disposeAll(this.animationQueue_, this.labels_, this.hoverLabels_, this.selectLabels_);
   anychart.charts.PyramidFunnel.base(this, 'disposeInternal');
 };
 
@@ -3612,6 +3637,10 @@ anychart.charts.PyramidFunnel.LabelsDomain.prototype.getLabelBounds_ = function(
   proto['select'] = proto.select;
   proto['unselect'] = proto.unselect;
   proto['getPoint'] = proto.getPoint;
+
+  proto['normal'] = proto.normal;
+  proto['hovered'] = proto.hovered;
+  proto['selected'] = proto.selected;
 
   // auto generated
   // proto['baseWidth'] = proto.baseWidth;
