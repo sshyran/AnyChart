@@ -1791,30 +1791,14 @@ anychart.charts.PyramidFunnel.prototype.getColorResolutionContext = function(opt
 /**
  * Getter/setter for labels.
  * @param {(Object|boolean|null)=} opt_value .
- * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} .
+ * @return {anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel} .
  */
 anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
-  return this.normal_.labels(opt_value);
-};
-
-
-/**
- * Getter/setter for series hover data labels.
- * @param {(Object|boolean|null)=} opt_value chart hover data labels settings.
- * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} Labels instance or itself for chaining call.
- */
-anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
-  return this.hovered_.labels(opt_value);
-};
-
-
-/**
- * Getter/setter for series select data labels.
- * @param {(Object|boolean|null)=} opt_value chart hover data labels settings.
- * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} Labels instance or itself for chaining call.
- */
-anychart.charts.PyramidFunnel.prototype.selectLabels = function(opt_value) {
-  return this.selected_.labels(opt_value);
+  if (goog.isDef(opt_value)) {
+    this.normal_.labels(opt_value);
+    return this;
+  }
+  return this.normal_.labels();
 };
 
 
@@ -2702,30 +2686,14 @@ anychart.charts.PyramidFunnel.prototype.updateConnector = function(label, pointS
 /**
  * Getter/setter for markers.
  * @param {(Object|boolean|null|string)=} opt_value Data markers settings.
- * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
+ * @return {anychart.core.ui.MarkersFactory|anychart.charts.PyramidFunnel} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.markers = function(opt_value) {
-  return this.normal_.markers(opt_value);
-};
-
-
-/**
- * Getter/setter for hoverMarkers.
- * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
- */
-anychart.charts.PyramidFunnel.prototype.hoverMarkers = function(opt_value) {
-  return this.hovered_.markers(opt_value);
-};
-
-
-/**
- * Getter/setter for series data markers on select.
- * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
- */
-anychart.charts.PyramidFunnel.prototype.selectMarkers = function(opt_value) {
-  return this.selected_.markers(opt_value);
+  if (goog.isDef(opt_value)) {
+    this.normal_.markers(opt_value);
+    return this;
+  }
+  return this.normal_.markers();
 };
 
 
