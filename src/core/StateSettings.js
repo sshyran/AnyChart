@@ -122,16 +122,16 @@ anychart.core.settings.populate(anychart.core.StateSettings, anychart.core.State
 //region --- Complex objects
 /**
  * Labels.
- * @param {Object=} opt_value
+ * @param {(Object|boolean|null)=} opt_value
  * @return {anychart.core.StateSettings|anychart.core.ui.LabelsFactory}
  */
 anychart.core.StateSettings.prototype.labels = function(opt_value) {
   if (!this.labels_) {
     this.labels_ = new anychart.core.ui.LabelsFactory();
     if (this.stateType == anychart.PointState.NORMAL) {
-      var hook = this.descriptorsMeta['labels'].beforeInvalidationHook;
+      var hook = /** @type {function(anychart.SignalEvent):(boolean|undefined)} */ (this.descriptorsMeta['labels'].beforeInvalidationHook);
       this.labels_.listenSignals(hook, this.stateHolder);
-      this.labels_.setParentEventTarget(this.stateHolder);
+      this.labels_.setParentEventTarget(/** @type {goog.events.EventTarget} */ (this.stateHolder));
     }
   }
 
@@ -147,16 +147,16 @@ anychart.core.StateSettings.prototype.labels = function(opt_value) {
 
 /**
  * Markers.
- * @param {Object=} opt_value
+ * @param {(Object|boolean|null|string)=} opt_value
  * @return {anychart.core.StateSettings|anychart.core.ui.MarkersFactory}
  */
 anychart.core.StateSettings.prototype.markers = function(opt_value) {
   if (!this.markers_) {
     this.markers_ = new anychart.core.ui.MarkersFactory();
     if (this.stateType == anychart.PointState.NORMAL) {
-      var hook = this.descriptorsMeta['markers'].beforeInvalidationHook;
+      var hook = /** @type {function(anychart.SignalEvent):(boolean|undefined)} */ (this.descriptorsMeta['markers'].beforeInvalidationHook);
       this.markers_.listenSignals(hook, this.stateHolder);
-      this.markers_.setParentEventTarget(this.stateHolder);
+      this.markers_.setParentEventTarget(/** @type {goog.events.EventTarget} */ (this.stateHolder));
     }
   }
 

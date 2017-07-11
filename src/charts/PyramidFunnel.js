@@ -170,7 +170,7 @@ goog.inherits(anychart.charts.PyramidFunnel, anychart.core.SeparateChart);
 
 /**
  * Normal state settings.
- * @param {Object=} opt_value
+ * @param {!Object=} opt_value
  * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
  */
 anychart.charts.PyramidFunnel.prototype.normal = function(opt_value) {
@@ -184,7 +184,7 @@ anychart.charts.PyramidFunnel.prototype.normal = function(opt_value) {
 
 /**
  * Hovered state settings.
- * @param {Object=} opt_value
+ * @param {!Object=} opt_value
  * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
  */
 anychart.charts.PyramidFunnel.prototype.hovered = function(opt_value) {
@@ -198,7 +198,7 @@ anychart.charts.PyramidFunnel.prototype.hovered = function(opt_value) {
 
 /**
  * Selected state settings.
- * @param {Object=} opt_value
+ * @param {!Object=} opt_value
  * @return {anychart.core.StateSettings|anychart.charts.PyramidFunnel}
  */
 anychart.charts.PyramidFunnel.prototype.selected = function(opt_value) {
@@ -1723,8 +1723,7 @@ anychart.core.settings.populate(anychart.charts.PyramidFunnel, anychart.charts.P
 
 //region --- anychart.core.IShapeManagerUser implementation
 /**
- * @override
- * @param {string} name
+ * @param {Array.<string>} names
  * @param {number} state
  * @param {anychart.data.IRowInfo} point
  * @param {Function} normalizer
@@ -1732,18 +1731,18 @@ anychart.core.settings.populate(anychart.charts.PyramidFunnel, anychart.charts.P
  * @param {boolean=} opt_ignorePointSettings
  * @return {*}
  */
-anychart.charts.PyramidFunnel.prototype.resolveOption = function(name, state, point, normalizer, opt_seriesName, opt_ignorePointSettings) {
+anychart.charts.PyramidFunnel.prototype.resolveOption = function(names, state, point, normalizer, opt_seriesName, opt_ignorePointSettings) {
   var val;
   var stateObject = state == 0 ? this.normal_ : state == 1 ? this.hovered_ : this.selected_;
   if (opt_ignorePointSettings) {
-    val = stateObject.getOption(name[0]);
+    val = stateObject.getOption(names[0]);
   } else {
     var pointStateName = state == 0 ? 'normal' : state == 1 ? 'hovered' : 'selected';
     var pointStateObject = point.get(pointStateName);
-    var stateValue = stateObject.getOption(name[0]);
-    val = goog.isDef(stateValue) ? stateValue : point.get(name[state]);
+    var stateValue = stateObject.getOption(names[0]);
+    val = goog.isDef(stateValue) ? stateValue : point.get(names[state]);
     if (goog.isDef(pointStateObject)) {
-      val = pointStateObject[name[0]] || val;
+      val = pointStateObject[names[0]] || val;
     }
   }
   if (goog.isDef(val))
@@ -1792,7 +1791,7 @@ anychart.charts.PyramidFunnel.prototype.getColorResolutionContext = function(opt
 /**
  * Getter/setter for labels.
  * @param {(Object|boolean|null)=} opt_value .
- * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} .
+ * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} .
  */
 anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
   return this.normal_.labels(opt_value);
@@ -1802,7 +1801,7 @@ anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
 /**
  * Getter/setter for series hover data labels.
  * @param {(Object|boolean|null)=} opt_value chart hover data labels settings.
- * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} Labels instance or itself for chaining call.
+ * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} Labels instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
   return this.hovered_.labels(opt_value);
@@ -1812,7 +1811,7 @@ anychart.charts.PyramidFunnel.prototype.hoverLabels = function(opt_value) {
 /**
  * Getter/setter for series select data labels.
  * @param {(Object|boolean|null)=} opt_value chart hover data labels settings.
- * @return {!(anychart.core.ui.LabelsFactory|anychart.charts.PyramidFunnel)} Labels instance or itself for chaining call.
+ * @return {anychart.core.ui.LabelsFactory|anychart.core.StateSettings} Labels instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.selectLabels = function(opt_value) {
   return this.selected_.labels(opt_value);
@@ -2703,7 +2702,7 @@ anychart.charts.PyramidFunnel.prototype.updateConnector = function(label, pointS
 /**
  * Getter/setter for markers.
  * @param {(Object|boolean|null|string)=} opt_value Data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
+ * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.markers = function(opt_value) {
   return this.normal_.markers(opt_value);
@@ -2713,7 +2712,7 @@ anychart.charts.PyramidFunnel.prototype.markers = function(opt_value) {
 /**
  * Getter/setter for hoverMarkers.
  * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
+ * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.hoverMarkers = function(opt_value) {
   return this.hovered_.markers(opt_value);
@@ -2723,7 +2722,7 @@ anychart.charts.PyramidFunnel.prototype.hoverMarkers = function(opt_value) {
 /**
  * Getter/setter for series data markers on select.
  * @param {(Object|boolean|null|string)=} opt_value Series data markers settings.
- * @return {!(anychart.core.ui.MarkersFactory|anychart.core.StateSettings)} Markers instance or itself for chaining call.
+ * @return {anychart.core.ui.MarkersFactory|anychart.core.StateSettings} Markers instance or itself for chaining call.
  */
 anychart.charts.PyramidFunnel.prototype.selectMarkers = function(opt_value) {
   return this.selected_.markers(opt_value);

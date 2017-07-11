@@ -660,7 +660,7 @@ anychart.color.getColorResolver2 = function(colorNames, colorType) {
  * @param {Array.<string>} colorNames
  * @param {!Function} normalizer
  * @param {boolean} isHatchFill
- * @param {anychart.core.IShapeManagerUser} series
+ * @param {anychart.core.IShapeManagerUser|anychart.charts.PyramidFunnel} series
  * @param {number} state
  * @param {boolean=} opt_ignorePointSettings
  * @param {boolean=} opt_ignoreColorScale
@@ -671,7 +671,7 @@ anychart.color.getColor2 = function(colorNames, normalizer, isHatchFill, series,
   state = Math.min(state & (anychart.PointState.HOVER | anychart.PointState.SELECT),
       anychart.PointState.SELECT);
   if (state != anychart.PointState.NORMAL && colorNames.length > 1) {
-    stateColor = series.resolveOption(colorNames, state, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+    stateColor = /** @type {anychart.charts.PyramidFunnel} */ (series).resolveOption(colorNames, state, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
     if (isHatchFill && stateColor === true)
       stateColor = normalizer(series.getAutoHatchFill());
     if (goog.isDef(stateColor)) {
@@ -684,7 +684,7 @@ anychart.color.getColor2 = function(colorNames, normalizer, isHatchFill, series,
     }
   }
   // we can get here only if state color is undefined or is a function
-  var color = series.resolveOption(colorNames, 0, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+  var color = /** @type {anychart.charts.PyramidFunnel} */ (series).resolveOption(colorNames, 0, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
   if (isHatchFill && color === true)
     color = normalizer(series.getAutoHatchFill());
   if (goog.isFunction(color)) {
