@@ -26,7 +26,7 @@ anychart.core.ui.Background = function() {
   anychart.core.ui.Background.base(this, 'constructor');
 
   /**
-   * Parent title.
+   * Parent.
    * @type {anychart.core.ui.Background}
    * @private
    */
