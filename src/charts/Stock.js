@@ -237,9 +237,9 @@ anychart.charts.Stock.prototype.createSeriesConfig = function(allowColoring) {
       // anychart.core.series.Capabilities.ALLOW_INTERACTIVITY |
       // anychart.core.series.Capabilities.ALLOW_POINT_SETTINGS |
       // anychart.core.series.Capabilities.ALLOW_ERROR |
-  anychart.core.series.Capabilities.SUPPORTS_MARKERS |
-  // anychart.core.series.Capabilities.SUPPORTS_LABELS |
-  0);
+      anychart.core.series.Capabilities.SUPPORTS_MARKERS |
+      // anychart.core.series.Capabilities.SUPPORTS_LABELS |
+      0);
   capabilities |= (allowColoring && anychart.core.series.Capabilities.ALLOW_POINT_SETTINGS);
   var discreteShapeManager = allowColoring ? anychart.enums.ShapeManagerTypes.PER_POINT : anychart.enums.ShapeManagerTypes.PER_SERIES;
   res[anychart.enums.StockSeriesType.AREA] = {
@@ -2103,8 +2103,8 @@ anychart.charts.Stock.prototype.handleMouseWheel_ = function(e) {
   if (!inBounds && this.scroller_ && this.scroller_.isVisible()) {
     boundsItem = this.scroller_.getPixelBounds();
     inBounds = (boundsItem &&
-    boundsItem.left <= x && x <= boundsItem.left + boundsItem.width &&
-    boundsItem.top <= y && y <= boundsItem.top + boundsItem.height);
+        boundsItem.left <= x && x <= boundsItem.left + boundsItem.width &&
+        boundsItem.top <= y && y <= boundsItem.top + boundsItem.height);
   }
   if (inBounds) {
     var doZoom,
@@ -2348,9 +2348,9 @@ anychart.charts.Stock.prototype.scrollerChangeHandler_ = function(e) {
   var last = e['endKey'];
   var source = this.transformScrollerSource_(e['source']);
   if (this.dispatchRangeChange_(
-          anychart.enums.EventType.SELECTED_RANGE_BEFORE_CHANGE,
-          source,
-          Math.min(first, last), Math.max(first, last))) {
+      anychart.enums.EventType.SELECTED_RANGE_BEFORE_CHANGE,
+      source,
+      Math.min(first, last), Math.max(first, last))) {
     this.selectRangeInternal_(first, last);
     this.dispatchRangeChange_(anychart.enums.EventType.SELECTED_RANGE_CHANGE, source);
   }
@@ -2488,8 +2488,8 @@ anychart.charts.Stock.prototype.limitDragRatio = function(ratio, anchor) {
  */
 anychart.charts.Stock.prototype.askDragStart = function() {
   var res = !this.inMarquee() && this.dispatchRangeChange_(
-          anychart.enums.EventType.SELECTED_RANGE_CHANGE_START,
-          anychart.enums.StockRangeChangeSource.PLOT_DRAG);
+      anychart.enums.EventType.SELECTED_RANGE_CHANGE_START,
+      anychart.enums.StockRangeChangeSource.PLOT_DRAG);
   if (res) {
     this.preventHighlight();
     goog.style.setStyle(document['body'], 'cursor', acgraph.vector.Cursor.EW_RESIZE);

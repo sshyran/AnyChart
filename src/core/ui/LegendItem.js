@@ -76,11 +76,11 @@ anychart.core.ui.LegendItem = function() {
     ['text', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
   ]);
 
-  this.descriptorsMeta['fontColor'].beforeInvalidationHook = function() {
-    var fontColor = this.getOwnOption('fontColor');
-    if (goog.isDef(fontColor))
-      this.originalFontColor_ = fontColor;
-  };
+  // this.descriptorsMeta['fontColor'].beforeInvalidationHook = function() {
+  //   var fontColor = this.getOwnOption('fontColor');
+  //   if (goog.isDef(fontColor))
+  //     this.originalFontColor_ = fontColor;
+  // };
 
   this.applyDefaults();
 };
@@ -941,15 +941,18 @@ anychart.core.ui.LegendItem.prototype.applyHover = function(hover) {
  * @private
  */
 anychart.core.ui.LegendItem.prototype.applyFontColor_ = function(hover, opt_isInitial) {
-  if (!this.disabled_) {
-    if (!this.originalFontColor_)
-      this.originalFontColor_ = /** @type {(acgraph.vector.Fill|acgraph.vector.Stroke)} */ (this.getOption('fontColor'));
-
-    this.textSettings('fontColor', hover ? anychart.color.lighten(this.originalFontColor_) : this.originalFontColor_);
-  } else {
-    this.textSettings('fontColor', this.disabledState_['fontColor']);
-  }
-  this.applyTextSettings(/** @type {!acgraph.vector.Text} */(this.textElement_), !!opt_isInitial);
+  // if (!this.disabled_) {
+  //   if (!this.originalFontColor_)
+  //     this.originalFontColor_ = /** @type {(acgraph.vector.Fill|acgraph.vector.Stroke)} */ (this.getOption('fontColor'));
+  //
+  //   this.textSettings('fontColor', hover ? anychart.color.lighten(this.originalFontColor_) : this.originalFontColor_);
+  // } else {
+  //   this.textSettings('fontColor', this.disabledState_['fontColor']);
+  // }
+  this.applyTextSettings(/** @type {!acgraph.vector.Text} */(this.textElement_), opt_isInitial);
+  var colorOption = /** @type {(acgraph.vector.Fill|acgraph.vector.Stroke)} */ (this.getOption('fontColor'));
+  var fontColor = this.disabled_ ? this.disabledState_['fontColor'] : hover ? anychart.color.lighten(colorOption) : colorOption;
+  this.textElement_.color(fontColor);
 };
 
 

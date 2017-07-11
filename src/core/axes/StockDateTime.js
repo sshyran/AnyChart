@@ -308,6 +308,10 @@ anychart.core.axes.StockDateTime.prototype.orientation = function(opt_value) {
 };
 
 
+/**
+ * Gets pixel bounds.
+ * @return {anychart.math.Rect}
+ */
 anychart.core.axes.StockDateTime.prototype.getPixelBounds = function() {
   var res = /** @type {anychart.math.Rect} */(this.parentBounds());
   if (!res)
