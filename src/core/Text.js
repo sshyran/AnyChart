@@ -782,28 +782,28 @@ anychart.core.Text.prototype.setupByJSON = function(config, opt_default) {
 
 
 //endregion
-//exports
-// (function() {
-//   var proto = anychart.core.Text.prototype;
-//   proto['fontSize'] = proto.fontSize;//in docs/final
-//   proto['fontFamily'] = proto.fontFamily;//in docs/final
-//   proto['fontColor'] = proto.fontColor;//in docs/final
-//   proto['fontOpacity'] = proto.fontOpacity;//in docs/final
-//   proto['fontDecoration'] = proto.fontDecoration;//in docs/final
-//   proto['fontStyle'] = proto.fontStyle;//in docs/final
-//   proto['fontVariant'] = proto.fontVariant;//in docs/final
-//   proto['fontWeight'] = proto.fontWeight;//in docs/final
-//   proto['letterSpacing'] = proto.letterSpacing;//in docs/final
-//   proto['textDirection'] = proto.textDirection;//in docs/final
-//   proto['lineHeight'] = proto.lineHeight;//in docs/final
-//   proto['textIndent'] = proto.textIndent;//in docs/final
-//   proto['vAlign'] = proto.vAlign;//in docs/final
-//   proto['hAlign'] = proto.hAlign;//in docs/final
-//   proto['wordWrap'] = proto.wordWrap;//in docs/final
-//   proto['wordBreak'] = proto.wordBreak;//in docs/final
-//   proto['textOverflow'] = proto.textOverflow;//in docs/final
-//   proto['selectable'] = proto.selectable;//in docs/final
-//   proto['disablePointerEvents'] = proto.disablePointerEvents;//in docs/final
-//   proto['useHtml'] = proto.useHtml;//in docs/final
-//   proto['textSettings'] = proto.textSettings;//in docs/final
-// })();
+// exports
+(function() {
+  var proto = anychart.core.Text.prototype;
+  // proto['fontSize'] = proto.fontSize;//in docs/final
+  // proto['fontFamily'] = proto.fontFamily;//in docs/final
+  // proto['fontColor'] = proto.fontColor;//in docs/final
+  // proto['fontOpacity'] = proto.fontOpacity;//in docs/final
+  // proto['fontDecoration'] = proto.fontDecoration;//in docs/final
+  // proto['fontStyle'] = proto.fontStyle;//in docs/final
+  // proto['fontVariant'] = proto.fontVariant;//in docs/final
+  // proto['fontWeight'] = proto.fontWeight;//in docs/final
+  // proto['letterSpacing'] = proto.letterSpacing;//in docs/final
+  // proto['textDirection'] = proto.textDirection;//in docs/final
+  // proto['lineHeight'] = proto.lineHeight;//in docs/final
+  // proto['textIndent'] = proto.textIndent;//in docs/final
+  // proto['vAlign'] = proto.vAlign;//in docs/final
+  // proto['hAlign'] = proto.hAlign;//in docs/final
+  // proto['wordWrap'] = proto.wordWrap;//in docs/final
+  // proto['wordBreak'] = proto.wordBreak;//in docs/final
+  // proto['textOverflow'] = proto.textOverflow;//in docs/final
+  // proto['selectable'] = proto.selectable;//in docs/final
+  // proto['disablePointerEvents'] = proto.disablePointerEvents;//in docs/final
+  // proto['useHtml'] = proto.useHtml;//in docs/final
+  proto['textSettings'] = proto.textSettings;//in docs/final
+})();
