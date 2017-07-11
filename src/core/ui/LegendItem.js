@@ -949,7 +949,7 @@ anychart.core.ui.LegendItem.prototype.applyFontColor_ = function(hover, opt_isIn
   // } else {
   //   this.textSettings('fontColor', this.disabledState_['fontColor']);
   // }
-  this.applyTextSettings(/** @type {!acgraph.vector.Text} */(this.textElement_), opt_isInitial);
+  this.applyTextSettings(/** @type {!acgraph.vector.Text} */(this.textElement_), !!opt_isInitial);
   var colorOption = /** @type {(acgraph.vector.Fill|acgraph.vector.Stroke)} */ (this.getOption('fontColor'));
   var fontColor = this.disabled_ ? this.disabledState_['fontColor'] : hover ? anychart.color.lighten(colorOption) : colorOption;
   this.textElement_.color(fontColor);
