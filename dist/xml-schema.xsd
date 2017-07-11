@@ -668,6 +668,61 @@
         <xsd:anyAttribute processContents="skip"/>
     </xsd:complexType>
 
+    <!-- core types -->
+    <xsd:complexType name="core.StateSettings">
+        <xsd:all>
+            <xsd:element minOccurs="0" maxOccurs="1" name="fill" type="Fill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="negative_fill" type="Fill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="rising_fill" type="Fill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="falling_fill" type="Fill"/>
+
+            <xsd:element minOccurs="0" maxOccurs="1" name="stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="low_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="high_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="negative_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="rising_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="falling_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="median_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="stem_stroke" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="whisker_stroke" type="Stroke"/>
+
+            <xsd:element minOccurs="0" maxOccurs="1" name="hatch_fill" type="HatchFill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="negative_hatch_fill" type="HatchFill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="rising_hatch_fill" type="HatchFill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="falling_hatch_fill" type="HatchFill"/>
+            <!-- annotations -->
+            <xsd:element minOccurs="0" maxOccurs="1" name="trend" type="Stroke"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="grid" type="Stroke"/>
+            <!-- linear gauge tank -->
+            <xsd:element minOccurs="0" maxOccurs="1" name="empty_fill" type="Fill"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="empty_hatch_fill" type="HatchFill"/>
+        </xsd:all>
+        <xsd:attribute name="fill" type="xsd:string" />
+        <xsd:attribute name="negative_fill" type="xsd:string" />
+        <xsd:attribute name="rising_fill" type="xsd:string" />
+        <xsd:attribute name="falling_fill" type="xsd:string" />
+        <xsd:attribute name="stroke" type="xsd:string" />
+        <xsd:attribute name="low_stroke" type="xsd:string" />
+        <xsd:attribute name="high_stroke" type="xsd:string" />
+        <xsd:attribute name="negative_stroke" type="xsd:string" />
+        <xsd:attribute name="rising_stroke" type="xsd:string" />
+        <xsd:attribute name="falling_stroke" type="xsd:string" />
+        <xsd:attribute name="median_stroke" type="xsd:string" />
+        <xsd:attribute name="stem_stroke" type="xsd:string" />
+        <xsd:attribute name="whisker_stroke" type="xsd:string" />
+        <xsd:attribute name="hatch_fill" type="simple.HatchFill" />
+        <xsd:attribute name="negative_hatch_fill" type="simple.HatchFill" />
+        <xsd:attribute name="rising_hatch_fill" type="simple.HatchFill" />
+        <xsd:attribute name="falling_hatch_fill" type="simple.HatchFill" />
+        <xsd:attribute name="trend" type="xsd:string" />
+        <xsd:attribute name="grid" type="xsd:string" />
+        <xsd:attribute name="empty_fill" type="xsd:string" />
+        <xsd:attribute name="empty_hatch_fill" type="simple.HatchFill" />
+        <xsd:attribute name="whisker_width" type="xsd:string" />
+        <xsd:attribute name="type" type="enums.MarkerType" />
+        <xsd:attribute name="size" type="xsd:double" />
+    </xsd:complexType>
+
     <!-- data complex types -->
 
     <xsd:complexType name="DataOrTreeData">

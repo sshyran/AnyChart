@@ -512,7 +512,9 @@
       "properties": {
         "type": {"enum": ["funnel"]},
         "data": {"$ref": "#/definitions/data"},
-
+        "normal": {"$ref": "#/definitions/anychart.core.StateSettings"},
+        "hovered": {"$ref": "#/definitions/anychart.core.StateSettings"},
+        "selected": {"$ref": "#/definitions/anychart.core.StateSettings"}
         "palette": {
           "type": [
             "object",
@@ -664,6 +666,9 @@
       "properties": {
         "type": {"enum": ["pyramid"]},
         "data": {"$ref": "#/definitions/data"},
+        "normal": {"$ref": "#/definitions/anychart.core.StateSettings"},
+        "hovered": {"$ref": "#/definitions/anychart.core.StateSettings"},
+        "selected": {"$ref": "#/definitions/anychart.core.StateSettings"}
         "labels": {
           "oneOf": [
             {"$ref": "#/definitions/disable"},
@@ -6167,6 +6172,35 @@
       "type": "object",
       "properties": {
         "stroke": {"$ref": "#/definitions/stroke"}
+      }
+    },
+    "anychart.core.StateSettings": {
+      "type" : "object",
+      "properties": {
+        "fill": {"$ref": "#/definitions/fill"},
+        "negativeFill": {"$ref": "#/definitions/fill"},
+        "risingFill": {"$ref": "#/definitions/fill"},
+        "fallingFill": {"$ref": "#/definitions/fill"},
+        "stroke": {"$ref": "#/definitions/stroke"},
+        "lowStroke": {"$ref": "#/definitions/stroke"},
+        "highStroke": {"$ref": "#/definitions/stroke"},
+        "negativeStroke": {"$ref": "#/definitions/stroke"},
+        "risingStroke": {"$ref": "#/definitions/stroke"},
+        "fallingStroke": {"$ref": "#/definitions/stroke"},
+        "medianStroke": {"$ref": "#/definitions/stroke"},
+        "stemStroke": {"$ref": "#/definitions/stroke"},
+        "whiskerStroke": {"$ref": "#/definitions/stroke"},
+        "hatchFill": {"$ref": "#/definitions/hatchFill"},
+        "negativeHatchFill": {"$ref": "#/definitions/hatchFill"},
+        "risingHatchFill": {"$ref": "#/definitions/hatchFill"},
+        "fallingHatchFill": {"$ref": "#/definitions/hatchFill"},
+        "whiskerWidth": {"$ref": "#/definitions/hatchFill"},
+        "type": {"$ref": "#/definitions/anychart.enums.MarkerType"},
+        "size": {"type": "number"},
+        "trend": {"$ref": "#/definitions/stroke"},
+        "grid": {"$ref": "#/definitions/stroke"},
+        "emptyFill": {"$ref": "#/definitions/fill"},
+        "emptyHatchFill": {"$ref": "#/definitions/hatchFill"}
       }
     },
 

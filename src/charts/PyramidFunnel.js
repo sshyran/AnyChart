@@ -1722,7 +1722,16 @@ anychart.core.settings.populate(anychart.charts.PyramidFunnel, anychart.charts.P
 
 
 //region --- anychart.core.IShapeManagerUser implementation
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @param {number} state
+ * @param {anychart.data.IRowInfo} point
+ * @param {Function} normalizer
+ * @param {string=} opt_seriesName - series option name if differs from point names.
+ * @param {boolean=} opt_ignorePointSettings
+ * @return {*}
+ */
 anychart.charts.PyramidFunnel.prototype.resolveOption = function(name, state, point, normalizer, opt_seriesName, opt_ignorePointSettings) {
   var val;
   var stateObject = state == 0 ? this.normal_ : state == 1 ? this.hovered_ : this.selected_;
@@ -3304,6 +3313,9 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
 
   anychart.core.settings.deserialize(this, anychart.charts.PyramidFunnel.PROPERTY_DESCRIPTORS, config);
   //anychart.core.settings.deserialize(this, anychart.charts.PyramidFunnel.COLOR_DESCRIPTORS, config);
+
+  // try to setup aliases
+  this.normal_.setupByJSON(config, opt_default);
   if (config['normal']) {
     this.normal_.setupByJSON(config['normal'], opt_default);
   }

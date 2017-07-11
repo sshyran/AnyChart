@@ -895,7 +895,7 @@ anychart.core.settings.descriptors = (function() {
 
   // annotations
   map.TREND = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'trend', anychart.core.settings.strokeOrFunctionNormalizer];
-  map.GRID = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'trend', anychart.core.settings.strokeOrFunctionNormalizer];
+  map.GRID = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'grid', anychart.core.settings.strokeOrFunctionNormalizer];
 
   // linear gauge tank pointer
   map.EMPTY_FILL = [anychart.enums.PropertyHandlerType.MULTI_ARG, 'emptyFill', anychart.core.settings.fillOrFunctionNormalizer];
