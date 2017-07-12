@@ -2281,14 +2281,35 @@ goog.provide('anychart.themes.defaultTheme');
           'enabled': null
         }
       },
-      //'fill': returnSourceColor,
-      //'stroke': 'none',
-      //'hatchFill': null,
-      //'hoverFill': returnLightenSourceColor,
-      //'hoverStroke': returnSourceColor,
-      //'selectFill': defaultSelectColor,
-      //'selectStroke': defaultSelectStroke,
+      'fill': returnSourceColor,
+      'stroke': 'none',
+      'hatchFill': null,
+      'hoverFill': returnLightenSourceColor,
+      'hoverStroke': returnSourceColor,
+      'selectFill': defaultSelectColor,
+      'selectStroke': defaultSelectStroke,
       'connectorStroke': colorStrokeNormal,
+      'labels': {
+        'enabled': true,
+        'fontColor': null,
+        'position': 'inside',
+        'disablePointerEvents': false,
+        'autoRotate': false,
+        'zIndex': 34,
+        /**
+         * @this {*}
+         * @return {*}
+         */
+        'format': function() {
+          return this['name'] ? this['name'] : this['x'];
+        }
+      },
+      'markers': {
+        'enabled': false,
+        'position': 'center',
+        'positionFormatter': returnValue,
+        'zIndex': 33
+      },
       'overlapMode': 'no-overlap',
       'connectorLength': 20,
       'baseWidth': '70%',
