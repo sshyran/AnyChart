@@ -109,8 +109,8 @@ anychart.core.StateSettings.PROPERTY_DESCRIPTORS = (function() {
     descriptors.TREND,
     descriptors.GRID,
     // linear gauge tank pointer
-    map.EMPTY_FILL,
-    map.EMPTY_HATCH_FILL
+    descriptors.EMPTY_FILL,
+    descriptors.EMPTY_HATCH_FILL
   ]);
 
   return map;
