@@ -2304,11 +2304,23 @@ goog.provide('anychart.themes.defaultTheme');
           return this['name'] ? this['name'] : this['x'];
         }
       },
+      'hoverLabels': {
+        'enabled': null
+      },
+      'selectLabels': {
+        'enabled': null
+      },
       'markers': {
         'enabled': false,
         'position': 'center',
         'positionFormatter': returnValue,
         'zIndex': 33
+      },
+      'hoverMarkers': {
+        'enabled': null
+      },
+      'selectMarkers': {
+        'enabled': null
       },
       'overlapMode': 'no-overlap',
       'connectorLength': 20,
