@@ -1841,10 +1841,12 @@ anychart.charts.PyramidFunnel.prototype.drawLabel_ = function(pointState) {
 
   var index = iterator.getIndex();
   var labelsFactory, stateFactory = null;
+  var hoverLabels = this.hovered().labels();
+  var selectLabels = this.selected().labels();
   if (selected) {
-    stateFactory = labelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(this.selectLabels());
+    stateFactory = labelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(selectLabels);
   } else if (hovered) {
-    stateFactory = labelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(this.hoverLabels());
+    stateFactory = labelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(hoverLabels);
   } else {
     labelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(this.labels());
   }
@@ -1858,18 +1860,18 @@ anychart.charts.PyramidFunnel.prototype.drawLabel_ = function(pointState) {
   var isDraw = hovered || selected ?
       hovered ?
           goog.isNull(labelHoverEnabledState) ?
-              goog.isNull(this.hoverLabels().enabled()) ?
+              goog.isNull(hoverLabels.enabled()) ?
                   goog.isNull(labelEnabledState) ?
                       this.labels().enabled() :
                       labelEnabledState :
-                  this.hoverLabels().enabled() :
+                  hoverLabels.enabled() :
               labelHoverEnabledState :
           goog.isNull(labelSelectEnabledState) ?
-              goog.isNull(this.selectLabels().enabled()) ?
+              goog.isNull(selectLabels.enabled()) ?
                   goog.isNull(labelEnabledState) ?
                       this.labels().enabled() :
                       labelEnabledState :
-                  this.selectLabels().enabled() :
+                  selectLabels.enabled() :
               labelSelectEnabledState :
       goog.isNull(labelEnabledState) ?
           this.labels().enabled() :
@@ -2843,10 +2845,12 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
 
   var index = this.getIterator().getIndex();
   var markersFactory;
+  var hoverMarkers = this.hovered().markers();
+  var selectMarkers = this.selected().markers();
   if (selected) {
-    markersFactory = /** @type {anychart.core.ui.MarkersFactory} */(this.selectMarkers());
+    markersFactory = /** @type {anychart.core.ui.MarkersFactory} */(selectMarkers);
   } else if (hovered) {
-    markersFactory = /** @type {anychart.core.ui.MarkersFactory} */(this.hoverMarkers());
+    markersFactory = /** @type {anychart.core.ui.MarkersFactory} */(hoverMarkers);
   } else {
     markersFactory = /** @type {anychart.core.ui.MarkersFactory} */(this.markers());
   }
@@ -2860,18 +2864,18 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
   var isDraw = hovered || selected ?
       hovered ?
           goog.isNull(markerHoverEnabledState) ?
-              goog.isNull(this.hoverMarkers().enabled()) ?
+              goog.isNull(hoverMarkers.enabled()) ?
                   goog.isNull(markerEnabledState) ?
                       this.markers().enabled() :
                       markerEnabledState :
-                  this.hoverMarkers().enabled() :
+                  hoverMarkers.enabled() :
               markerHoverEnabledState :
           goog.isNull(markerSelectEnabledState) ?
-              goog.isNull(this.selectMarkers().enabled()) ?
+              goog.isNull(selectMarkers.enabled()) ?
                   goog.isNull(markerEnabledState) ?
                       this.markers().enabled() :
                       markerEnabledState :
-                  this.selectMarkers().enabled() :
+                  selectMarkers.enabled() :
               markerSelectEnabledState :
       goog.isNull(markerEnabledState) ?
           this.markers().enabled() :
@@ -2882,8 +2886,8 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
     var markerHoverPosition = hoverPointMarker && hoverPointMarker['position'] ? hoverPointMarker['position'] : null;
     var markerSelectPosition = selectPointMarker && selectPointMarker['position'] ? selectPointMarker['position'] : null;
 
-    var position = (hovered && (markerHoverPosition || this.hoverMarkers().position())) ||
-        (selected && (markerSelectPosition || this.selectMarkers().position())) ||
+    var position = (hovered && (markerHoverPosition || hoverMarkers.position())) ||
+        (selected && (markerSelectPosition || selectMarkers.position())) ||
         markerPosition || this.markers().position();
 
     var positionProvider = this.createMarkersPositionProvider_(/** @type {anychart.enums.Position|string} */(position));
@@ -2906,9 +2910,9 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
     var markerType = pointMarker && pointMarker['type'];
     var finalMarkerType = goog.isDef(markerType) ? markerType : (this.markers().getType() || this.markerPalette().itemAt(index));
     var markerHoverType = hoverPointMarker && hoverPointMarker['type'];
-    var finalMarkerHoverType = goog.isDef(markerHoverType) ? markerHoverType : this.hoverMarkers().getType();
+    var finalMarkerHoverType = goog.isDef(markerHoverType) ? markerHoverType : hoverMarkers.getType();
     var markerSelectType = selectPointMarker && selectPointMarker['type'];
-    var finalMarkerSelectType = goog.isDef(markerSelectType) ? markerSelectType : this.selectMarkers().getType();
+    var finalMarkerSelectType = goog.isDef(markerSelectType) ? markerSelectType : selectMarkers.getType();
 
     if (selected && goog.isDef(finalMarkerSelectType))
       markerSettings.type = finalMarkerSelectType;
@@ -2920,9 +2924,9 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
     var markerFill = pointMarker && pointMarker['fill'];
     var finalMarkerFill = goog.isDef(markerFill) ? markerFill : (this.markers().getFill() || this.getMarkerFill());
     var markerHoverFill = hoverPointMarker && hoverPointMarker['fill'];
-    var finalMarkerHoverFill = goog.isDef(markerHoverFill) ? markerHoverFill : this.hoverMarkers().getFill();
+    var finalMarkerHoverFill = goog.isDef(markerHoverFill) ? markerHoverFill : hoverMarkers.getFill();
     var markerSelectFill = selectPointMarker && selectPointMarker['fill'];
-    var finalMarkerSelectFill = goog.isDef(markerSelectFill) ? markerSelectFill : this.selectMarkers().getFill();
+    var finalMarkerSelectFill = goog.isDef(markerSelectFill) ? markerSelectFill : selectMarkers.getFill();
 
     if (selected && goog.isDef(finalMarkerSelectFill))
       markerSettings.fill = finalMarkerSelectFill;
@@ -2934,9 +2938,9 @@ anychart.charts.PyramidFunnel.prototype.drawMarker = function(pointState) {
     var markerStroke = pointMarker && pointMarker['stroke'];
     var finalMarkerStroke = goog.isDef(markerStroke) ? markerStroke : (this.markers().getStroke() || this.getMarkerStroke());
     var markerHoverStroke = hoverPointMarker && hoverPointMarker['stroke'];
-    var finalMarkerHoverStroke = goog.isDef(markerHoverStroke) ? markerHoverStroke : (this.hoverMarkers().getStroke() || this.getMarkerStroke());
+    var finalMarkerHoverStroke = goog.isDef(markerHoverStroke) ? markerHoverStroke : (hoverMarkers.getStroke() || this.getMarkerStroke());
     var markerSelectStroke = selectPointMarker && selectPointMarker['stroke'];
-    var finalMarkerSelectStroke = goog.isDef(markerSelectStroke) ? markerSelectStroke : (this.selectMarkers().getStroke() || this.getMarkerStroke());
+    var finalMarkerSelectStroke = goog.isDef(markerSelectStroke) ? markerSelectStroke : (selectMarkers.getStroke() || this.getMarkerStroke());
 
     if (selected && goog.isDef(finalMarkerSelectStroke))
       markerSettings.stroke = finalMarkerSelectStroke;
@@ -3522,12 +3526,12 @@ anychart.charts.PyramidFunnel.LabelsDomain.prototype.getLabelBounds_ = function(
   proto['markerPalette'] = proto.markerPalette;
 
   proto['labels'] = proto.labels;
-  proto['hoverLabels'] = proto.hoverLabels;
-  proto['selectLabels'] = proto.selectLabels;
+  //proto['hoverLabels'] = proto.hoverLabels;
+  //proto['selectLabels'] = proto.selectLabels;
 
   proto['markers'] = proto.markers;
-  proto['hoverMarkers'] = proto.hoverMarkers;
-  proto['selectMarkers'] = proto.selectMarkers;
+  //proto['hoverMarkers'] = proto.hoverMarkers;
+  //proto['selectMarkers'] = proto.selectMarkers;
 
   proto['hover'] = proto.hover;
   proto['unhover'] = proto.unhover;
