@@ -353,9 +353,9 @@ anychart.scales.StockScatterDateTime.prototype.calculate = function() {
         NaN);
   }
 
-  var len = this.ranges_.length;
+  var last = this.ranges_.length - 1;
   var row;
-  for (var i = 0; i < len; i++) {
+  for (var i = 0; i < last; i++) {
     if (minorTickRange <= this.ranges_[i].range) {
       row = this.ranges_[i];
       break;
@@ -364,14 +364,15 @@ anychart.scales.StockScatterDateTime.prototype.calculate = function() {
   // Math.ceil(range / (365 * 24 * 60 * 60 * 1000)) is always >= 0.5, because the last
   // this.RANGES is 2 years, so there shouldn't be a situation when interval is 0.
   if (!row) {
-    var count = Math.ceil(minorTickRange / (365 * 24 * 60 * 60 * 1000));
-    row = {
-      range: anychart.utils.getIntervalRange(anychart.enums.Interval.YEAR, count / 2),
-      minorUnit: anychart.enums.Interval.YEAR,
-      minorCount: count / 2,
-      majorUnit: anychart.enums.Interval.YEAR,
-      majorCount: count
-    };
+    row = this.ranges_[last];
+    // var count = Math.ceil(minorTickRange / (365 * 24 * 60 * 60 * 1000));
+    // row = {
+    //   range: anychart.utils.getIntervalRange(anychart.enums.Interval.YEAR, count / 2),
+    //   minorUnit: anychart.enums.Interval.YEAR,
+    //   minorCount: count / 2,
+    //   majorUnit: anychart.enums.Interval.YEAR,
+    //   majorCount: count
+    // };
   }
 
   this.ticksIterator.setup(
@@ -487,7 +488,7 @@ anychart.scales.StockScatterDateTime.prototype.ticks = function(opt_value) {
   if (goog.isDef(opt_value)) {
     var value = this.normalizeTicks_(opt_value);
     var len = value.length;
-    var same = len == this.ranges_.length;
+    var same = len && (len == this.ranges_.length);
     for (var i = 0; same && i < len; i++) {
       var rangeA = value[i];
       var rangeB = this.ranges_[i];
