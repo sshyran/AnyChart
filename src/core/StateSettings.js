@@ -64,8 +64,10 @@ anychart.core.StateSettings.prototype.serialize = function() {
 anychart.core.StateSettings.prototype.setupByJSON = function(config, opt_default) {
   anychart.core.StateSettings.base(this, 'setupByJSON', config, opt_default);
   anychart.core.settings.deserialize(this, anychart.core.StateSettings.PROPERTY_DESCRIPTORS, config);
-  this.labels().setupInternal(!!opt_default, config['labels']);
-  this.markers().setupInternal(!!opt_default, config['markers']);
+  if (goog.isDef(this.descriptorsMeta['labels']))
+    this.labels().setupInternal(!!opt_default, config['labels']);
+  if (goog.isDef(this.descriptorsMeta['markers']))
+    this.markers().setupInternal(!!opt_default, config['markers']);
 };
 
 
