@@ -629,6 +629,7 @@ anychart.scales.StockScatterDateTime.DEFAULT_TICKS_ = [
 //exports
 (function() {
   var proto = anychart.scales.StockScatterDateTime.prototype;
+  proto['ticks'] = proto.ticks;
   proto['ticksCount'] = proto.ticksCount;
   proto['getFullMinimum'] = proto.getFullMinimum;
   proto['getFullMaximum'] = proto.getFullMaximum;
