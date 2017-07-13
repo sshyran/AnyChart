@@ -314,9 +314,9 @@ anychart.core.axes.StockDateTime.prototype.getRemainingBounds = function() {
  * @private
  */
 anychart.core.axes.StockDateTime.prototype.scaleInvalidated_ = function(e) {
-  //if (e.hasSignal(anychart.Signal.NEED_UPDATE_TICK_DEPENDENT)) {
-  //  this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
-  //}
+  if (e.hasSignal(anychart.Signal.NEED_UPDATE_TICK_DEPENDENT)) {
+    this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
+  }
 };
 
 

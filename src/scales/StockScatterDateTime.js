@@ -5,6 +5,7 @@ goog.require('anychart.enums');
 goog.require('anychart.scales.IXScale');
 goog.require('anychart.scales.StockScatterTicksIterator');
 goog.require('anychart.utils');
+goog.require('goog.array');
 goog.require('goog.math');
 
 
@@ -24,6 +25,13 @@ anychart.scales.StockScatterDateTime = function(chartOrScroller) {
    * @private
    */
   this.maxTicksCount_ = 1000;
+
+  /**
+   * Minor ticks count.
+   * @type {number}
+   * @private
+   */
+  this.ticksCount_ = 6;
 
   /**
    * Chart reference. Used for key<->index transformations.
@@ -102,27 +110,26 @@ anychart.scales.StockScatterDateTime = function(chartOrScroller) {
   this.ticksIterator = null;
 
   /**
-   * Array of minor intervals, synced with RANGES_. Used by interval auto calculation.
-   * @type {!Array.<!Array>}
-   * @protected
+   * Ticks settings.
+   * @type {anychart.scales.StockScatterDateTime.TicksSettingsRep}
+   * @private
    */
-  this.MINOR_INTERVALS = anychart.scales.StockScatterDateTime.MINOR_INTERVALS_;
-
-  /**
-   * Array of minor intervals, synced with RANGES_. Used by interval auto calculation.
-   * @type {!Array.<!Array>}
-   * @protected
-   */
-  this.MAJOR_INTERVALS = anychart.scales.StockScatterDateTime.MAJOR_INTERVALS_;
-
-  /**
-   * Array of different ranges. Used by interval auto calculation.
-   * @type {!Array.<number>}
-   * @protected
-   */
-  this.RANGES = anychart.scales.StockScatterDateTime.RANGES_;
+  this.ranges_ = [];
+  this.ticks(anychart.scales.StockScatterDateTime.DEFAULT_TICKS_);
 };
 goog.inherits(anychart.scales.StockScatterDateTime, anychart.core.Base);
+
+
+/**
+ * @typedef {Array<{minor:(string|{unit:anychart.enums.Interval,count:number}),major:(string|{unit:anychart.enums.Interval,count:number})}>}
+ */
+anychart.scales.StockScatterDateTime.TicksSettings;
+
+
+/**
+ * @typedef {Array<{range:number,minorUnit:anychart.enums.Interval,minorCount:number,majorUnit:anychart.enums.Interval,majorCount:number}>}
+ */
+anychart.scales.StockScatterDateTime.TicksSettingsRep;
 
 
 /**
@@ -150,6 +157,25 @@ anychart.scales.StockScatterDateTime.prototype.maxTicksCount = function(opt_valu
     return this;
   }
   return this.maxTicksCount_;
+};
+
+
+/**
+ * Desired minor ticks count.
+ * @param {number=} opt_value
+ * @return {number|anychart.scales.StockScatterDateTime}
+ */
+anychart.scales.StockScatterDateTime.prototype.ticksCount = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    var val = anychart.utils.normalizeToNaturalNumber(opt_value, this.ticksCount_, false);
+    if (this.ticksCount_ != val) {
+      this.ticksCount_ = val;
+      this.consistent = false;
+      this.dispatchSignal(anychart.Signal.NEED_UPDATE_TICK_DEPENDENT);
+    }
+    return this;
+  }
+  return this.ticksCount_;
 };
 
 
@@ -317,8 +343,8 @@ anychart.scales.StockScatterDateTime.prototype.calculate = function() {
     dataMaxKey = goog.math.clamp(this.maxKey, this.dataFullMinKey, this.dataFullMaxKey);
   }
 
-  var range = Math.abs(dataMaxKey - dataMinKey) / 6;
-  if (isNaN(range)) {
+  var minorTickRange = Math.abs(dataMaxKey - dataMinKey) / this.ticksCount_;
+  if (isNaN(minorTickRange)) {
     this.ticksIterator.setup(
         NaN,
         NaN,
@@ -327,34 +353,38 @@ anychart.scales.StockScatterDateTime.prototype.calculate = function() {
         NaN);
   }
 
-  var len = this.RANGES.length;
-  var minorInterval, majorInterval;
+  var len = this.ranges_.length;
+  var row;
   for (var i = 0; i < len; i++) {
-    if (range <= this.RANGES[i]) {
-      majorInterval = this.MAJOR_INTERVALS[i];
-      minorInterval = this.MINOR_INTERVALS[i];
+    if (minorTickRange <= this.ranges_[i].range) {
+      row = this.ranges_[i];
       break;
     }
   }
   // Math.ceil(range / (365 * 24 * 60 * 60 * 1000)) is always >= 0.5, because the last
   // this.RANGES is 2 years, so there shouldn't be a situation when interval is 0.
-  if (!minorInterval || !majorInterval) {
-    var count = Math.ceil(range / (365 * 24 * 60 * 60 * 1000));
-    majorInterval = [anychart.enums.Interval.YEAR, count];
-    minorInterval = [anychart.enums.Interval.YEAR, count / 2];
+  if (!row) {
+    var count = Math.ceil(minorTickRange / (365 * 24 * 60 * 60 * 1000));
+    row = {
+      range: anychart.utils.getIntervalRange(anychart.enums.Interval.YEAR, count / 2),
+      minorUnit: anychart.enums.Interval.YEAR,
+      minorCount: count / 2,
+      majorUnit: anychart.enums.Interval.YEAR,
+      majorCount: count
+    };
   }
 
   this.ticksIterator.setup(
       dataMinKey,
       dataMaxKey,
-      anychart.utils.getIntervalFromInfo(majorInterval[0], majorInterval[1]),
-      anychart.utils.getIntervalFromInfo(minorInterval[0], minorInterval[1]),
+      anychart.utils.getIntervalFromInfo(row.majorUnit, row.majorCount),
+      anychart.utils.getIntervalFromInfo(row.minorUnit, row.minorCount),
       this.dataFullMinKey);
 
-  this.majorUnit_ = majorInterval[0];
-  this.majorUnitCount_ = majorInterval[1];
-  this.minorUnit_ = minorInterval[0];
-  this.minorUnitCount_ = minorInterval[1];
+  this.majorUnit_ = row.majorUnit;
+  this.majorUnitCount_ = row.majorCount;
+  this.minorUnit_ = row.minorUnit;
+  this.minorUnitCount_ = row.minorCount;
 
   this.consistent = true;
 };
@@ -449,6 +479,98 @@ anychart.scales.StockScatterDateTime.prototype.ticksInvalidated_ = function(even
 
 
 /**
+ *
+ * @param {anychart.scales.StockScatterDateTime.TicksSettings} opt_value
+ * @return {anychart.scales.StockScatterDateTime.TicksSettings|anychart.scales.StockScatterDateTime}
+ */
+anychart.scales.StockScatterDateTime.prototype.ticks = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    var value = this.normalizeTicks_(opt_value);
+    var len = value.length;
+    var same = len == this.ranges_.length;
+    for (var i = 0; same && i < len; i++) {
+      var rangeA = value[i];
+      var rangeB = this.ranges_[i];
+      same = (
+          rangeA.range == rangeB.range &&
+          rangeA.minorUnit == rangeB.minorUnit &&
+          rangeA.minorCount == rangeB.minorCount &&
+          rangeA.majorUnit == rangeB.majorUnit &&
+          rangeA.majorCount == rangeB.majorCount);
+    }
+    if (!same) {
+      this.ranges_ = value;
+      this.dispatchSignal(anychart.Signal.NEED_UPDATE_TICK_DEPENDENT);
+    }
+    return this;
+  }
+  return /** @type {anychart.scales.StockScatterDateTime.TicksSettings} */(
+      goog.array.map(this.ranges_, function(item) {
+        return {
+          'minor': {
+            'unit': item.minorUnit,
+            'count': item.minorCount
+          },
+          'major': {
+            'unit': item.majorUnit,
+            'count': item.majorCount
+          }
+        };
+      }));
+};
+
+
+/**
+ * Normalizes anychart.scales.StockScatterDateTime.TicksSettings-like representation to anychart.scales.StockScatterDateTime.TicksSettingsRep.
+ * @param {*} value
+ * @return {anychart.scales.StockScatterDateTime.TicksSettingsRep}
+ * @private
+ */
+anychart.scales.StockScatterDateTime.prototype.normalizeTicks_ = function(value) {
+  var res = [];
+  if (goog.isArray(value)) {
+    for (var i = 0; i < value.length; i++) {
+      var val = value[i];
+      if (goog.isObject(val)) {
+        var minor = this.normalizeTicksRow_(val['minor']);
+        var major = this.normalizeTicksRow_(val['major']);
+        if (minor && major) {
+          res.push({
+            range: anychart.utils.getIntervalRange(minor[0], minor[1]),
+            minorUnit: minor[0],
+            minorCount: minor[1],
+            majorUnit: major[0],
+            majorCount: major[1]
+          });
+        }
+      }
+    }
+    res.sort(function(a, b) { return a.range - b.range; });
+  }
+  return res;
+};
+
+
+/**
+ * Normalizes particular ticks array row.
+ * @param {*} val
+ * @return {?Array<anychart.enums.Interval|number>} Array of [unit, count] or null.
+ * @private
+ */
+anychart.scales.StockScatterDateTime.prototype.normalizeTicksRow_ = function(val) {
+  var unit = null, count;
+  if (goog.isString(val)) {
+    unit = anychart.enums.normalizeInterval(val, null);
+    count = 1;
+  } else if (goog.isObject(val)) {
+    unit = anychart.enums.normalizeInterval(val['unit'], null);
+    count = anychart.utils.normalizeToNaturalNumber(val['count']);
+  }
+  return unit ? [unit, count] : null;
+};
+
+
+/**
  * Returns true if passed string indicates Scatter scale.
  * @param {string} type
  * @return {boolean}
@@ -468,96 +590,32 @@ anychart.scales.StockScatterDateTime.askedForScatter = function(type) {
 
 
 /**
- * Array of different ranges. Used by interval auto calculation.
- * Multiplying by 4 to get rid of count.
- * @type {!Array.<number>}
+ * Array of default tick settings.
+ * @type {anychart.scales.StockScatterDateTime.TicksSettings}
  * @private
  */
-anychart.scales.StockScatterDateTime.RANGES_ = [
-  1,
-  5,
-  20,
-  100,
-  500,
-  1000 * 2,
-  1000 * 10,
-  1000 * 30,
-  1000 * 60 * 2,
-  1000 * 60 * 10,
-  1000 * 60 * 30,
-  1000 * 60 * 60,
-  1000 * 60 * 60 * 3,
-  1000 * 60 * 60 * 12,
-  1000 * 60 * 60 * 24,
-  1000 * 60 * 60 * 24 * 7,
-  1000 * 60 * 60 * 24 * 365 / 12,
-  1000 * 60 * 60 * 24 * 365 / 12 * 2,
-  1000 * 60 * 60 * 24 * 365 / 12 * 3,
-  1000 * 60 * 60 * 24 * 365 / 12 * 6,
-  1000 * 60 * 60 * 24 * 365,
-  1000 * 60 * 60 * 24 * 365 * 2
-];
-
-
-/**
- * Array of minor intervals, synced with RANGES_. Used by interval auto calculation.
- * @type {!Array.<!Array>}
- * @private
- */
-anychart.scales.StockScatterDateTime.MINOR_INTERVALS_ = [
-  [anychart.enums.Interval.MILLISECOND, 1],
-  [anychart.enums.Interval.MILLISECOND, 5],
-  [anychart.enums.Interval.MILLISECOND, 20],
-  [anychart.enums.Interval.MILLISECOND, 100],
-  [anychart.enums.Interval.MILLISECOND, 500],
-  [anychart.enums.Interval.SECOND, 2],
-  [anychart.enums.Interval.SECOND, 10],
-  [anychart.enums.Interval.SECOND, 30],
-  [anychart.enums.Interval.MINUTE, 2],
-  [anychart.enums.Interval.MINUTE, 10],
-  [anychart.enums.Interval.MINUTE, 30],
-  [anychart.enums.Interval.HOUR, 1],
-  [anychart.enums.Interval.HOUR, 3],
-  [anychart.enums.Interval.HOUR, 12],
-  [anychart.enums.Interval.DAY, 1],
-  [anychart.enums.Interval.WEEK, 1],
-  [anychart.enums.Interval.MONTH, 1],
-  [anychart.enums.Interval.MONTH, 1],
-  [anychart.enums.Interval.QUARTER, 1],
-  [anychart.enums.Interval.SEMESTER, 1],
-  [anychart.enums.Interval.YEAR, 1],
-  [anychart.enums.Interval.YEAR, 2]
-];
-
-
-/**
- * Array of major intervals, synced with RANGES_. Used by interval auto calculation.
- * @type {!Array.<!Array>}
- * @private
- */
-anychart.scales.StockScatterDateTime.MAJOR_INTERVALS_ = [
-  [anychart.enums.Interval.MILLISECOND, 5],
-  [anychart.enums.Interval.MILLISECOND, 20],
-  [anychart.enums.Interval.MILLISECOND, 100],
-  [anychart.enums.Interval.MILLISECOND, 500],
-  [anychart.enums.Interval.SECOND, 2],
-  [anychart.enums.Interval.SECOND, 10],
-  [anychart.enums.Interval.SECOND, 30],
-  [anychart.enums.Interval.MINUTE, 2],
-  [anychart.enums.Interval.MINUTE, 10],
-  [anychart.enums.Interval.MINUTE, 30],
-  [anychart.enums.Interval.HOUR, 1],
-  [anychart.enums.Interval.HOUR, 3],
-  [anychart.enums.Interval.HOUR, 12],
-  [anychart.enums.Interval.DAY, 1],
-  [anychart.enums.Interval.WEEK, 1],
-  [anychart.enums.Interval.MONTH, 1],
-  [anychart.enums.Interval.MONTH, 2],
-  [anychart.enums.Interval.QUARTER, 1],
-  [anychart.enums.Interval.SEMESTER, 1],
-  [anychart.enums.Interval.YEAR, 1],
-  [anychart.enums.Interval.YEAR, 2],
-  [anychart.enums.Interval.YEAR, 4]
+anychart.scales.StockScatterDateTime.DEFAULT_TICKS_ = [
+  {'minor': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 1}, 'major': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 5}},
+  {'minor': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 5}, 'major': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 20}},
+  {'minor': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 20}, 'major': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 100}},
+  {'minor': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 100}, 'major': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 500}},
+  {'minor': {'unit': anychart.enums.Interval.MILLISECOND, 'count': 500}, 'major': {'unit': anychart.enums.Interval.SECOND, 'count': 2}},
+  {'minor': {'unit': anychart.enums.Interval.SECOND, 'count': 2}, 'major': {'unit': anychart.enums.Interval.SECOND, 'count': 10}},
+  {'minor': {'unit': anychart.enums.Interval.SECOND, 'count': 10}, 'major': {'unit': anychart.enums.Interval.SECOND, 'count': 30}},
+  {'minor': {'unit': anychart.enums.Interval.SECOND, 'count': 30}, 'major': {'unit': anychart.enums.Interval.MINUTE, 'count': 2}},
+  {'minor': {'unit': anychart.enums.Interval.MINUTE, 'count': 2}, 'major': {'unit': anychart.enums.Interval.MINUTE, 'count': 10}},
+  {'minor': {'unit': anychart.enums.Interval.MINUTE, 'count': 10}, 'major': {'unit': anychart.enums.Interval.MINUTE, 'count': 30}},
+  {'minor': {'unit': anychart.enums.Interval.MINUTE, 'count': 30}, 'major': {'unit': anychart.enums.Interval.HOUR, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.HOUR, 'count': 1}, 'major': {'unit': anychart.enums.Interval.HOUR, 'count': 3}},
+  {'minor': {'unit': anychart.enums.Interval.HOUR, 'count': 3}, 'major': {'unit': anychart.enums.Interval.HOUR, 'count': 12}},
+  {'minor': {'unit': anychart.enums.Interval.HOUR, 'count': 12}, 'major': {'unit': anychart.enums.Interval.DAY, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.DAY, 'count': 1}, 'major': {'unit': anychart.enums.Interval.WEEK, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.WEEK, 'count': 1}, 'major': {'unit': anychart.enums.Interval.MONTH, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.MONTH, 'count': 1}, 'major': {'unit': anychart.enums.Interval.QUARTER, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.QUARTER, 'count': 1}, 'major': {'unit': anychart.enums.Interval.SEMESTER, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.SEMESTER, 'count': 1}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 1}},
+  {'minor': {'unit': anychart.enums.Interval.YEAR, 'count': 1}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 2}},
+  {'minor': {'unit': anychart.enums.Interval.YEAR, 'count': 2}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 4}},
 ];
 
 
@@ -571,6 +629,7 @@ anychart.scales.StockScatterDateTime.MAJOR_INTERVALS_ = [
 //exports
 (function() {
   var proto = anychart.scales.StockScatterDateTime.prototype;
+  proto['ticksCount'] = proto.ticksCount;
   proto['getFullMinimum'] = proto.getFullMinimum;
   proto['getFullMaximum'] = proto.getFullMaximum;
   proto['getMinimum'] = proto.getMinimum;
