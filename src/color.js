@@ -516,6 +516,13 @@ anychart.color.colorResolversCache = {};
 
 
 /**
+ * Series cache of resolver functions.
+ * @type {Object.<string, function(anychart.core.IShapeManagerUser, number):(acgraph.vector.Fill|acgraph.vector.Stroke|acgraph.vector.PatternFill)>}
+ */
+anychart.color.colorResolversCache2 = {};
+
+
+/**
  * Returns a color resolver for passed color names and type.
  * @param {(Array.<string>|null|boolean)} colorNames
  * @param {anychart.enums.ColorType} colorType
@@ -627,7 +634,7 @@ anychart.color.getColorResolver2 = function(colorNames, colorType) {
   if (!colorNames) return anychart.color.getNullColor;
   if (goog.isArray(colorNames)) {
     var hash = colorType + '|' + colorNames.join('|');
-    result = anychart.color.colorResolversCache[hash];
+    result = anychart.color.colorResolversCache2[hash];
     if (!result) {
       /** @type {!Function} */
       var normalizerFunc;
@@ -643,13 +650,13 @@ anychart.color.getColorResolver2 = function(colorNames, colorType) {
           normalizerFunc = anychart.core.settings.fillOrFunctionSimpleNormalizer;
           break;
       }
-      anychart.color.colorResolversCache[hash] = result = goog.partial(anychart.color.getColor2,
+      anychart.color.colorResolversCache2[hash] = result = goog.partial(anychart.color.getColor2,
           colorNames, normalizerFunc, colorType == anychart.enums.ColorType.HATCH_FILL);
     }
   } else {
-    result = anychart.color.colorResolversCache['transparent'];
+    result = anychart.color.colorResolversCache2['transparent'];
     if (!result)
-      result = anychart.color.colorResolversCache['transparent'] = function() {return anychart.color.TRANSPARENT_HANDLER};
+      result = anychart.color.colorResolversCache2['transparent'] = function() {return anychart.color.TRANSPARENT_HANDLER};
   }
   return result;
 };
