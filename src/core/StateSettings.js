@@ -12,10 +12,11 @@ goog.require('anychart.core.ui.MarkersFactory');
  * @param {anychart.core.settings.IObjectWithSettings} stateHolder State holder.
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} descriptorsMeta Descriptors for state.
  * @param {anychart.PointState} stateType
+ * @param {Array.<Array>=} opt_descriptorsOverride
  * @constructor
  * @extends {anychart.core.Base}
  */
-anychart.core.StateSettings = function(stateHolder, descriptorsMeta, stateType) {
+anychart.core.StateSettings = function(stateHolder, descriptorsMeta, stateType, opt_descriptorsOverride) {
   anychart.core.StateSettings.base(this, 'constructor');
 
   /**
@@ -32,6 +33,11 @@ anychart.core.StateSettings = function(stateHolder, descriptorsMeta, stateType) 
    * @type {anychart.PointState}
    */
   this.stateType = stateType;
+
+  if (goog.isDef(opt_descriptorsOverride)) {
+    var diff = anychart.core.settings.createDescriptors(anychart.core.StateSettings.PROPERTY_DESCRIPTORS, opt_descriptorsOverride);
+    anychart.core.settings.populate(anychart.core.StateSettings, diff);
+  }
 };
 goog.inherits(anychart.core.StateSettings, anychart.core.Base);
 
@@ -54,8 +60,10 @@ anychart.core.StateSettings.prototype.disposeInternal = function() {
 anychart.core.StateSettings.prototype.serialize = function() {
   var json = anychart.core.StateSettings.base(this, 'serialize');
   anychart.core.settings.serialize(this, anychart.core.StateSettings.PROPERTY_DESCRIPTORS, json, 'State settings', this.descriptorsMeta);
-  json['labels'] = this.labels().serialize();
-  json['markers'] = this.markers().serialize();
+  if (this.descriptorsMeta['labels'])
+    json['labels'] = this.labels().serialize();
+  if (this.descriptorsMeta['markers'])
+    json['markers'] = this.markers().serialize();
   return json;
 };
 
@@ -125,11 +133,12 @@ anychart.core.settings.populate(anychart.core.StateSettings, anychart.core.State
 /**
  * Labels.
  * @param {(Object|boolean|null)=} opt_value
- * @return {anychart.core.StateSettings|anychart.core.ui.LabelsFactory}
+ * @return {anychart.core.StateSettings|anychart.core.ui.LabelsFactory|anychart.core.ui.CircularLabelsFactory}
  */
 anychart.core.StateSettings.prototype.labels = function(opt_value) {
   if (!this.labels_) {
-    this.labels_ = new anychart.core.ui.LabelsFactory();
+    var labelsFactoryConstructor = this.getOption('labelsFactoryConstructor');
+    this.labels_ = new labelsFactoryConstructor();
     if (this.stateType == anychart.PointState.NORMAL) {
       var hook = /** @type {function(anychart.SignalEvent):(boolean|undefined)} */ (this.descriptorsMeta['labels'].beforeInvalidationHook);
       this.labels_.listenSignals(hook, this.stateHolder);

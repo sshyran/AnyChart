@@ -113,23 +113,22 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
     ['markers', 0, 0, 0, this.markersInvalidated_, this]
   ]);
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
+  this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
   anychart.core.settings.populateAliases(anychart.charts.PyramidFunnel, ['fill', 'stroke', 'hatchFill'], this.normal_);
 
-  var hoveredDescriptorsMeta = {};
-  anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
+  var interactivityDescriptorsMeta = {};
+  anychart.core.settings.createDescriptorsMeta(interactivityDescriptorsMeta, [
     ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
     ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['hatchFill', 0, 0]
+    ['hatchFill', 0, 0],
+    ['labels', 0, 0],
+    ['markers', 0, 0]
   ]);
-  this.hovered_ = new anychart.core.StateSettings(this, hoveredDescriptorsMeta, anychart.PointState.HOVER);
+  this.hovered_ = new anychart.core.StateSettings(this, interactivityDescriptorsMeta, anychart.PointState.HOVER);
+  this.hovered_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
 
-  var selectedDescriptorsMeta = {};
-  anychart.core.settings.createDescriptorsMeta(selectedDescriptorsMeta, [
-    ['fill', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['stroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['hatchFill', 0, 0]
-  ]);
-  this.selected_ = new anychart.core.StateSettings(this, selectedDescriptorsMeta, anychart.PointState.SELECT);
+  this.selected_ = new anychart.core.StateSettings(this, interactivityDescriptorsMeta, anychart.PointState.SELECT);
+  this.selected_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
 
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['baseWidth', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
@@ -142,25 +141,6 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
       anychart.ConsistencyState.BOUNDS | anychart.ConsistencyState.PYRAMID_FUNNEL_LABELS,
       anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
     ['connectorStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW]
-    /*['fill',
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
-      anychart.Signal.NEEDS_REDRAW],
-    ['hoverFill',
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW],
-    ['selectFill',
-      anychart.ConsistencyState.APPEARANCE,
-      anychart.Signal.NEEDS_REDRAW],
-    ['stroke',
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
-      anychart.Signal.NEEDS_REDRAW],
-    ['hoverStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['selectStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
-    ['hatchFill',
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.CHART_LEGEND,
-      anychart.Signal.NEEDS_REDRAW],
-    ['hoverHatchFill', 0, 0],
-    ['selectHatchFill', 0, 0]*/
   ]);
 
   this.resumeSignalsDispatching(false);

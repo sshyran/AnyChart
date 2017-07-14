@@ -2281,47 +2281,7 @@ goog.provide('anychart.themes.defaultTheme');
           'enabled': null
         }
       },
-      'fill': returnSourceColor,
-      'stroke': 'none',
-      'hatchFill': null,
-      'hoverFill': returnLightenSourceColor,
-      'hoverStroke': returnSourceColor,
-      'selectFill': defaultSelectColor,
-      'selectStroke': defaultSelectStroke,
       'connectorStroke': colorStrokeNormal,
-      'labels': {
-        'enabled': true,
-        'fontColor': null,
-        'position': 'inside',
-        'disablePointerEvents': false,
-        'autoRotate': false,
-        'zIndex': 34,
-        /**
-         * @this {*}
-         * @return {*}
-         */
-        'format': function() {
-          return this['name'] ? this['name'] : this['x'];
-        }
-      },
-      'hoverLabels': {
-        'enabled': null
-      },
-      'selectLabels': {
-        'enabled': null
-      },
-      'markers': {
-        'enabled': false,
-        'position': 'center',
-        'positionFormatter': returnValue,
-        'zIndex': 33
-      },
-      'hoverMarkers': {
-        'enabled': null
-      },
-      'selectMarkers': {
-        'enabled': null
-      },
       'overlapMode': 'no-overlap',
       'connectorLength': 20,
       'baseWidth': '70%',
@@ -2381,8 +2341,10 @@ goog.provide('anychart.themes.defaultTheme');
       'outsideLabelsCriticalAngle': 60,
       'outsideLabelsSpace': 30,
       'insideLabelsOffset': '50%',
-      'labels': {
-        'format': PERCENT_VALUE_TOKEN + '%'
+      'normal': {
+        'labels': {
+          'format': PERCENT_VALUE_TOKEN + '%'
+        }
       },
       'a11y': {
         'titleFormat': pieA11yTitleFormatter

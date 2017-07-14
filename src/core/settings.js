@@ -42,10 +42,11 @@ anychart.core.settings.PropertyDescriptorMeta;
  * @param {string} propName - Property name.
  * @param {Function} normalizer - Normalizer function.
  * @param {string=} opt_methodName - Deprecated prop name.
+ * @return {anychart.core.settings.PropertyDescriptor}
  */
 anychart.core.settings.createDescriptor = function(map, descriptorOrHandler, propName, normalizer, opt_methodName) {
   if (goog.isArray(descriptorOrHandler))
-    anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptorOrHandler));
+    return anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptorOrHandler));
   else {
     /**
      * @type {anychart.core.settings.PropertyDescriptor}
@@ -61,17 +62,21 @@ anychart.core.settings.createDescriptor = function(map, descriptorOrHandler, pro
     }
     map[methodName] = descriptor;
   }
+  return descriptor;
 };
 
 
 /**
  * @param {!Object.<anychart.core.settings.PropertyDescriptor>} map
  * @param {!Array.<Array>} descriptors Descriptors.
+ * @return {!Object.<anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.settings.createDescriptors = function(map, descriptors) {
+  var diff = {};
   for (var i = 0; i < descriptors.length; i++) {
-    anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptors[i]));
+    diff[descriptors[i][1]] = anychart.core.settings.createDescriptor.apply(null, goog.array.concat(map, descriptors[i]));
   }
+  return diff;
 };
 
 
