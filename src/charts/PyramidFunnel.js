@@ -1699,7 +1699,7 @@ anychart.charts.PyramidFunnel.prototype.labels = function(opt_value) {
     this.normal_.labels(opt_value);
     return this;
   }
-  return this.normal_.labels();
+  return /** @type {anychart.core.ui.LabelsFactory} */ (this.normal_.labels());
 };
 
 
@@ -2596,7 +2596,7 @@ anychart.charts.PyramidFunnel.prototype.markers = function(opt_value) {
     this.normal_.markers(opt_value);
     return this;
   }
-  return this.normal_.markers();
+  return /** @type {anychart.core.ui.MarkersFactory} */ (this.normal_.markers());
 };
 
 

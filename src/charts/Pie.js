@@ -4,6 +4,7 @@ goog.require('anychart.animations.AnimationSerialQueue');
 goog.require('anychart.animations.PieAnimation');
 goog.require('anychart.animations.PieLabelAnimation');
 goog.require('anychart.color');
+goog.require('anychart.core.IShapeManagerUser');
 goog.require('anychart.core.PiePoint');
 goog.require('anychart.core.SeparateChart');
 goog.require('anychart.core.StateSettings');
@@ -29,6 +30,7 @@ goog.require('anychart.palettes');
  * @param {(anychart.enums.TextParsingMode|anychart.data.TextParsingSettings)=} opt_csvSettings If CSV string is passed, you can pass CSV parser settings here as a hash map.
  * @extends {anychart.core.SeparateChart}
  * @implements {anychart.core.utils.IInteractiveSeries}
+ * @implements {anychart.core.IShapeManagerUser}
  * @constructor
  */
 anychart.charts.Pie = function(opt_data, opt_csvSettings) {
@@ -946,7 +948,7 @@ anychart.charts.Pie.prototype.labels = function(opt_value) {
     this.normal_.labels(opt_value);
     return this;
   }
-  return this.normal_.labels();
+  return /** @type {anychart.core.ui.CircularLabelsFactory} */ (this.normal_.labels());
 };
 
 
@@ -4535,7 +4537,7 @@ anychart.charts.Pie.prototype.disposeInternal = function() {
   proto['group'] = proto.group;//doc|ex|non-tr
   proto['data'] = proto.data;//doc|ex|
   proto['labels'] = proto.labels;//doc|ex
-  proto['hoverLabels'] = proto.hoverLabels;//doc|ex
+  //proto['hoverLabels'] = proto.hoverLabels;//doc|ex
   proto['getCenterPoint'] = proto.getCenterPoint;//doc|ex
   proto['getPixelRadius'] = proto.getPixelRadius;//doc|need-ex
   proto['getPixelInnerRadius'] = proto.getPixelInnerRadius;//doc|need-ex

@@ -12,7 +12,7 @@ goog.require('anychart.core.ui.MarkersFactory');
  * @param {anychart.core.settings.IObjectWithSettings} stateHolder State holder.
  * @param {!Object.<string, anychart.core.settings.PropertyDescriptorMeta>} descriptorsMeta Descriptors for state.
  * @param {anychart.PointState} stateType
- * @param {Array.<Array>=} opt_descriptorsOverride
+ * @param {!Array.<Array>=} opt_descriptorsOverride
  * @constructor
  * @extends {anychart.core.Base}
  */
@@ -137,7 +137,7 @@ anychart.core.settings.populate(anychart.core.StateSettings, anychart.core.State
  */
 anychart.core.StateSettings.prototype.labels = function(opt_value) {
   if (!this.labels_) {
-    var labelsFactoryConstructor = this.getOption('labelsFactoryConstructor');
+    var labelsFactoryConstructor = /** @type {Function} */ (this.getOption('labelsFactoryConstructor'));
     this.labels_ = new labelsFactoryConstructor();
     if (this.stateType == anychart.PointState.NORMAL) {
       var hook = /** @type {function(anychart.SignalEvent):(boolean|undefined)} */ (this.descriptorsMeta['labels'].beforeInvalidationHook);
