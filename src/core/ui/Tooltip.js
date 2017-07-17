@@ -1143,7 +1143,7 @@ anychart.core.ui.Tooltip.prototype.showFloat = function(clientX, clientY, opt_co
     opt_contextProvider['clientX'] = clientX;
     opt_contextProvider['clientY'] = clientY;
     this.title().autoText(this.getFormattedTitle(opt_contextProvider));
-    this.contentInternal().text(this.getFormattedContent_(opt_contextProvider));
+    this.contentInternal()['text'](this.getFormattedContent_(opt_contextProvider));
   }
 
   this.setContainerToTooltip_(this);
@@ -1378,9 +1378,9 @@ anychart.core.ui.Tooltip.prototype.applyTextSettings = function() {
         this.contentInternal().textSettings(key, val);
       }
     }
-    this.contentInternal().adjustFontSize(/** @type {boolean} */ (this.getOption('adjustFontSize')));
-    this.contentInternal().minFontSize(/** @type {number|string} */ (this.getOption('minFontSize')));
-    this.contentInternal().maxFontSize(/** @type {number|string} */ (this.getOption('maxFontSize')));
+    this.contentInternal()['adjustFontSize'](/** @type {boolean} */ (this.getOption('adjustFontSize')));
+    this.contentInternal()['minFontSize'](/** @type {number|string} */ (this.getOption('minFontSize')));
+    this.contentInternal()['maxFontSize'](/** @type {number|string} */ (this.getOption('maxFontSize')));
     this.contentInternal().resumeSignalsDispatching(false);
   }
 };

@@ -72,6 +72,7 @@ anychart.core.ui.CrosshairLabel.DESCRIPTORS = (function() {
 
   return map;
 })();
+anychart.core.settings.populate(anychart.core.ui.CrosshairLabel, anychart.core.ui.CrosshairLabel.DESCRIPTORS);
 
 
 //endregion
