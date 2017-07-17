@@ -58,19 +58,19 @@ goog.inherits(anychart.core.ui.Label, anychart.core.ui.LabelBase);
 
 
 //exports
-// (function() {
-//   var proto = anychart.core.ui.Label.prototype;
-//   proto['position'] = proto.position;
-//   proto['background'] = proto.background;
-//   proto['padding'] = proto.padding;
-//   proto['width'] = proto.width;
-//   proto['height'] = proto.height;
-//   proto['anchor'] = proto.anchor;
-//   proto['offsetX'] = proto.offsetX;
-//   proto['offsetY'] = proto.offsetY;
-//   proto['text'] = proto.text;
-//   proto['minFontSize'] = proto.minFontSize;
-//   proto['maxFontSize'] = proto.maxFontSize;
-//   proto['adjustFontSize'] = proto.adjustFontSize;
-//   proto['rotation'] = proto.rotation;
-// })();
+(function() {
+  var proto = anychart.core.ui.Label.prototype;
+  // proto['position'] = proto.position;
+  proto['background'] = proto.background;
+  proto['padding'] = proto.padding;
+  // proto['width'] = proto.width;
+  // proto['height'] = proto.height;
+  // proto['anchor'] = proto.anchor;
+  // proto['offsetX'] = proto.offsetX;
+  // proto['offsetY'] = proto.offsetY;
+  // proto['text'] = proto.text;
+  // proto['minFontSize'] = proto.minFontSize;
+  // proto['maxFontSize'] = proto.maxFontSize;
+  // proto['adjustFontSize'] = proto.adjustFontSize;
+  // proto['rotation'] = proto.rotation;
+})();

@@ -1216,11 +1216,8 @@ anychart.core.ui.LabelBase.prototype.setupByJSON = function(config, opt_default)
     anychart.core.settings.deserialize(this, anychart.core.ui.LabelBase.DESCRIPTORS, config);
   }
 
-  if ('background' in config)
-    this.background(config['background']);
-
-  if ('padding' in config)
-    this.padding(config['padding']);
+  this.background().setupInternal(!!opt_default, config['background']);
+  this.padding().setupInternal(!!opt_default, config['padding']);
 
   // this.width(config['width']);
   // this.height(config['height']);
