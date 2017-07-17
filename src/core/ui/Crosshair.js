@@ -1,6 +1,9 @@
 goog.provide('anychart.core.ui.Crosshair');
+
 goog.require('anychart.core.VisualBase');
+goog.require('anychart.core.settings');
 goog.require('anychart.core.ui.CrosshairLabel');
+goog.require('goog.array');
 
 
 
@@ -8,6 +11,7 @@ goog.require('anychart.core.ui.CrosshairLabel');
  * Crosshair class.
  * @constructor
  * @extends {anychart.core.VisualBase}
+ * @implements {anychart.core.settings.IResolvable}
  */
 anychart.core.ui.Crosshair = function() {
   anychart.core.ui.Crosshair.base(this, 'constructor');
@@ -92,10 +96,41 @@ anychart.core.ui.Crosshair = function() {
    * @private
    */
   this.xLabelAutoEnabled_ = true;
+
+  /**
+   * @type {boolean}
+   * @private
+   */
+  this.needsForceSignalsDispatching_ = false;
+
+  /**
+   * Resolution chain cache.
+   * @type {?Array.<Object|null|undefined>}
+   * @private
+   */
+  this.resolutionChainCache_ = null;
+
+  /**
+   * Parent.
+   * @type {?anychart.core.ui.Crosshair}
+   * @private
+   */
+  this.parent_ = null;
+
+  /**
+   * @type {Object.<string, anychart.core.ui.Crosshair>}
+   */
+  this.childrenMap = {};
+
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['xStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW],
+    ['yStroke', anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.ui.Crosshair, anychart.core.VisualBase);
 
 
+//region -- Consistency states.
 /**
  * Supported signals.
  * @type {number}
@@ -114,6 +149,130 @@ anychart.core.ui.Crosshair.prototype.SUPPORTED_CONSISTENCY_STATES =
     anychart.ConsistencyState.APPEARANCE;
 
 
+//endregion
+//region -- Descriptors.
+/**
+ * Descriptors.
+ * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
+ */
+anychart.core.ui.Crosshair.DESCRIPTORS = (function() {
+  /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
+  var map = {};
+
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.MULTI_ARG,
+      'xStroke',
+      anychart.core.settings.strokeNormalizer);
+
+  anychart.core.settings.createDescriptor(
+      map,
+      anychart.enums.PropertyHandlerType.MULTI_ARG,
+      'yStroke',
+      anychart.core.settings.strokeNormalizer);
+
+  return map;
+})();
+anychart.core.settings.populate(anychart.core.ui.Crosshair, anychart.core.ui.Crosshair.DESCRIPTORS);
+
+
+//endregion
+//region -- IResolvable impl.
+/** @inheritDoc */
+anychart.core.ui.Crosshair.prototype.resolutionChainCache = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.resolutionChainCache_ = opt_value;
+  }
+  return this.resolutionChainCache_;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Crosshair.prototype.getResolutionChain = anychart.core.settings.getResolutionChain;
+
+
+/** @inheritDoc */
+anychart.core.ui.Crosshair.prototype.getLowPriorityResolutionChain = function() {
+  var sett = [this.themeSettings];
+  if (this.parent_)
+    sett = goog.array.concat(sett, this.parent_.getLowPriorityResolutionChain());
+  return sett;
+};
+
+
+/** @inheritDoc */
+anychart.core.ui.Crosshair.prototype.getHighPriorityResolutionChain = function() {
+  var sett = [this.ownSettings];
+  if (this.parent_) {
+    sett = goog.array.concat(sett, this.parent_.getHighPriorityResolutionChain());
+  }
+  return sett;
+};
+
+
+//endregion
+//region -- Parental relations
+/**
+ * Gets/sets new parent title.
+ * @param {anychart.core.ui.Crosshair=} opt_value - Value to set.
+ * @return {anychart.core.ui.Crosshair} - Current value or itself for method chaining.
+ */
+anychart.core.ui.Crosshair.prototype.parent = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    if (this.parent_ != opt_value) {
+      var uid = String(goog.getUid(this));
+      if (goog.isNull(opt_value)) { //removing parent.
+        //this.parent_ is not null here.
+        this.parent_.unlistenSignals(this.parentInvalidated_, this);
+        delete this.parent_.childrenMap[uid];
+        this.parent_ = null;
+      } else {
+        if (this.parent_)
+          this.parent_.unlistenSignals(this.parentInvalidated_, this);
+        this.parent_ = opt_value;
+        this.parent_.childrenMap[uid] = this;
+        this.parent_.listenSignals(this.parentInvalidated_, this);
+      }
+    }
+    return this;
+  }
+  return this.parent_;
+
+};
+
+
+/**
+ * Parent invalidation handler.
+ * @param {anychart.SignalEvent} e - Signal event.
+ * @private
+ */
+anychart.core.ui.Crosshair.prototype.parentInvalidated_ = function(e) {
+  var state = 0;
+  var signal = 0;
+
+  if (e.hasSignal(anychart.Signal.NEEDS_REDRAW)) {
+    state |= anychart.ConsistencyState.APPEARANCE;
+    signal |= anychart.Signal.NEEDS_REDRAW;
+  }
+
+  if (e.hasSignal(anychart.Signal.BOUNDS_CHANGED)) {
+    state |= anychart.ConsistencyState.BOUNDS;
+    signal |= anychart.Signal.BOUNDS_CHANGED;
+  }
+
+  if (e.hasSignal(anychart.Signal.ENABLED_STATE_CHANGED)) {
+    state |= anychart.ConsistencyState.ENABLED;
+    signal |= anychart.Signal.ENABLED_STATE_CHANGED | anychart.Signal.NEEDS_REDRAW;
+  }
+
+  this.resolutionChainCache_ = null;
+
+  this.invalidate(state, signal);
+};
+
+
+//endregion
+//region -- Common.
 /**
  * Internal label invalidation handler.
  * @param {anychart.SignalEvent} event Event object.
@@ -272,52 +431,54 @@ anychart.core.ui.Crosshair.prototype.yLabel = function(opt_value) {
 };
 
 
-/**
- * Getter/Setter for the X line stroke.
- * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
- *    or stroke settings.
- * @param {number=} opt_thickness [1] Line thickness.
- * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
- * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
- * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
- * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
- */
-anychart.core.ui.Crosshair.prototype.xStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-  if (goog.isDef(opt_strokeOrFill)) {
-    var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
-    if (stroke != this.xStroke_) {
-      this.xStroke_ = stroke;
-      this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
-    }
-    return this;
-  }
-  return this.xStroke_;
-};
+// /**
+//  * Getter/Setter for the X line stroke.
+//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
+//  *    or stroke settings.
+//  * @param {number=} opt_thickness [1] Line thickness.
+//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
+//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
+//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
+//  * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
+//  */
+// anychart.core.ui.Crosshair.prototype.xStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
+//   if (goog.isDef(opt_strokeOrFill)) {
+//     var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
+//     if (stroke != this.xStroke_) {
+//       this.xStroke_ = stroke;
+//       this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
+//     }
+//     return this;
+//   }
+//   return this.xStroke_;
+// };
+//
+//
+// /**
+//  * Getter/Setter for the Y line stroke.
+//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
+//  *    or stroke settings.
+//  * @param {number=} opt_thickness [1] Line thickness.
+//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
+//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
+//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
+//  * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
+//  */
+// anychart.core.ui.Crosshair.prototype.yStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
+//   if (goog.isDef(opt_strokeOrFill)) {
+//     var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
+//     if (stroke != this.yStroke_) {
+//       this.yStroke_ = stroke;
+//       this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
+//     }
+//     return this;
+//   }
+//   return this.yStroke_;
+// };
 
 
-/**
- * Getter/Setter for the Y line stroke.
- * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
- *    or stroke settings.
- * @param {number=} opt_thickness [1] Line thickness.
- * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
- * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
- * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
- * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
- */
-anychart.core.ui.Crosshair.prototype.yStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-  if (goog.isDef(opt_strokeOrFill)) {
-    var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
-    if (stroke != this.yStroke_) {
-      this.yStroke_ = stroke;
-      this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
-    }
-    return this;
-  }
-  return this.yStroke_;
-};
-
-
+//endregion
+//region -- Draw.
 /**
  * Create xLine, yLine and Labels
  * @return {!anychart.core.ui.Crosshair} {@link anychart.core.ui.Crosshair} instance for method chaining.
@@ -368,6 +529,32 @@ anychart.core.ui.Crosshair.prototype.draw = function() {
 };
 
 
+/**
+ * Whether to dispatch signals even if current consistency state is not effective.
+ * @param {boolean=} opt_value - Value to set.
+ * @return {boolean|anychart.core.ui.Crosshair}
+ */
+anychart.core.ui.Crosshair.prototype.needsForceSignalsDispatching = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.needsForceSignalsDispatching_ = opt_value;
+    return this;
+  }
+  return this.needsForceSignalsDispatching_;
+};
+
+
+/**
+ * @inheritDoc
+ */
+anychart.core.ui.Crosshair.prototype.invalidate = function(state, opt_signal) {
+  var effective = anychart.core.ui.Crosshair.base(this, 'invalidate', state, opt_signal);
+  if (!effective && this.needsForceSignalsDispatching())
+    this.dispatchSignal(opt_signal || 0);
+  return effective;
+};
+
+
+//endregion
 /**
  *
  * @param {(anychart.core.ChartWithAxes|anychart.charts.Map|anychart.core.stock.Plot)=} opt_chart
@@ -651,13 +838,15 @@ anychart.core.ui.Crosshair.prototype.drawXLabel_ = function(mouseX, mouseY) {
 
 
 /**
- * See variable description.
- * @param {boolean=} opt_value - Value ti set.
- * @return {boolean}
+ * This flag is used to auto enable or disable xLabel.
+ * Used to correctly show xLabels for stock plots.
+ * @param {boolean=} opt_value - Value to set.
+ * @return {boolean|anychart.core.ui.Crosshair}
  */
 anychart.core.ui.Crosshair.prototype.xLabelAutoEnabled = function(opt_value) {
   if (goog.isDef(opt_value)) {
     this.xLabelAutoEnabled_ = opt_value;
+    return this;
   }
   return this.xLabelAutoEnabled_;
 };
@@ -892,9 +1081,7 @@ anychart.core.ui.Crosshair.prototype.remove = function() {
 };
 
 
-//----------------------------------------------------------------------------------------------------------------------
-//  Disposing.
-//----------------------------------------------------------------------------------------------------------------------
+//region -- Disposing.
 /** @inheritDoc */
 anychart.core.ui.Crosshair.prototype.disposeInternal = function() {
   if (this.chart) {
@@ -924,12 +1111,17 @@ anychart.core.ui.Crosshair.prototype.disposeInternal = function() {
 };
 
 
+//endregion
+//region -- Serialize/Deserialize.
 /** @inheritDoc */
 anychart.core.ui.Crosshair.prototype.serialize = function() {
   var json = anychart.core.ui.Crosshair.base(this, 'serialize');
+
+  anychart.core.settings.serialize(this, anychart.core.ui.Crosshair.DESCRIPTORS, json, 'Crosshair');
+
   json['displayMode'] = this.displayMode();
-  json['xStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.xStroke()));
-  json['yStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.yStroke()));
+  // json['xStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.xStroke()));
+  // json['yStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.yStroke()));
   json['xLabel'] = this.xLabel_.serialize();
   json['yLabel'] = this.yLabel_.serialize();
   return json;
@@ -939,20 +1131,28 @@ anychart.core.ui.Crosshair.prototype.serialize = function() {
 /** @inheritDoc */
 anychart.core.ui.Crosshair.prototype.setupByJSON = function(config, opt_default) {
   anychart.core.ui.Crosshair.base(this, 'setupByJSON', config, opt_default);
+
+  if (opt_default) {
+    anychart.core.settings.copy(this.themeSettings, anychart.core.ui.Crosshair.DESCRIPTORS, config);
+  } else {
+    anychart.core.settings.deserialize(this, anychart.core.ui.Crosshair.DESCRIPTORS, config);
+  }
+
   this.displayMode(config['displayMode']);
-  this.xStroke(config['xStroke']);
-  this.yStroke(config['yStroke']);
+  // this.xStroke(config['xStroke']);
+  // this.yStroke(config['yStroke']);
   this.xLabel(config['xLabel']);
   this.yLabel(config['yLabel']);
 };
 
 
+//endregion
 //exports
 (function() {
   var proto = anychart.core.ui.Crosshair.prototype;
   proto['displayMode'] = proto.displayMode;
-  proto['xStroke'] = proto.xStroke;
-  proto['yStroke'] = proto.yStroke;
+  // proto['xStroke'] = proto.xStroke;
+  // proto['yStroke'] = proto.yStroke;
   proto['xLabel'] = proto.xLabel;
   proto['yLabel'] = proto.yLabel;
 })();

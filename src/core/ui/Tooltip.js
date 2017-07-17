@@ -1324,7 +1324,7 @@ anychart.core.ui.Tooltip.prototype.remove = function() {
  * Whether needs force invalidation.
  * @return {boolean}
  */
-anychart.core.ui.Tooltip.prototype.needsForceInvalidation = function() {
+anychart.core.ui.Tooltip.prototype.needsForceSignalsDispatching = function() {
   return (this.check(anychart.core.ui.Tooltip.Capabilities.CAN_CHANGE_DISPLAY_MODE) && !goog.object.isEmpty(this.childTooltipsMap));
 };
 
@@ -1333,10 +1333,10 @@ anychart.core.ui.Tooltip.prototype.needsForceInvalidation = function() {
  * Updates needsForceInvalidation state for complex properties like bg, title, etc.
  */
 anychart.core.ui.Tooltip.prototype.updateForceInvalidation = function() {
-  var forceInvalidation = this.needsForceInvalidation();
-  this.title().forceInvalidate = forceInvalidation;
-  this.separator().forceInvalidate = forceInvalidation;
-  this.background().forceInvalidate = forceInvalidation;
+  var forceInvalidation = this.needsForceSignalsDispatching();
+  this.title().needsForceSignalsDispatching(forceInvalidation);
+  this.separator().needsForceSignalsDispatching(forceInvalidation);
+  this.background().needsForceSignalsDispatching(forceInvalidation);
 };
 
 
@@ -1391,7 +1391,7 @@ anychart.core.ui.Tooltip.prototype.applyTextSettings = function() {
  */
 anychart.core.ui.Tooltip.prototype.invalidate = function(state, opt_signal) {
   var effective = anychart.core.ui.Tooltip.base(this, 'invalidate', state, opt_signal);
-  if (!effective && this.needsForceInvalidation())
+  if (!effective && this.needsForceSignalsDispatching())
     this.dispatchSignal(opt_signal || 0);
   return effective;
 };

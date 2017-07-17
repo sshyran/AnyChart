@@ -40,8 +40,8 @@ anychart.core.ui.MapCrosshair.prototype.show = function(event) {
 
     var xAxis = /** @type {anychart.core.axes.Map} */(this.xAxis());
     var yAxis = /** @type {anychart.core.axes.Map} */(this.yAxis());
-    var xStroke = /** @type {acgraph.vector.Stroke} */(this.xStroke());
-    var yStroke = /** @type {acgraph.vector.Stroke} */(this.yStroke());
+    var xStroke = /** @type {acgraph.vector.Stroke} */(this.getOption('xStroke'));
+    var yStroke = /** @type {acgraph.vector.Stroke} */(this.getOption('yStroke'));
     var xLabel = /** @type {anychart.core.ui.CrosshairLabel} */(this.xLabel());
     var yLabel = /** @type {anychart.core.ui.CrosshairLabel} */(this.yLabel());
 
@@ -129,8 +129,8 @@ anychart.core.ui.MapCrosshair.prototype.update = function(opt_x, opt_y) {
 
   var xAxis = /** @type {anychart.core.axes.Map} */(this.xAxis());
   var yAxis = /** @type {anychart.core.axes.Map} */(this.yAxis());
-  var xStroke = /** @type {acgraph.vector.Stroke} */(this.xStroke());
-  var yStroke = /** @type {acgraph.vector.Stroke} */(this.yStroke());
+  var xStroke = /** @type {acgraph.vector.Stroke} */(this.getOption('xStroke'));
+  var yStroke = /** @type {acgraph.vector.Stroke} */(this.getOption('yStroke'));
   var xLabel = /** @type {anychart.core.ui.CrosshairLabel} */(this.xLabel());
   var yLabel = /** @type {anychart.core.ui.CrosshairLabel} */(this.yLabel());
 
@@ -214,8 +214,8 @@ anychart.core.ui.MapCrosshair.prototype.draw = function() {
   }
 
   if (this.hasInvalidationState(anychart.ConsistencyState.APPEARANCE)) {
-    this.xLine.stroke(/** @type {acgraph.vector.Stroke} */(this.xStroke()));
-    this.yLine.stroke(/** @type {acgraph.vector.Stroke} */(this.yStroke()));
+    this.xLine.stroke(/** @type {acgraph.vector.Stroke} */(this.getOption('xStroke')));
+    this.yLine.stroke(/** @type {acgraph.vector.Stroke} */(this.getOption('yStroke')));
 
     this.markConsistent(anychart.ConsistencyState.APPEARANCE);
   }
@@ -309,7 +309,7 @@ anychart.core.ui.MapCrosshair.prototype.drawLabel = function(axis, label, value)
   var positionCoords = axis.ticks().calcTick(value);
 
   label.x(/** @type {number}*/(positionCoords[0])).y(/** @type {number}*/(positionCoords[1]));
-  label.rotation(this.getLabelRotation_(axis, positionCoords[4]));
+  label['rotation'](this.getLabelRotation_(axis, positionCoords[4]));
   label.container(this.rootLayer_).draw();
 };
 

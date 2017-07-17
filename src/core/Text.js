@@ -4,6 +4,7 @@ goog.require('acgraph');
 goog.require('anychart.core.VisualBase');
 goog.require('anychart.core.settings');
 goog.require('anychart.enums');
+goog.require('goog.array');
 
 
 
@@ -34,6 +35,13 @@ anychart.core.Text = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  /**
+   * Whether to dispatch signals even if current consistency state is not effective.
+   * @type {boolean}
+   * @private
+   */
+  this.needsForceSignalsDispatching_ = false;
 
   // /**
   //  * Settings object.
@@ -315,6 +323,31 @@ anychart.core.Text.prototype.parentInvalidated_ = function(e) {
 
   this.resolutionChainCache_ = null;
   this.invalidate(state, signal);
+};
+
+
+/**
+ * Whether to dispatch signals even if current consistency state is not effective.
+ * @param {boolean=} opt_value - Value to set.
+ * @return {boolean|anychart.core.Text}
+ */
+anychart.core.Text.prototype.needsForceSignalsDispatching = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.needsForceSignalsDispatching_ = opt_value;
+    return this;
+  }
+  return this.needsForceSignalsDispatching_;
+};
+
+
+/**
+ * @inheritDoc
+ */
+anychart.core.Text.prototype.invalidate = function(state, opt_signal) {
+  var effective = anychart.core.Text.base(this, 'invalidate', state, opt_signal);
+  if (!effective && this.needsForceSignalsDispatching())
+    this.dispatchSignal(opt_signal || 0);
+  return effective;
 };
 
 

@@ -68,8 +68,9 @@ anychart.core.ui.Separator = function() {
 
   /**
    * @type {boolean}
+   * @private
    */
-  this.forceInvalidate = false;
+  this.needsForceSignalsDispatching_ = false;
 
   /**
    * Resolution chain cache.
@@ -280,11 +281,16 @@ anychart.core.ui.Separator.prototype.parentInvalidated_ = function(e) {
 
 //endregion
 /**
- * Whether needs force invalidation.
- * @return {boolean}
+ * Whether to dispatch signals even if current consistency state is not effective.
+ * @param {boolean=} opt_value - Value to set.
+ * @return {boolean|anychart.core.ui.Separator}
  */
-anychart.core.ui.Separator.prototype.needsForceInvalidation = function() {
-  return this.forceInvalidate;
+anychart.core.ui.Separator.prototype.needsForceSignalsDispatching = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.needsForceSignalsDispatching_ = opt_value;
+    return this;
+  }
+  return this.needsForceSignalsDispatching_;
 };
 
 
@@ -581,7 +587,7 @@ anychart.core.ui.Separator.prototype.isHorizontal = function() {
  */
 anychart.core.ui.Separator.prototype.invalidate = function(state, opt_signal) {
   var effective = anychart.core.ui.Separator.base(this, 'invalidate', state, opt_signal);
-  if (!effective && this.needsForceInvalidation())
+  if (!effective && this.needsForceSignalsDispatching())
     this.dispatchSignal(opt_signal || 0);
   return effective;
 };

@@ -164,8 +164,9 @@ anychart.core.ui.Title = function() {
 
   /**
    * @type {boolean}
+   * @private
    */
-  this.forceInvalidate = false;
+  this.needsForceSignalsDispatching_ = false;
 
   /**
    * Auto text.
@@ -599,18 +600,23 @@ anychart.core.ui.Title.prototype.autoText = function(opt_value) {
  */
 anychart.core.ui.Title.prototype.invalidate = function(state, opt_signal) {
   var effective = anychart.core.ui.Title.base(this, 'invalidate', state, opt_signal);
-  if (!effective && this.needsForceInvalidation())
+  if (!effective && this.needsForceSignalsDispatching())
     this.dispatchSignal(opt_signal || 0);
   return effective;
 };
 
 
 /**
- * Whether needs force invalidation.
- * @return {boolean}
+ * Whether to dispatch signals even if current consistency state is not effective.
+ * @param {boolean=} opt_value - Value to set.
+ * @return {boolean|anychart.core.ui.Title}
  */
-anychart.core.ui.Title.prototype.needsForceInvalidation = function() {
-  return this.forceInvalidate;
+anychart.core.ui.Title.prototype.needsForceSignalsDispatching = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.needsForceSignalsDispatching_ = opt_value;
+    return this;
+  }
+  return this.needsForceSignalsDispatching_;
 };
 
 
