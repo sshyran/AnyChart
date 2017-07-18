@@ -64,6 +64,8 @@ anychart.core.StateSettings.prototype.serialize = function() {
     json['labels'] = this.labels().serialize();
   if (this.descriptorsMeta['markers'])
     json['markers'] = this.markers().serialize();
+  if (this.descriptorsMeta['outlierMarkers'])
+    json['outlierMarkers'] = this.markers().serialize();
   return json;
 };
 
@@ -181,11 +183,37 @@ anychart.core.StateSettings.prototype.markers = function(opt_value) {
 };
 
 
+/**
+ * Outlier markers.
+ * @param {(Object|boolean|null|string)=} opt_value
+ * @return {anychart.core.StateSettings|anychart.core.ui.MarkersFactory}
+ */
+anychart.core.StateSettings.prototype.outlierMarkers = function(opt_value) {
+  if (!this.outlierMarkers_) {
+    this.outlierMarkers_ = new anychart.core.ui.MarkersFactory();
+    if (this.stateType == anychart.PointState.NORMAL) {
+      var hook = /** @type {function(anychart.SignalEvent):(boolean|undefined)} */ (this.descriptorsMeta['markers'].beforeInvalidationHook);
+      this.outlierMarkers_.listenSignals(hook, this.stateHolder);
+      this.outlierMarkers_.setParentEventTarget(/** @type {goog.events.EventTarget} */ (this.stateHolder));
+    }
+  }
+
+  if (goog.isDef(opt_value)) {
+    if (goog.isObject(opt_value) && !('enabled' in opt_value))
+      opt_value['enabled'] = true;
+    this.outlierMarkers_.setup(opt_value);
+    return this;
+  }
+  return this.outlierMarkers_;
+};
+
+
 //endregion
 //region --- Exports
 (function() {
   var proto = anychart.core.StateSettings.prototype;
   proto['labels'] = proto.labels;
   proto['markers'] = proto.markers;
+  proto['outlierMarkers'] = proto.outlierMarkers;
 })();
 //endregion

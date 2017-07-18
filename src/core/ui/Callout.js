@@ -835,15 +835,15 @@ anychart.core.ui.Callout.prototype.configureSeriesLabel = function(label, series
   var selected = series.state.isStateContains(pointState, anychart.PointState.SELECT);
   var hovered = !selected && series.state.isStateContains(pointState, anychart.PointState.HOVER);
   var currentLabelsFactory, pointLabel, stateLabel;
-  var parentLabelsFactory = series.labels();
+  var parentLabelsFactory = series.normal().labels();
 
   pointLabel = iterator.get('label');
   if (selected) {
     stateLabel = iterator.get('selectLabel');
-    currentLabelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(series.selectLabels());
+    currentLabelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(series.selected().labels());
   } else if (hovered) {
     stateLabel = iterator.get('hoverLabel');
-    currentLabelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(series.hoverLabels());
+    currentLabelsFactory = /** @type {anychart.core.ui.LabelsFactory} */(series.hovered().labels());
   } else {
     stateLabel = null;
     currentLabelsFactory = null;

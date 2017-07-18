@@ -783,10 +783,10 @@ anychart.charts.Pie.prototype.resolveOption = function(names, state, point, norm
   } else {
     var pointStateName = hasHoverState ? 'hovered' : 'normal';
     var pointStateObject = point.get(pointStateName);
-    val = goog.isDef(stateValue) ? stateValue : point.get(names[state]);
-    if (goog.isDef(pointStateObject)) {
-      val = pointStateObject[names[0]] || val;
-    }
+    val = anychart.utils.getFirstDefinedValue(
+        goog.isDef(pointStateObject) ? pointStateObject[names[0]] : void 0,
+        point.get(names[state]),
+        stateObject.getOption(names[0]));
   }
   if (goog.isDef(val))
     val = normalizer(val);
@@ -4059,9 +4059,9 @@ anychart.charts.Pie.prototype.serialize = function() {
   json['data'] = this.data().serialize();
   //json['labels'] = this.labels().serialize();
   //json['hoverLabels'] = this.hoverLabels().getChangedSettings();
-  if (goog.isNull(json['hoverLabels']['enabled'])) {
-    delete json['hoverLabels']['enabled'];
-  }
+  //if (goog.isNull(json['hoverLabels']['enabled'])) {
+  //  delete json['hoverLabels']['enabled'];
+  //}
   json['palette'] = this.palette().serialize();
   json['hatchFillPalette'] = this.hatchFillPalette().serialize();
   json['tooltip'] = this.tooltip().serialize();

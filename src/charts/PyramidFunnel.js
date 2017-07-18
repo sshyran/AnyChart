@@ -1640,11 +1640,10 @@ anychart.charts.PyramidFunnel.prototype.resolveOption = function(names, state, p
   } else {
     var pointStateName = state == 0 ? 'normal' : state == 1 ? 'hovered' : 'selected';
     var pointStateObject = point.get(pointStateName);
-    var stateValue = stateObject.getOption(names[0]);
-    val = goog.isDef(stateValue) ? stateValue : point.get(names[state]);
-    if (goog.isDef(pointStateObject)) {
-      val = pointStateObject[names[0]] || val;
-    }
+    val = anychart.utils.getFirstDefinedValue(
+        goog.isDef(pointStateObject) ? pointStateObject[names[0]] : void 0,
+        point.get(names[state]),
+        stateObject.getOption(names[0]));
   }
   if (goog.isDef(val))
     val = normalizer(val);

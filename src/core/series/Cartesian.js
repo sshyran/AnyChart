@@ -1385,7 +1385,7 @@ anychart.core.series.Cartesian.prototype.makePointEvent = function(event) {
   }
 
   var pointIndex;
-  if (event['target'] == this.outlierMarkers() && !isNaN(event['markerIndex'])) {
+  if (event['target'] == this.normal().outlierMarkers() && !isNaN(event['markerIndex'])) {
     pointIndex = this.getPointIndexByOutlierIndex(event['markerIndex']);
   } else if ('pointIndex' in event) {
     pointIndex = event['pointIndex'];

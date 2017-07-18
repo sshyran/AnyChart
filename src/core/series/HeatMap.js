@@ -24,8 +24,8 @@ goog.require('anychart.utils');
 anychart.core.series.HeatMap = function(chart, plot, type, config, sortedMode) {
   anychart.core.series.HeatMap.base(this, 'constructor', chart, plot, type, config, sortedMode);
 
-  this.labels().adjustFontSizeMode('same');
-  this.labels().setParentEventTarget(this);
+  this.normal().labels().adjustFontSizeMode('same');
+  this.normal().labels().setParentEventTarget(this);
 
   /**
    * Stroke resolver.
@@ -79,25 +79,25 @@ anychart.core.series.HeatMap.prototype.TOKEN_ALIASES = (function() {
 })();
 
 
-/** @inheritDoc */
+/*/!** @inheritDoc *!/
 anychart.core.series.HeatMap.prototype.labels = function(opt_value) {
-  var res = (/** @type {anychart.charts.HeatMap} */(this.chart)).labels(opt_value);
-  return goog.isDef(opt_value) ? this : /** @type {!anychart.core.ui.LabelsFactory} */(res);
+  var res = (/!** @type {anychart.charts.HeatMap} *!/(this.chart)).labels(opt_value);
+  return goog.isDef(opt_value) ? this : /!** @type {!anychart.core.ui.LabelsFactory} *!/(res);
 };
 
 
-/** @inheritDoc */
+/!** @inheritDoc *!/
 anychart.core.series.HeatMap.prototype.hoverLabels = function(opt_value) {
-  var res = (/** @type {anychart.charts.HeatMap} */(this.chart)).hoverLabels(opt_value);
-  return goog.isDef(opt_value) ? this : /** @type {!anychart.core.ui.LabelsFactory} */(res);
+  var res = (/!** @type {anychart.charts.HeatMap} *!/(this.chart)).hoverLabels(opt_value);
+  return goog.isDef(opt_value) ? this : /!** @type {!anychart.core.ui.LabelsFactory} *!/(res);
 };
 
 
-/** @inheritDoc */
+/!** @inheritDoc *!/
 anychart.core.series.HeatMap.prototype.selectLabels = function(opt_value) {
-  var res = (/** @type {anychart.charts.HeatMap} */(this.chart)).selectLabels(opt_value);
-  return goog.isDef(opt_value) ? this : /** @type {!anychart.core.ui.LabelsFactory} */(res);
-};
+  var res = (/!** @type {anychart.charts.HeatMap} *!/(this.chart)).selectLabels(opt_value);
+  return goog.isDef(opt_value) ? this : /!** @type {!anychart.core.ui.LabelsFactory} *!/(res);
+};*/
 
 
 /** @inheritDoc */
@@ -117,7 +117,7 @@ anychart.core.series.HeatMap.prototype.tooltip = function(opt_value) {
  */
 anychart.core.series.HeatMap.prototype.calcMinFontSize_ = function(point, pointState, prefix, minFontSize) {
   var label = this.drawFactoryElement(
-      [this.labels, this.hoverLabels, this.selectLabels],
+      [this.normal().labels, this.hovered().labels, this.selected().labels],
       null,
       ['label', 'hoverLabel', 'selectLabel'],
       this.planHasPointLabels(),
@@ -153,9 +153,9 @@ anychart.core.series.HeatMap.prototype.calcMinFontSize_ = function(point, pointS
 
 /** @inheritDoc */
 anychart.core.series.HeatMap.prototype.additionalLabelsInitialize = function() {
-  var labels = /** @type {anychart.core.ui.LabelsFactory} */(this.labels());
-  var hoverLabels = /** @type {anychart.core.ui.LabelsFactory} */(this.hoverLabels());
-  var selectLabels = /** @type {anychart.core.ui.LabelsFactory} */(this.selectLabels());
+  var labels = /** @type {anychart.core.ui.LabelsFactory} */(this.normal().labels());
+  var hoverLabels = /** @type {anychart.core.ui.LabelsFactory} */(this.hovered().labels());
+  var selectLabels = /** @type {anychart.core.ui.LabelsFactory} */(this.selected().labels());
 
   var labelsEnabled = /** @type {boolean} */(labels.enabled());
   var hoverLabelsEnabled = labelsEnabled || /** @type {boolean} */(hoverLabels.enabled());
@@ -332,7 +332,7 @@ anychart.core.series.HeatMap.prototype.createPositionProviderByGeometry = functi
 anychart.core.series.HeatMap.prototype.drawLabel = function(point, pointState, pointStateChanged) {
   var displayMode = (/** @type {anychart.charts.HeatMap} */(this.chart)).getOption('labelsDisplayMode');
   var label = this.drawFactoryElement(
-      [this.labels, this.hoverLabels, this.selectLabels],
+      [this.normal().labels, this.hovered().labels, this.selected().labels],
       null,
       ['label', 'hoverLabel', 'selectLabel'],
       this.planHasPointLabels(),
@@ -356,18 +356,19 @@ anychart.core.series.HeatMap.prototype.drawLabel = function(point, pointState, p
     var width = /** @type {number} */(point.meta(prefix + 'Width'));
     var height = /** @type {number} */(point.meta(prefix + 'Height'));
     var cellBounds = anychart.math.rect(x, y, width, height);
+    var labels = this.normal().labels();
 
     if (displayMode == anychart.enums.LabelsDisplayMode.DROP) {
       var mergedSettings = label.getMergedSettings();
       mergedSettings['width'] = null;
       mergedSettings['height'] = null;
-      var bounds = this.labels().measure(label.formatProvider(), label.positionProvider(), mergedSettings);
+      var bounds = labels.measure(label.formatProvider(), label.positionProvider(), mergedSettings);
       // we allow 0.5 pixel bounds overlap to allow better labels positioning
       if (cellBounds.left > bounds.left + .5 ||
           cellBounds.getRight() < bounds.getRight() - .5 ||
           cellBounds.top > bounds.top + .5 ||
           cellBounds.getBottom() < bounds.getBottom() - .5) {
-        this.labels().clear(label.getIndex());
+        labels.clear(label.getIndex());
         label = null;
       }
     }
@@ -382,7 +383,7 @@ anychart.core.series.HeatMap.prototype.drawLabel = function(point, pointState, p
         if (pointStateChanged)
           label.draw();
       } else {
-        this.labels().clear(label.getIndex());
+        labels.clear(label.getIndex());
       }
     }
   }
@@ -510,7 +511,7 @@ anychart.core.series.HeatMap.prototype.setupByJSON = function(config, opt_defaul
 (function() {
   var proto = anychart.core.series.HeatMap.prototype;
   proto['tooltip'] = proto.tooltip;
-  proto['labels'] = proto.labels;
-  proto['hoverLabels'] = proto.hoverLabels;
-  proto['selectLabels'] = proto.selectLabels;
+  //proto['labels'] = proto.labels;
+  //proto['hoverLabels'] = proto.hoverLabels;
+  //proto['selectLabels'] = proto.selectLabels;
 })();
