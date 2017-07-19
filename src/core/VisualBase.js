@@ -293,7 +293,8 @@ anychart.core.VisualBase.prototype.isOwnStage = function() {
 anychart.core.VisualBase.prototype.container = function(opt_value) {
   if (goog.isDef(opt_value)) {
     /** @type {?(acgraph.vector.ILayer|Element)} */
-    var value = (goog.isString(opt_value) ? goog.dom.getElement(opt_value || null) : opt_value);
+    var value = (goog.isString(opt_value) ? goog.global['document'].getElementById(opt_value || null) : opt_value);
+    // var value = (goog.isString(opt_value) ? goog.dom.getElement(opt_value || null) : opt_value);
     var validContainer = value || goog.isNull(opt_value);
     if (this.originalContainer_ != validContainer) {
       this.originalContainer_ = validContainer;

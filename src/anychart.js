@@ -48,6 +48,15 @@ anychart.graphics = goog.global['acgraph'];
 
 
 /**
+ * Set global.
+ * @param {Window} global Global context.
+ */
+anychart.setGlobal = function(global) {
+  goog.global = global;
+};
+
+
+/**
  * If the credits is allowed to be disabled for the stage regardless of the product key.
  * @type {boolean}
  */
@@ -1114,6 +1123,7 @@ goog.exportSymbol('anychart.quadrant', anychart.quadrant);
 goog.exportSymbol('anychart.venn', anychart.venn);
 goog.exportSymbol('anychart.theme', anychart.theme);
 goog.exportSymbol('anychart.appendTheme', anychart.appendTheme);
+goog.exportSymbol('anychart.setGlobal', anychart.setGlobal);
 goog.exportSymbol('anychart.treeMap', anychart.treeMap);
 goog.exportSymbol('anychart.pareto', anychart.pareto);
 goog.exportSymbol('anychart.resource', anychart.resource);
