@@ -590,20 +590,16 @@ anychart.core.ui.Crosshair.prototype.bindHandlers = function(opt_chart) {
     this.chart = opt_chart;
   }
 
-  if (this.getOption('displayMode') == anychart.enums.CrosshairDisplayMode.FLOAT) {
-    this.chart.unlisten(anychart.enums.EventType.POINTS_HOVER, this.show, false, this);
-
-    this.chart.listen(acgraph.events.EventType.MOUSEOVER, this.handleMouseOverAndMove, false, this);
-    this.chart.listen(acgraph.events.EventType.MOUSEMOVE, this.handleMouseOverAndMove, false, this);
-    this.chart.listen(acgraph.events.EventType.MOUSEOUT, this.handleMouseOut, false, this);
-
-  // sticky
-  } else {
+  if (this.getOption('displayMode') == anychart.enums.CrosshairDisplayMode.STICKY) {
     this.chart.unlisten(acgraph.events.EventType.MOUSEOVER, this.handleMouseOverAndMove, false, this);
     this.chart.unlisten(acgraph.events.EventType.MOUSEMOVE, this.handleMouseOverAndMove, false, this);
     this.chart.unlisten(acgraph.events.EventType.MOUSEOUT, this.handleMouseOut, false, this);
-
     this.chart.listen(anychart.enums.EventType.POINTS_HOVER, this.show, false, this);
+  } else { // float
+    this.chart.unlisten(anychart.enums.EventType.POINTS_HOVER, this.show, false, this);
+    this.chart.listen(acgraph.events.EventType.MOUSEOVER, this.handleMouseOverAndMove, false, this);
+    this.chart.listen(acgraph.events.EventType.MOUSEMOVE, this.handleMouseOverAndMove, false, this);
+    this.chart.listen(acgraph.events.EventType.MOUSEOUT, this.handleMouseOut, false, this);
   }
 };
 
