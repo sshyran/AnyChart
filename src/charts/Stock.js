@@ -2889,6 +2889,7 @@ anychart.charts.Stock.prototype.toCsv = function(opt_chartDataExportMode, opt_cs
   var proto = anychart.charts.Stock.prototype;
   goog.exportSymbol('anychart.stock', anychart.stock);
   proto['plot'] = proto.plot;
+  proto['crosshair'] = proto.crosshair;
   proto['scroller'] = proto.scroller;
   proto['xScale'] = proto.xScale;
   proto['selectRange'] = proto.selectRange;
