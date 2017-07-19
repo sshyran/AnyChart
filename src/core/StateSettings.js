@@ -209,11 +209,49 @@ anychart.core.StateSettings.prototype.outlierMarkers = function(opt_value) {
 
 
 //endregion
+//region --- State Fallbacks
+/**
+ * Normal fallback.
+ * @param {!Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.core.settings.IObjectWithSettings}
+ */
+anychart.core.StateSettings.prototype.normal = function(opt_value) {
+  return this.stateHolder.normal(opt_value);
+};
+
+
+/**
+ * Hovered fallback.
+ * @param {!Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.core.settings.IObjectWithSettings}
+ */
+anychart.core.StateSettings.prototype.hovered = function(opt_value) {
+  return this.stateHolder.hovered(opt_value);
+};
+
+
+/**
+ * Selected fallback.
+ * @param {!Object=} opt_value
+ * @return {anychart.core.StateSettings|anychart.core.settings.IObjectWithSettings}
+ */
+anychart.core.StateSettings.prototype.selected = function(opt_value) {
+  if (this.stateHolder.selected)
+    return this.stateHolder.selected(opt_value);
+  else
+    return null;
+};
+
+
+//endregion
 //region --- Exports
 (function() {
   var proto = anychart.core.StateSettings.prototype;
   proto['labels'] = proto.labels;
   proto['markers'] = proto.markers;
   proto['outlierMarkers'] = proto.outlierMarkers;
+  proto['normal'] = proto.normal;
+  proto['hovered'] = proto.hovered;
+  proto['selected'] = proto.selected;
 })();
 //endregion
