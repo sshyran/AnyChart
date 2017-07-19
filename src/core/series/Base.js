@@ -135,8 +135,6 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   this.renderingSettings_ = new anychart.core.series.RenderingSettings(this);
   this.renderingSettings_.listenSignals(this.rendererInvalidated_, this);
 
-  this.applyConfig(config, true);
-
   var normalDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(normalDescriptorsMeta, [
     ['fill',
@@ -315,6 +313,8 @@ anychart.core.series.Base = function(chart, plot, type, config) {
       anychart.Signal.NEEDS_RECALCULATION | anychart.Signal.NEEDS_REDRAW,
       anychart.core.drawers.Capabilities.ANY]
   ]);
+
+  this.applyConfig(config, true);
 };
 goog.inherits(anychart.core.series.Base, anychart.core.VisualBaseWithBounds);
 
@@ -673,6 +673,16 @@ anychart.core.series.Base.prototype.applyConfig = function(config, opt_reapplyCl
   this.recreateShapeManager();
 
   this.themeSettings = this.plot.defaultSeriesSettings()[anychart.utils.toCamelCase(this.type_)] || {};
+  this.normal_.setupByJSON(this.themeSettings, true);
+  if (this.themeSettings['normal']) {
+    this.normal_.setupByJSON(this.themeSettings['normal'], true);
+  }
+  if (this.themeSettings['hovered']) {
+    this.hovered_.setupByJSON(this.themeSettings['hovered'], true);
+  }
+  if (this.themeSettings['selected']) {
+    this.selected_.setupByJSON(this.themeSettings['selected'], true);
+  }
 
   if (this.supportsOutliers()) {
     this.indexToMarkerIndexes_ = {};
@@ -2108,7 +2118,7 @@ anychart.core.series.Base.prototype.drawFactoryElement = function(seriesFactoryG
     if (!indexes)
       indexes = this.indexToMarkerIndexes_[index] = [];
   }
-  var mainFactory = seriesFactoryGetters[0].call(this);
+  var mainFactory = seriesFactoryGetters[0].call(this.normal_);
   var chartNormalFactory = chartFactoryGetters ? chartFactoryGetters[0].call(this.chart) : null;
 
   var pointOverride, statePointOverride, seriesStateFactory, chartStateFactory;
@@ -2131,7 +2141,8 @@ anychart.core.series.Base.prototype.drawFactoryElement = function(seriesFactoryG
     var pointOverrideEnabled = pointOverride && goog.isDef(pointOverride['enabled']) ? pointOverride['enabled'] : null;
     var statePointOverrideEnabled = statePointOverride && goog.isDef(statePointOverride['enabled']) ? statePointOverride['enabled'] : null;
 
-    seriesStateFactory = (state == anychart.PointState.NORMAL) ? null : seriesFactoryGetters[state].call(this);
+    var stateObject = state == 0 ? this.normal_ : state == 1 ? this.hovered_ : this.selected_;
+    seriesStateFactory = (state == anychart.PointState.NORMAL) ? null : seriesFactoryGetters[state].call(stateObject);
     chartStateFactory = (state == anychart.PointState.NORMAL || !chartFactoryGetters) ? null : chartFactoryGetters[state].call(this.chart);
 
     isDraw = goog.isNull(statePointOverrideEnabled) ? // has no state marker or null "enabled" in it ?
@@ -4686,6 +4697,10 @@ anychart.core.series.Base.prototype.disposeInternal = function() {
   //proto['outlierMarkers'] = proto.outlierMarkers;
   //proto['hoverOutlierMarkers'] = proto.hoverOutlierMarkers;
   //proto['selectOutlierMarkers'] = proto.selectOutlierMarkers;
+
+  proto['normal'] = proto.normal;
+  proto['hovered'] = proto.hovered;
+  proto['selected'] = proto.selected;
 
   proto['tooltip'] = proto.tooltip;
   proto['legendItem'] = proto.legendItem;
