@@ -1282,49 +1282,55 @@ goog.provide('anychart.themes.defaultTheme');
             },
             'zIndex': 0
           },
-          'hatchFill': false,
-          'hoverHatchFill': null,
-          'selectHatchFill': null,
-          'labels': {
-            'enabled': null,
-            'anchor': 'auto',
-            'position': 'value'
+          'normal': {
+            'fill': returnSourceColor65,
+            'stroke': returnStrokeSourceColor,
+            'lowStroke': returnStrokeSourceColor,
+            'highStroke': returnStrokeSourceColor,
+            'hatchFill': false,
+            'labels': {
+              'enabled': null,
+              'anchor': 'auto',
+              'position': 'value'
+            },
+            'markers': {
+              'enabled': false,
+              'disablePointerEvents': false,
+              'position': 'value',
+              'positionFormatter': returnValue,
+              'size': 4
+            }
           },
-          'hoverLabels': {'enabled': null},
-          'selectLabels': {'enabled': null},
-          'markers': {
-            'enabled': false,
-            'disablePointerEvents': false,
-            'position': 'value',
-            'positionFormatter': returnValue,
-            'size': 4
+          'hovered': {
+            'fill': returnSourceColor,
+            'stroke': returnLightenStrokeSourceColor,
+            'lowStroke': returnLightenStrokeSourceColor,
+            'highStroke': returnLightenStrokeSourceColor,
+            'hatchFill': null,
+            'labels': {'enabled': null},
+            'markers': {
+              'enabled': null,
+              'size': 6
+            }
           },
-          'hoverMarkers': {
-            'enabled': null,
-            'size': 6
-          },
-          'selectMarkers': {
-            'enabled': null,
+          'selected': {
             'fill': defaultSelectColor,
-            'stroke': defaultSelectStroke,
-            'size': 6
+            'stroke': defaultSelectColor,
+            'lowStroke': defaultSelectColor,
+            'highStroke': defaultSelectColor,
+            'hatchFill': null,
+            'labels': {'enabled': null},
+            'markers': {
+              'enabled': null,
+              'fill': defaultSelectColor,
+              'stroke': defaultSelectStroke,
+              'size': 6
+            }
           },
           'legendItem': {
             'enabled': true,
             'iconType': 'square'
           },
-          'fill': returnSourceColor65,
-          'hoverFill': returnSourceColor,
-          'selectFill': defaultSelectColor,
-          'stroke': returnStrokeSourceColor,
-          'hoverStroke': returnLightenStrokeSourceColor,
-          'selectStroke': defaultSelectColor,
-          'lowStroke': returnStrokeSourceColor,
-          'hoverLowStroke': returnLightenStrokeSourceColor,
-          'selectLowStroke': defaultSelectColor,
-          'highStroke': returnStrokeSourceColor,
-          'hoverHighStroke': returnLightenStrokeSourceColor,
-          'selectHighStroke': defaultSelectColor,
           'clip': true,
           'color': null,
           'xScale': null,
@@ -1350,86 +1356,104 @@ goog.provide('anychart.themes.defaultTheme');
           }
         },
         'marker': {
-          'fill': returnSourceColor,
-          'stroke': returnStrokeWithThickness,
-          'hoverFill': returnLightenSourceColor,
-          'hoverStroke': returnStrokeWithThickness,
-          'selectFill': defaultSelectColor,
-          'selectStroke': defaultSelectStroke,
-          'size': 4,
-          'hoverSize': 6,
-          'selectSize': 6,
+          'normal': {
+            'fill': returnSourceColor,
+            'stroke': returnStrokeWithThickness,
+            'size': 4,
+            'labels': {
+              'offsetY': 3
+            }
+          },
+          'hovered': {
+            'fill': returnLightenSourceColor,
+            'stroke': returnStrokeWithThickness,
+            'size': 6
+          },
+          'selected': {
+            'fill': defaultSelectColor,
+            'stroke': defaultSelectStroke,
+            'size': 6
+          },
           'legendItem': {
             'iconStroke': 'none'
-          },
-          'labels': {
-            'offsetY': 3
           }
         },
         'bubble': {
-          'fill': returnSourceColor70,
-          'hoverFill': returnSourceColor50,
+          'normal': {
+            'fill': returnSourceColor70,
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeFill': function() {
+              return darken(darken(darken(this['sourceColor'])));
+            },
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeStroke': function() {
+              return darken(darken(darken(darken((this['sourceColor'])))));
+            },
+            'negativeHatchFill': false,
+            'labels': {
+              'anchor': 'center'
+            }
+          },
+          'hovered': {
+            'fill': returnSourceColor50,
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeFill': function() {
+              return darken(darken(darken(darken(this['sourceColor']))));
+            },
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeStroke': function() {
+              return darken(darken(darken(darken(darken(this['sourceColor'])))));
+            },
+            'negativeHatchFill': null
+          },
+          'selected': {
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeFill': function() {
+              return darken(darken(darken(this['sourceColor'])));
+            },
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'negativeStroke': function() {
+              return darken(darken(darken(darken(this['sourceColor']))));
+            },
+            'negativeHatchFill': null
+          },
           'displayNegative': false,
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'negativeFill': function() {
-            return darken(darken(darken(this['sourceColor'])));
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'hoverNegativeFill': function() {
-            return darken(darken(darken(darken(this['sourceColor']))));
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'selectNegativeFill': function() {
-            return darken(darken(darken(this['sourceColor'])));
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'negativeStroke': function() {
-            return darken(darken(darken(darken((this['sourceColor'])))));
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'hoverNegativeStroke': function() {
-            return darken(darken(darken(darken(darken(this['sourceColor'])))));
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'selectNegativeStroke': function() {
-            return darken(darken(darken(darken(this['sourceColor']))));
-          },
-          'negativeHatchFill': false,
-          'hoverNegativeHatchFill': null,
-          'selectNegativeHatchFill': null,
           'legendItem': {
             'iconStroke': 'none'
-          },
-          'labels': {
-            'anchor': 'center'
           }
         },
         'areaLike': {
-          'fill': returnSourceColor65,
-          'hoverFill': returnSourceColor65,
-          'hoverMarkers': {
-            'enabled': true
+          'normal': {
+            'fill': returnSourceColor65
           },
-          'selectMarkers': {
-            'enabled': true
+          'hovered': {
+            'fill': returnSourceColor65,
+            'markers': {
+              'enabled': true
+            }
+          },
+          'selected': {
+            'markers': {
+              'enabled': true
+            }
           },
           'legendItem': {
             'iconStroke': 'none'
@@ -1437,90 +1461,115 @@ goog.provide('anychart.themes.defaultTheme');
           'stepDirection': 'center'
         },
         'barLike': {
-          'fill': returnSourceColor85,
-          'hoverFill': returnSourceColor65,
+          'normal': {
+            'fill': returnSourceColor85
+          },
+          'hovered': {
+            'fill': returnSourceColor65
+          },
           'legendItem': {
             'iconStroke': 'none'
           }
         },
         'lineLike': {
-          'hoverMarkers': {
-            'enabled': true
+          'hovered': {
+            'markers': {
+              'enabled': true
+            }
           },
-          'selectMarkers': {
-            'enabled': true
+          'selected': {
+            'markers': {
+              'enabled': true
+            }
           },
           'stepDirection': 'center'
         },
         'rangeLike': {
-          'labels': {
-            'format': returnRangeLabelsContentFormatter,
-            'position': 'high'
-          },
-          'markers': {
-            'position': 'high'
+          'normal': {
+            'labels': {
+              'format': returnRangeLabelsContentFormatter,
+              'position': 'high'
+            },
+            'markers': {
+              'position': 'high'
+            }
           },
           'tooltip': {
             'format': returnRangeTooltipContentFormatter
           }
         },
         'candlestick': {
-          'risingFill': risingColor,
-          'risingStroke': risingColor,
-          'hoverRisingFill': returnLightenSourceColor,
-          'hoverRisingStroke': returnDarkenSourceColor,
-          'fallingFill': fallingColor,
-          'fallingStroke': fallingColor,
-          'hoverFallingFill': returnLightenSourceColor,
-          'hoverFallingStroke': returnDarkenSourceColor,
-
-          'risingHatchFill': false,
-          'hoverRisingHatchFill': null,
-          'selectRisingHatchFill': null,
-          'fallingHatchFill': false,
-          'hoverFallingHatchFill': null,
-          'selectFallingHatchFill': null,
-          'selectFallingFill': defaultSelectColor,
-          'selectRisingFill': defaultSelectColor,
-          'selectRisingStroke': defaultSelectColor,
-          'selectFallingStroke': defaultSelectColor,
+          'normal': {
+            'risingFill': risingColor,
+            'risingStroke': risingColor,
+            'fallingFill': fallingColor,
+            'fallingStroke': fallingColor,
+            'risingHatchFill': false,
+            'fallingHatchFill': false,
+            'markers': {
+              'position': 'high'
+            },
+            'labels': {
+              'position': 'high',
+              'format': returnX
+            }
+          },
+          'hovered': {
+            'risingFill': returnLightenSourceColor,
+            'risingStroke': returnDarkenSourceColor,
+            'fallingFill': returnLightenSourceColor,
+            'fallingStroke': returnDarkenSourceColor,
+            'risingHatchFill': null,
+            'fallingHatchFill': null
+          },
+          'selected': {
+            'risingFill': defaultSelectColor,
+            'risingStroke': defaultSelectColor,
+            'fallingFill': defaultSelectColor,
+            'fallingStroke': defaultSelectColor,
+            'risingHatchFill': null,
+            'fallingHatchFill': null
+          },
           'tooltip': {
             'format': OHLCTooltipFormatter
-          },
-          'markers': {
-            'position': 'high'
-          },
-          'labels': {
-            'position': 'high',
-            'format': returnX
           }
         },
         'column': {
           'isVertical': false,
-          'labels': {
-            'offsetY': 3
+          'normal': {
+            'labels': {
+              'offsetY': 3
+            }
           }
         },
         'ohlc': {
-          'risingStroke': risingColor,
-          'hoverRisingStroke': returnDarkenSourceColor,
-          'fallingStroke': fallingColor,
-          'hoverFallingStroke': returnDarkenSourceColor,
-          'selectRisingStroke': '3 ' + defaultSelectColor,
-          'selectFallingStroke': '3 ' + defaultSelectColor,
+          'normal': {
+            'risingStroke': risingColor,
+            'fallingStroke': fallingColor,
+            'markers': {
+              'position': 'high'
+            },
+            'labels': {
+              'position': 'high',
+              'format': returnX
+            }
+          },
+          'hovered': {
+            'risingStroke': returnDarkenSourceColor,
+            'fallingStroke': returnDarkenSourceColor
+          },
+          'selected': {
+            'risingStroke': '3 ' + defaultSelectColor,
+            'fallingStroke': '3 ' + defaultSelectColor
+          },
           'tooltip': {
             'format': OHLCTooltipFormatter
-          },
-          'markers': {
-            'position': 'high'
-          },
-          'labels': {
-            'position': 'high',
-            'format': returnX
           }
         },
         'stick': {
-          'stroke': returnStrokeSourceColor1
+          'normal': {
+            'stroke': returnStrokeSourceColor1
+          }
         },
         'jumpLine': {
           'pointWidth': '100%'
@@ -1747,14 +1796,18 @@ goog.provide('anychart.themes.defaultTheme');
     'cartesianBase': {
       'defaultSeriesSettings': {
         'base': {
-          'labels': {
-            'format': VALUE_TOKEN_DECIMALS_COUNT_2
+          'normal': {
+            'labels': {
+              'format': VALUE_TOKEN_DECIMALS_COUNT_2
+            }
           }
         },
         'bar': {
           'isVertical': true,
-          'labels': {
-            'offsetY': 3
+          'normal': {
+            'labels': {
+              'offsetY': 3
+            }
           },
           'tooltip': {
             'anchor': 'left-top'
@@ -1773,59 +1826,67 @@ goog.provide('anychart.themes.defaultTheme');
           }
         },
         'rangeBar': {
-          'isVertical': true,
-          'labels': {
-            'offsetY': 3
-          }
+          'normal': {
+            'labels': {
+              'offsetY': 3
+            }
+          },
+          'isVertical': true
         },
         'box': {
-          'medianStroke': returnDarkenSourceColor,
-          'hoverMedianStroke': returnSourceColor,
-          'selectMedianStroke': defaultSelectColor,
-          'stemStroke': returnDarkenSourceColor,
-          'hoverStemStroke': returnSourceColor,
-          'selectStemStroke': defaultSelectColor,
-          'whiskerStroke': returnDarkenSourceColor,
-          'hoverWhiskerStroke': returnDarkenSourceColor,
-          'selectWhiskerStroke': defaultSelectColor,
-          'whiskerWidth': 0,
-          'hoverWhiskerWidth': null,
-          'selectWhiskerWidth': null,
-          'outlierMarkers': {
-            'enabled': true,
-            'disablePointerEvents': false,
-            'position': 'center',
-            'rotation': 0,
-            'anchor': 'center',
-            'offsetX': 0,
-            'offsetY': 0,
-            'type': 'circle',
-            'size': 3,
-            'positionFormatter': returnValue
+          'normal': {
+            'medianStroke': returnDarkenSourceColor,
+            'stemStroke': returnDarkenSourceColor,
+            'whiskerStroke': returnDarkenSourceColor,
+            'whiskerWidth': 0,
+            'outlierMarkers': {
+              'enabled': true,
+              'disablePointerEvents': false,
+              'position': 'center',
+              'rotation': 0,
+              'anchor': 'center',
+              'offsetX': 0,
+              'offsetY': 0,
+              'type': 'circle',
+              'size': 3,
+              'positionFormatter': returnValue
+            },
+            'markers': {
+              'position': 'median'
+            },
+            'labels': {
+              'position': 'highest',
+              /**
+               * @this {*}
+               * @return {*}
+               */
+              'format': function() {
+                return 'Highest: ' + locNum(this['highest']) + '\n' +
+                    'Median: ' + locNum(this['median']) + '\n' +
+                    'Lowest: ' + locNum(this['lowest']);
+              }
+            }
           },
-          'hoverOutlierMarkers': {
-            'enabled': null,
-            'size': 4
+          'hovered': {
+            'medianStroke': returnSourceColor,
+            'stemStroke': returnSourceColor,
+            'whiskerStroke': returnDarkenSourceColor,
+            'whiskerWidth': null,
+            'outlierMarkers': {
+              'enabled': null,
+              'size': 4
+            }
           },
-          'selectOutlierMarkers': {
-            'enabled': null,
-            'size': 4,
-            'fill': defaultSelectColor,
-            'stroke': defaultSelectStroke
-          },
-          'markers': {
-            'position': 'median'
-          },
-          'labels': {
-            'position': 'highest',
-            /**
-             * @this {*}
-             * @return {*}
-             */
-            'format': function() {
-              return 'Highest: ' + locNum(this['highest']) + '\n' +
-                  'Median: ' + locNum(this['median']) + '\n' +
-                  'Lowest: ' + locNum(this['lowest']);
+          'selected': {
+            'medianStroke': defaultSelectColor,
+            'stemStroke': defaultSelectColor,
+            'whiskerStroke': defaultSelectColor,
+            'whiskerWidth': null,
+            'outlierMarkers': {
+              'enabled': null,
+              'size': 4,
+              'fill': defaultSelectColor,
+              'stroke': defaultSelectStroke
             }
           },
           'tooltip': {
@@ -2000,16 +2061,20 @@ goog.provide('anychart.themes.defaultTheme');
           'tooltip': {
             'titleFormat': returnDateTimeX
           },
-          'labels': {
-            'format': returnDateTimeX
+          'normal': {
+            'labels': {
+              'format': returnDateTimeX
+            }
           }
         },
         'ohlc': {
           'tooltip': {
             'titleFormat': returnDateTimeX
           },
-          'labels': {
-            'format': returnDateTimeX
+          'normal': {
+            'labels': {
+              'format': returnDateTimeX
+            }
           }
         }
       },
@@ -2114,34 +2179,37 @@ goog.provide('anychart.themes.defaultTheme');
       'defaultSeriesType': 'waterfall',
       'defaultSeriesSettings': {
         'waterfall': {
-          'fill': waterfallTotalFill,
-          'stroke': waterfallTotalStroke,
-
-          'risingFill': waterfallRisingFill,
-          'fallingFill': waterfallFallingFill,
-          'hoverRisingFill': returnSourceColor65,
-          'hoverFallingFill': returnSourceColor65,
-          'risingStroke': waterfallRisingStroke,
-          'fallingStroke': waterfallFallingStroke,
-          'hoverRisingStroke': returnLightenStrokeSourceColor,
-          'hoverFallingStroke': returnLightenStrokeSourceColor,
-
-          'risingHatchFill': false,
-          'hoverRisingHatchFill': null,
-          'selectRisingHatchFill': null,
-          'fallingHatchFill': false,
-          'hoverFallingHatchFill': null,
-          'selectFallingHatchFill': null,
-          'selectFallingFill': defaultSelectColor,
-          'selectRisingFill': defaultSelectColor,
-          'selectRisingStroke': defaultSelectColor,
-          'selectFallingStroke': defaultSelectColor,
-
-          'labels': {
-            'enabled': true,
-            'format': function() {
-              return locNum(this['isTotal'] ? this['absolute'] : this['diff']);
+          'normal': {
+            'fill': waterfallTotalFill,
+            'stroke': waterfallTotalStroke,
+            'risingFill': waterfallRisingFill,
+            'fallingFill': waterfallFallingFill,
+            'risingStroke': waterfallRisingStroke,
+            'fallingStroke': waterfallFallingStroke,
+            'risingHatchFill': false,
+            'fallingHatchFill': false,
+            'labels': {
+              'enabled': true,
+              'format': function() {
+                return locNum(this['isTotal'] ? this['absolute'] : this['diff']);
+              }
             }
+          },
+          'hovered': {
+            'risingFill': returnSourceColor65,
+            'fallingFill': returnSourceColor65,
+            'risingStroke': returnLightenStrokeSourceColor,
+            'fallingStroke': returnLightenStrokeSourceColor,
+            'risingHatchFill': null,
+            'fallingHatchFill': null
+          },
+          'selected': {
+            'risingFill': defaultSelectColor,
+            'fallingFill': defaultSelectColor,
+            'risingStroke': defaultSelectColor,
+            'fallingStroke': defaultSelectColor,
+            'risingHatchFill': null,
+            'fallingHatchFill': null
           },
           'tooltip': {
             'format': function() {
@@ -2178,12 +2246,18 @@ goog.provide('anychart.themes.defaultTheme');
       'zPadding': 10,
       'defaultSeriesSettings': {
         'base': {
-          'stroke': 'none',
-          'fill': returnSourceColor,
-          'hoverStroke': returnSourceColor,
-          'hoverFill': returnLightenSourceColor,
-          'selectStroke': returnSourceColor,
-          'selectFill': defaultSelectSolidColor,
+          'normal': {
+            'stroke': 'none',
+            'fill': returnSourceColor
+          },
+          'hovered': {
+            'stroke': returnSourceColor,
+            'fill': returnLightenSourceColor
+          },
+          'selected': {
+            'stroke': returnSourceColor,
+            'fill': defaultSelectSolidColor
+          },
           'tooltip': {
             'anchor': 'left-top',
             'position': 'left-top'
@@ -2424,16 +2498,20 @@ goog.provide('anychart.themes.defaultTheme');
           }
         },
         'bubble': {
-          'labels': {
-            'anchor': 'center'
+          'normal': {
+            'negativeFill': returnDarkenSourceColor,
+            'negativeStroke': returnDarkenSourceColor,
+            'negativeHatchFill': null,
+            'labels': {
+              'anchor': 'center'
+            }
+          },
+          'hovered': {
+            'negativeFill': returnDarkenSourceColor,
+            'negativeStroke': returnDarkenSourceColor,
+            'negativeHatchFill': undefined
           },
           'displayNegative': false,
-          'negativeFill': returnDarkenSourceColor,
-          'hoverNegativeFill': returnDarkenSourceColor,
-          'negativeStroke': returnDarkenSourceColor,
-          'hoverNegativeStroke': returnDarkenSourceColor,
-          'negativeHatchFill': null,
-          'hoverNegativeHatchFill': undefined,
           'hatchFill': false,
           'tooltip': {
             /**
@@ -2449,9 +2527,15 @@ goog.provide('anychart.themes.defaultTheme');
           'connectMissingPoints': false
         },
         'marker': {
-          'size': 5,
-          'hoverSize': 7,
-          'selectSize': 7
+          'normal': {
+            'size': 5
+          },
+          'hovered': {
+            'size': 7
+          },
+          'selected': {
+            'size': 7
+          }
         }
       },
       'defaultAnnotationSettings': {},
@@ -2580,27 +2664,31 @@ goog.provide('anychart.themes.defaultTheme');
       },
       'defaultSeriesSettings': {
         'base': {
-          'fill': returnSourceColor85,
-          'hoverFill': returnSourceColor65,
+          'normal': {
+            'fill': returnSourceColor85,
+            'stroke': returnStrokeSourceColor1,
+            'labels': {
+              'format': VALUE_TOKEN_DECIMALS_COUNT_2,
+              'position': 'center',
+              'offsetY': 0,
+              'fontColor': fontColorReversedNormal
+            },
+            'markers': {
+              'position': 'center',
+              'anchor': 'center'
+            }
+          },
+          'hovered': {
+            'fill': returnSourceColor65,
+            'stroke': returnLightenStrokeSourceColor1
+          },
           'legendItem': {
             'iconStroke': 'none'
           },
           'isVertical': false,
-          'labels': {
-            'format': VALUE_TOKEN_DECIMALS_COUNT_2,
-            'position': 'center',
-            'offsetY': 0,
-            'fontColor': fontColorReversedNormal
-          },
-          'markers': {
-            'position': 'center',
-            'anchor': 'center'
-          },
           'tooltip': {
             'anchor': 'left-top'
-          },
-          'stroke': returnStrokeSourceColor1,
-          'hoverStroke': returnLightenStrokeSourceColor1
+          }
         },
         'mekko': {}
       },
@@ -2698,42 +2786,46 @@ goog.provide('anychart.themes.defaultTheme');
       ],
       'defaultSeriesSettings': {
         'mekko': {
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'fill': function() {
-            var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
-            color = color ? color : this['sourceColor'];
-            return setOpacity(color, 0.85, true);
+          'normal': {
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'fill': function() {
+              var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
+              color = color ? color : this['sourceColor'];
+              return setOpacity(color, 0.85, true);
+            },
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'stroke': function() {
+              var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
+              color = color ? color : this['sourceColor'];
+              return setThickness(color, 1);
+            },
+            'labels': {
+              'format': VALUE_TOKEN_DECIMALS_COUNT_2,
+              'anchor': 'auto',
+              'position': 'value',
+              'fontColor': fontColorNormal
+            },
+            'markers': {
+              'position': 'value',
+              'positionFormatter': returnValue
+            }
           },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'hoverFill': function() {
-            var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
-            color = color ? color : this['sourceColor'];
-            return setOpacity(color, 0.65, true);
-          },
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'stroke': function() {
-            var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
-            color = color ? color : this['sourceColor'];
-            return setThickness(color, 1);
-          },
-          'labels': {
-            'format': VALUE_TOKEN_DECIMALS_COUNT_2,
-            'anchor': 'auto',
-            'position': 'value',
-            'fontColor': fontColorNormal
-          },
-          'markers': {
-            'position': 'value',
-            'positionFormatter': returnValue
+          'hovered': {
+            /**
+             * @this {*}
+             * @return {*}
+             */
+            'fill': function() {
+              var color = this['chart']['getSeriesCount']() > 1 ? this['sourceColor'] : this['chart']['palette']()['itemAt'](this['iterator']['currentIndex']);
+              color = color ? color : this['sourceColor'];
+              return setOpacity(color, 0.65, true);
+            }
           }
         }
       },
@@ -3098,54 +3190,60 @@ goog.provide('anychart.themes.defaultTheme');
       'defaultCalloutSettings': {},
       'defaultSeriesSettings': {
         'base': {
-          /**
-           * @this {*}
-           * @return {*}
-           */
-          'fill': function() {
-            return this['scaledColor'] || this['sourceColor'];
-          },
-          'hoverFill': defaultHoverColor,
-          'selectFill': defaultSelectColor,
-          'stroke': returnDarkenSourceColor,
-          'hoverStroke': {'thickness': 0.5, 'color': '#545f69'},
-          'selectStroke': {'thickness': 0.5, 'color': '#545f69'},
-          'hatchFill': false,
-          'labels': {
-            'anchor': 'center-bottom',
-            'enabled': null,
-            'adjustFontSize': {
-              'width': true,
-              'height': true
-            },
+          'normal': {
             /**
              * @this {*}
              * @return {*}
              */
-            'format': function() {
-              if (this['getData']('name')) {
-                return this['getData']('name');
-              } else if (this['name']) {
-                return this['name'];
-              } else if (this['getData']('id')) {
-                return this['getData']('id');
-              } else {
-                return 'lat: ' + this['lat'] + '\nlong: ' + this['long'];
+            'fill': function() {
+              return this['scaledColor'] || this['sourceColor'];
+            },
+            'stroke': returnDarkenSourceColor,
+            'hatchFill': false,
+            'labels': {
+              'anchor': 'center-bottom',
+              'enabled': null,
+              'adjustFontSize': {
+                'width': true,
+                'height': true
+              },
+              /**
+               * @this {*}
+               * @return {*}
+               */
+              'format': function() {
+                if (this['getData']('name')) {
+                  return this['getData']('name');
+                } else if (this['name']) {
+                  return this['name'];
+                } else if (this['getData']('id')) {
+                  return this['getData']('id');
+                } else {
+                  return 'lat: ' + this['lat'] + '\nlong: ' + this['long'];
+                }
               }
+            },
+            'markers': {
+              'enabled': false,
+              'disablePointerEvents': false
             }
           },
-          'hoverLabels': {
-            'enabled': null
+          'hovered': {
+            'fill': defaultHoverColor,
+            'stroke': {'thickness': 0.5, 'color': '#545f69'},
+            'labels': {
+              'enabled': null
+            },
+            'markers': {'enabled': null}
           },
-          'selectLabels': {
-            'enabled': null
+          'selected': {
+            'fill': defaultSelectColor,
+            'stroke': {'thickness': 0.5, 'color': '#545f69'},
+            'labels': {
+              'enabled': null
+            },
+            'markers': {'enabled': null}
           },
-          'markers': {
-            'enabled': false,
-            'disablePointerEvents': false
-          },
-          'hoverMarkers': {'enabled': null},
-          'selectMarkers': {'enabled': null},
           'color': null,
           'tooltip': {
             /**
@@ -3171,12 +3269,14 @@ goog.provide('anychart.themes.defaultTheme');
           'clip': false
         },
         'choropleth': {
-          'labels': {
-            'fontColor': fontColorDark,
-            'anchor': 'center'
-          },
-          'markers': {
-            'anchor': null
+          'normal': {
+            'labels': {
+              'fontColor': fontColorDark,
+              'anchor': 'center'
+            },
+            'markers': {
+              'anchor': null
+            }
           },
           'colorScale': {}
         },
@@ -3184,39 +3284,45 @@ goog.provide('anychart.themes.defaultTheme');
           'startSize': 0,
           'endSize': 0,
           'curvature': .3,
-          'stroke': function() {
-            return {'thickness': 2, 'color': this['sourceColor'], 'lineJoin': 'round'};
+          'normal': {
+            'stroke': function() {
+              return {'thickness': 2, 'color': this['sourceColor'], 'lineJoin': 'round'};
+            },
+            'markers': {
+              'position': 'middle',
+              'enabled': true,
+              'size': 15,
+              'stroke': '1.5 #f7f7f7',
+              'rotation': null,
+              'anchor': null,
+              'type': 'arrowhead'
+            },
+            'labels': {
+              'enabled': false,
+              'position': 'middle',
+              'anchor': null,
+              /**
+               * @this {*}
+               * @return {*}
+               */
+              'format': function() {
+                return 'from: ' + this['startPoint']['lat'] + ',' + this['startPoint']['long'] + '\nto: ' + this['endPoint']['lat'] + ',' + this['endPoint']['long'];
+              }
+            }
           },
-          'hoverStroke': returnLightenSourceColor,
-          'selectStroke': '2 ' + defaultSelectColor,
-          'markers': {
-            'position': 'middle',
-            'enabled': true,
-            'size': 15,
-            'stroke': '1.5 #f7f7f7',
-            'rotation': null,
-            'anchor': null,
-            'type': 'arrowhead'
+          'hovered': {
+            'stroke': returnLightenSourceColor,
+            'markers': {
+              'stroke': '1.5 #f7f7f7',
+              'size': 15
+            }
           },
-          'hoverMarkers': {
-            'stroke': '1.5 #f7f7f7',
-            'size': 15
-          },
-          'selectMarkers': {
-            'fill': defaultSelectColor,
-            'stroke': '1.5 #f7f7f7',
-            'size': 15
-          },
-          'labels': {
-            'enabled': false,
-            'position': 'middle',
-            'anchor': null,
-            /**
-             * @this {*}
-             * @return {*}
-             */
-            'format': function() {
-              return 'from: ' + this['startPoint']['lat'] + ',' + this['startPoint']['long'] + '\nto: ' + this['endPoint']['lat'] + ',' + this['endPoint']['long'];
+          'selected': {
+            'stroke': '2 ' + defaultSelectColor,
+            'markers': {
+              'fill': defaultSelectColor,
+              'stroke': '1.5 #f7f7f7',
+              'size': 15
             }
           },
           'tooltip': {
@@ -3236,14 +3342,20 @@ goog.provide('anychart.themes.defaultTheme');
           }
         },
         'bubble': {
-          'stroke': function() {
-            return {'thickness': 2, 'color': darken(this['sourceColor'])};
+          'normal': {
+            'stroke': function() {
+              return {'thickness': 2, 'color': darken(this['sourceColor'])};
+            },
+            'labels': {
+              'anchor': 'center'
+            }
           },
-          'labels': {
-            'anchor': 'center'
+          'hovered': {
+            'fill': defaultHoverColor
           },
-          'hoverFill': defaultHoverColor,
-          'selectFill': defaultSelectColor,
+          'selected': {
+            'fill': defaultSelectColor
+          },
           'tooltip': {
             /**
              * @this {*}
@@ -3263,14 +3375,20 @@ goog.provide('anychart.themes.defaultTheme');
           }
         },
         'marker': {
-          'labels': {
-            'enabled': true
+          'normal': {
+            'labels': {
+              'enabled': true
+            }
           },
-          'hoverLabels': {
-            'fontWeight': 'bold'
+          'hovered': {
+            'labels': {
+              'fontWeight': 'bold'
+            }
           },
-          'selectLabels': {
-            'fontWeight': 'bold'
+          'selected': {
+            'labels': {
+              'fontWeight': 'bold'
+            }
           },
           'tooltip': {
             /**
@@ -4488,19 +4606,27 @@ goog.provide('anychart.themes.defaultTheme');
             'legendItem': {'iconStroke': 'none'}
           },
           'areaLike': {
-            'hoverMarkers': {
-              'enabled': null
+            'hovered': {
+              'markers': {
+                'enabled': null
+              }
             },
-            'selectMarkers': {
-              'enabled': null
+            'selected': {
+              'markers': {
+                'enabled': null
+              }
             }
           },
           'lineLike': {
-            'hoverMarkers': {
-              'enabled': null
+            'hovered': {
+              'markers': {
+                'enabled': null
+              }
             },
-            'selectMarkers': {
-              'enabled': null
+            'selected': {
+              'markers': {
+                'enabled': null
+              }
             }
           },
           'rangeLike': {
@@ -4514,10 +4640,14 @@ goog.provide('anychart.themes.defaultTheme');
             }
           },
           'column': {
-            'stroke': 'none'
+            'normal': {
+              'stroke': 'none'
+            }
           },
           'rangeColumn': {
-            'stroke': 'none'
+            'normal': {
+              'stroke': 'none'
+            }
           },
           'ohlc': {
             'tooltip': {
@@ -4690,51 +4820,79 @@ goog.provide('anychart.themes.defaultTheme');
       'scroller': {
         'defaultSeriesSettings': {
           'base': {
-            'fill': stockScrollerUnselected,
-            'selectFill': returnSourceColor,
-            'stroke': stockScrollerUnselected,
-            'selectStroke': returnSourceColor,
-            'lowStroke': stockScrollerUnselected,
-            'selectLowStroke': returnSourceColor,
-            'highStroke': stockScrollerUnselected,
-            'selectHighStroke': returnSourceColor,
+            'normal': {
+              'fill': stockScrollerUnselected,
+              'stroke': stockScrollerUnselected,
+              'lowStroke': stockScrollerUnselected,
+              'highStroke': stockScrollerUnselected
+            },
+            'selected': {
+              'fill': returnSourceColor,
+              'stroke': returnSourceColor,
+              'lowStroke': returnSourceColor,
+              'highStroke': returnSourceColor
+            },
             'pointWidth': '75%'
           },
           'marker': {
-            'fill': stockScrollerUnselected,
-            'stroke': stockScrollerUnselected,
-            'selectFill': returnSourceColor,
-            'selectStroke': returnSourceColor
+            'normal': {
+              'fill': stockScrollerUnselected,
+              'stroke': stockScrollerUnselected
+            },
+            'selected': {
+              'fill': returnSourceColor,
+              'stroke': returnSourceColor
+            }
           },
           'areaLike': {
-            'fill': stockScrollerUnselected
+            'normal': {
+              'fill': stockScrollerUnselected
+            }
           },
           'barLike': {
-            'fill': stockScrollerUnselected
+            'normal': {
+              'fill': stockScrollerUnselected
+            }
           },
           'candlestick': {
-            'risingFill': stockScrollerUnselected,
-            'risingStroke': stockScrollerUnselected,
-            'fallingFill': stockScrollerUnselected,
-            'fallingStroke': stockScrollerUnselected,
-            'selectFallingFill': fallingColor,
-            'selectRisingFill': risingColor,
-            'selectRisingStroke': risingColor,
-            'selectFallingStroke': fallingColor
+            'normal': {
+              'risingFill': stockScrollerUnselected,
+              'risingStroke': stockScrollerUnselected,
+              'fallingFill': stockScrollerUnselected,
+              'fallingStroke': stockScrollerUnselected
+            },
+            'selected': {
+              'risingFill': risingColor,
+              'risingStroke': risingColor,
+              'fallingFill': fallingColor,
+              'fallingStroke': fallingColor
+            }
           },
           'ohlc': {
-            'risingStroke': stockScrollerUnselected,
-            'fallingStroke': stockScrollerUnselected,
-            'selectRisingStroke': risingColor,
-            'selectFallingStroke': fallingColor
+            'normal': {
+              'risingStroke': stockScrollerUnselected,
+              'fallingStroke': stockScrollerUnselected
+            },
+            'selected': {
+              'risingStroke': risingColor,
+              'fallingStroke': fallingColor
+            }
           },
           'stick': {
-            'stroke': stockScrollerUnselected,
-            'selectStroke': returnStrokeSourceColor1
+            'normal': {
+              'stroke': stockScrollerUnselected
+            },
+            'selected': {
+              'stroke': returnStrokeSourceColor1
+            }
           },
           'jumpLine': {
-            'stroke': stockScrollerUnselected,
-            'selectStroke': returnStrokeSourceColor1
+            'normal': {
+              'stroke': stockScrollerUnselected
+            },
+            'selected': {
+              'stroke': returnStrokeSourceColor1
+            }
           }
         },
         'enabled': true,
