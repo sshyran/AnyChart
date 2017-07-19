@@ -29,12 +29,6 @@ anychart.core.ui.Crosshair = function() {
    */
   this.barChartMode_ = false;
 
-  // /**
-  //  * @type {anychart.enums.CrosshairDisplayMode}
-  //  * @private
-  //  */
-  // this.displayMode_ = anychart.enums.CrosshairDisplayMode.FLOAT;
-
   /**
    * @type {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime}
    * @private
@@ -46,18 +40,6 @@ anychart.core.ui.Crosshair = function() {
    * @private
    */
   this.yAxis_ = null;
-
-  // /**
-  //  * @type {?acgraph.vector.Stroke}
-  //  * @private
-  //  */
-  // this.xStroke_ = null;
-  //
-  // /**
-  //  * @type {?acgraph.vector.Stroke}
-  //  * @private
-  //  */
-  // this.yStroke_ = null;
 
   /**
    * @type {acgraph.vector.Path}
@@ -329,24 +311,6 @@ anychart.core.ui.Crosshair.prototype.barChartMode = function(opt_value) {
 };
 
 
-// /**
-//  * Display mode for crosshair.
-//  * @param {(anychart.enums.CrosshairDisplayMode|string)=} opt_value
-//  * @return {!(anychart.enums.CrosshairDisplayMode|anychart.core.ui.Crosshair)}
-//  */
-// anychart.core.ui.Crosshair.prototype.displayMode = function(opt_value) {
-//   if (goog.isDef(opt_value)) {
-//     var displayMode = anychart.enums.normalizeCrosshairDisplayMode(opt_value);
-//     if (displayMode != this.displayMode_) {
-//       this.displayMode_ = displayMode;
-//       this.bindHandlers();
-//     }
-//     return this;
-//   }
-//   return this.displayMode_;
-// };
-
-
 /**
  *
  * @param {(anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime)=} opt_value
@@ -455,52 +419,6 @@ anychart.core.ui.Crosshair.prototype.yLabel = function(opt_value) {
     return this.yLabel_;
   }
 };
-
-
-// /**
-//  * Getter/Setter for the X line stroke.
-//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
-//  *    or stroke settings.
-//  * @param {number=} opt_thickness [1] Line thickness.
-//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
-//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
-//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
-//  * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
-//  */
-// anychart.core.ui.Crosshair.prototype.xStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-//   if (goog.isDef(opt_strokeOrFill)) {
-//     var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
-//     if (stroke != this.xStroke_) {
-//       this.xStroke_ = stroke;
-//       this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
-//     }
-//     return this;
-//   }
-//   return this.xStroke_;
-// };
-//
-//
-// /**
-//  * Getter/Setter for the Y line stroke.
-//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Fill settings
-//  *    or stroke settings.
-//  * @param {number=} opt_thickness [1] Line thickness.
-//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
-//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line joint style.
-//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Line cap style.
-//  * @return {anychart.core.ui.Crosshair|acgraph.vector.Stroke} .
-//  */
-// anychart.core.ui.Crosshair.prototype.yStroke = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-//   if (goog.isDef(opt_strokeOrFill)) {
-//     var stroke = acgraph.vector.normalizeStroke.apply(null, arguments);
-//     if (stroke != this.yStroke_) {
-//       this.yStroke_ = stroke;
-//       this.invalidate(anychart.ConsistencyState.APPEARANCE, anychart.Signal.NEEDS_REDRAW);
-//     }
-//     return this;
-//   }
-//   return this.yStroke_;
-// };
 
 
 //endregion
@@ -645,7 +563,6 @@ anychart.core.ui.Crosshair.prototype.show = function(event) {
 
     var iterator = series.getIterator();
     var x = anychart.utils.toNumber(iterator.meta('x'));
-    // var y = anychart.utils.toNumber(iterator.meta('value'));
     var mouseX = event['originalEvent'] - chartOffset.x;
     var y = event['originalEvent']['clientY'] - chartOffset.y;
 
@@ -1130,12 +1047,7 @@ anychart.core.ui.Crosshair.prototype.disposeInternal = function() {
 /** @inheritDoc */
 anychart.core.ui.Crosshair.prototype.serialize = function() {
   var json = anychart.core.ui.Crosshair.base(this, 'serialize');
-
   anychart.core.settings.serialize(this, anychart.core.ui.Crosshair.DESCRIPTORS, json, 'Crosshair');
-
-  // json['displayMode'] = this.displayMode();
-  // json['xStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.xStroke()));
-  // json['yStroke'] = anychart.color.serialize(/** @type {acgraph.vector.Stroke}*/(this.yStroke()));
   json['xLabel'] = this.xLabel_.serialize();
   json['yLabel'] = this.yLabel_.serialize();
   return json;
@@ -1151,10 +1063,6 @@ anychart.core.ui.Crosshair.prototype.setupByJSON = function(config, opt_default)
   } else {
     anychart.core.settings.deserialize(this, anychart.core.ui.Crosshair.DESCRIPTORS, config);
   }
-
-  // this.displayMode(config['displayMode']);
-  // this.xStroke(config['xStroke']);
-  // this.yStroke(config['yStroke']);
   this.xLabel().setupInternal(!!opt_default, config['xLabel']);
   this.yLabel().setupInternal(!!opt_default, config['yLabel']);
 };
@@ -1164,9 +1072,6 @@ anychart.core.ui.Crosshair.prototype.setupByJSON = function(config, opt_default)
 //exports
 (function() {
   var proto = anychart.core.ui.Crosshair.prototype;
-  // proto['displayMode'] = proto.displayMode;
-  // proto['xStroke'] = proto.xStroke;
-  // proto['yStroke'] = proto.yStroke;
   proto['xLabel'] = proto.xLabel;
   proto['yLabel'] = proto.yLabel;
 })();

@@ -106,18 +106,6 @@ anychart.core.stock.Plot = function(chart) {
    */
   this.minorGrids_ = [];
 
-  // /**
-  //  * @type {acgraph.vector.Path}
-  //  * @private
-  //  */
-  // this.dateTimeHighlighter_ = null;
-
-  // /**
-  //  * @type {acgraph.vector.Stroke}
-  //  * @private
-  //  */
-  // this.dateTimeHighlighterStroke_ = '#f00';
-
   /**
    * @type {acgraph.vector.Rect}
    * @private
@@ -1417,33 +1405,6 @@ anychart.core.stock.Plot.prototype.minorGrid = function(opt_indexOrValue, opt_va
 };
 
 
-// /**
-//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Stroke settings,
-//  *    if used as a setter.
-//  * @param {number=} opt_thickness Line thickness. If empty - set to 1.
-//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
-//  *    Dash array contains a list of comma and/or white space separated lengths and percentages that specify the
-//  *    lengths of alternating dashes and gaps. If an odd number of values is provided, then the list of values is
-//  *    repeated to yield an even number of values. Thus, stroke dashpattern: 5,3,2 is equivalent to dashpattern: 5,3,2,5,3,2.
-//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line join style.
-//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Style of line cap.
-//  * @return {acgraph.vector.Stroke|anychart.core.stock.Plot} .
-//  */
-// anychart.core.stock.Plot.prototype.dateTimeHighlighter = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-//   if (goog.isDef(opt_strokeOrFill)) {
-//     var color = acgraph.vector.normalizeStroke.apply(null, arguments);
-//     if (this.dateTimeHighlighterStroke_ != color) {
-//       this.dateTimeHighlighterStroke_ = color;
-//       if (this.dateTimeHighlighter_)
-//         this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
-//     }
-//     return this;
-//   } else {
-//     return this.dateTimeHighlighterStroke_;
-//   }
-// };
-
-
 //endregion
 //region Drawing
 //----------------------------------------------------------------------------------------------------------------------
@@ -1947,30 +1908,6 @@ anychart.core.stock.Plot.prototype.highlight = function(value, isLastPlot, hlSou
 
   this.crosshair().autoHighlightX(x, isLastPlot, hlSource != this);
 
-  //
-  // this.highlightedValue_ = value;
-  //
-  // var thickness = acgraph.vector.getThickness(this.dateTimeHighlighterStroke_);
-  // if (thickness && this.dateTimeHighlighterStroke_ != 'none' && ratio >= 0 && ratio <= 1) {
-  //   if (!this.dateTimeHighlighter_) {
-  //     this.dateTimeHighlighter_ = acgraph.path();
-  //     this.dateTimeHighlighter_.fill(null);
-  //     this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
-  //     this.dateTimeHighlighter_.disablePointerEvents(true);
-  //     this.dateTimeHighlighter_.zIndex(1000);
-  //   } else {
-  //     this.dateTimeHighlighter_.clear();
-  //   }
-  //   var x = this.seriesBounds_.left + ratio * this.seriesBounds_.width;
-  //   x = anychart.utils.applyPixelShift(x, thickness);
-  //   this.dateTimeHighlighter_.moveTo(x, this.seriesBounds_.top);
-  //   this.dateTimeHighlighter_.lineTo(x, this.seriesBounds_.getBottom());
-  //   if (!this.dateTimeHighlighter_.parent())
-  //     this.rootLayer_.addChild(this.dateTimeHighlighter_);
-  // } else if (this.dateTimeHighlighter_) {
-  //   this.dateTimeHighlighter_.remove();
-  // }
-
   for (var i = 0; i < this.series_.length; i++) {
     var series = this.series_[i];
     if (series)
@@ -1987,9 +1924,6 @@ anychart.core.stock.Plot.prototype.highlight = function(value, isLastPlot, hlSou
 /**
  */
 anychart.core.stock.Plot.prototype.unhighlight = function() {
-  // if (this.dateTimeHighlighter_)
-  //   this.dateTimeHighlighter_.remove();
-
   this.highlightedValue_ = NaN;
 
   for (var i = 0; i < this.series_.length; i++) {
@@ -2043,7 +1977,6 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
       if (!goog.isDef(this.frame_))
         this.frame_ = window.requestAnimationFrame(this.frameAction_);
     }
-    // this.chart_.highlightPlots(this, e['clientX'] - stageReferencePoint.x);
   }
 };
 
@@ -2390,11 +2323,11 @@ anychart.core.stock.Plot.prototype.serialize = function() {
 
   axesIds.push(goog.getUid(this.xAxis()));
   json['xAxis'] = this.xAxis().serialize();
-  // json['dateTimeHighlighter'] = anychart.color.serialize(this.dateTimeHighlighterStroke_);
 
   json['palette'] = this.palette().serialize();
   json['markerPalette'] = this.markerPalette().serialize();
   json['hatchFillPalette'] = this.hatchFillPalette().serialize();
+  json['crosshair'] = this.crosshair().serialize();
 
   var yAxes = [];
   for (i = 0; i < this.yAxes_.length; i++) {
@@ -2533,7 +2466,6 @@ anychart.core.stock.Plot.prototype.setupByJSON = function(config, opt_default) {
   this.background(config['background']);
 
   this.xAxis(config['xAxis']);
-  // this.dateTimeHighlighter(config['dateTimeHighlighter']);
   this.legend(config['legend']);
   var type = this.getChart().getType();
 
@@ -2794,7 +2726,6 @@ anychart.core.stock.Plot.Dragger.prototype.limitY = function(y) {
   proto['xAxis'] = proto.xAxis;
   proto['grid'] = proto.grid;
   proto['minorGrid'] = proto.minorGrid;
-  // proto['dateTimeHighlighter'] = proto.dateTimeHighlighter;
   proto['defaultSeriesType'] = proto.defaultSeriesType;
   proto['addSeries'] = proto.addSeries;
   proto['getSeriesAt'] = proto.getSeriesAt;

@@ -1838,21 +1838,6 @@ anychart.charts.Stock.prototype.unhighlight_ = function() {
 };
 
 
-// /**
-//  * Highlights plots by crosshair.
-//  * @param {anychart.core.stock.Plot} target - Plot that initialized highlighting.
-//  * @param {number} mouseX - Mouse x coordinate.
-//  */
-// anychart.charts.Stock.prototype.highlightPlots = function(target, mouseX) {
-//   for (var i = 0; i < this.plots_.length; i++) {
-//     var plot = this.plots_[i];
-//     var lastPlot = i == this.plots_.length - 1;
-//     plot.crosshair().xLabelAutoEnabled(lastPlot);
-//     plot.crosshair().autoHighlightX(mouseX, lastPlot, plot != target);
-//   }
-// };
-
-
 /**
  * Removes crosshair from plots.
  */
@@ -1887,8 +1872,6 @@ anychart.charts.Stock.prototype.crosshair = function(opt_value) {
   if (!this.crosshair_) {
     this.crosshair_ = new anychart.core.ui.Crosshair();
     this.crosshair_.needsForceSignalsDispatching(true);
-    // this.crosshair_.enabled(false);
-    // this.crosshair_.bindHandlers(this);
     this.registerDisposable(this.crosshair_);
     this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
     this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
@@ -2550,6 +2533,7 @@ anychart.charts.Stock.prototype.serialize = function() {
   json['plots'] = goog.array.map(this.plots_, function(element) {
     return element ? element.serialize() : null;
   });
+  json['crosshair'] = this.crosshair().serialize();
 
   anychart.core.settings.serialize(this, anychart.charts.Stock.PROPERTY_DESCRIPTORS, json);
   json['interactivity'] = this.interactivity().serialize();

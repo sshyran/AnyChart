@@ -289,16 +289,6 @@ anychart.core.utils.LegendItemSettings.prototype.iconSize = function(opt_value) 
 };
 
 
-// /**
-//  * Getter/setter for legend item text.
-//  * @param {string=} opt_value Legend item text.
-//  * @return {(string|Function|anychart.core.utils.LegendItemSettings)} Legend item text or self for method chaining.
-//  */
-// anychart.core.utils.LegendItemSettings.prototype.text = function(opt_value) {
-//   return /** @type {!anychart.core.utils.LegendItemSettings|string} */(this.textSettings('text', opt_value));
-// };
-
-
 /**
  * Getter/setter for legend item format.
  * @param {(string|Function)=} opt_value Legend item text.
@@ -372,8 +362,6 @@ anychart.core.utils.LegendItemSettings.prototype.serialize = function() {
 
   if (goog.isDef(this.iconTextSpacing()))
     json['iconTextSpacing'] = this.iconTextSpacing();
-  // if (goog.isString(this.text()))
-  //   json['text'] = this.text();
   if (goog.isDef(this.iconEnabled()))
     json['iconEnabled'] = this.iconEnabled();
   if (goog.isDef(this.iconSize()))
@@ -467,7 +455,6 @@ anychart.core.utils.LegendItemSettings.prototype.setupByJSON = function(config, 
   this.iconMarkerFill(config['iconMarkerFill']);
   this.iconMarkerStroke(config['iconMarkerStroke']);
   this.iconSize(config['iconSize']);
-  // this.text(config['text']);
   this.disabled(config['disabled']);
   this.resumeSignalsDispatching(true);
 };
@@ -486,7 +473,6 @@ anychart.core.utils.LegendItemSettings.prototype.setupByJSON = function(config, 
   proto['iconMarkerFill'] = proto.iconMarkerFill;
   proto['iconMarkerStroke'] = proto.iconMarkerStroke;
   proto['iconSize'] = proto.iconSize;
-  // proto['text'] = proto.text;
   proto['format'] = proto.format;
   proto['disabled'] = proto.disabled;
 })();

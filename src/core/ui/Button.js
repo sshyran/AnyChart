@@ -270,29 +270,6 @@ anychart.core.ui.Button.prototype.boundsInvalidated_ = function(event) {
 };
 
 
-// /**
-//  * Button text value.
-//  * @param {string=} opt_value Value to set.
-//  * @return {(anychart.core.ui.Button|string)} Text value or self for method chaining.
-//  */
-// anychart.core.ui.Button.prototype.text = function(opt_value) {
-//   return /** @type {!anychart.core.ui.Button|string} */(this.textSettings('text', opt_value));
-// };
-//
-//
-// /** @inheritDoc */
-// anychart.core.ui.Button.prototype.applyTextSettings = function(textElement, isInitial) {
-//   if (isInitial || 'text' in this.changedSettings || 'useHtml' in this.changedSettings) {
-//     if (!!this.settingsObj['useHtml'])
-//       textElement.htmlText(this.settingsObj['text']);
-//     else
-//       textElement.text(this.settingsObj['text']);
-//   }
-//   anychart.core.ui.Button.base(this, 'applyTextSettings', textElement, isInitial);
-//   this.changedSettings = {};
-// };
-
-
 /**
  * Getter/setter for position.
  * @param {anychart.math.Coordinate=} opt_value Button position.

@@ -4598,7 +4598,6 @@ goog.provide('anychart.themes.defaultTheme');
             }
           }
         },
-        // 'dateTimeHighlighter': '#B9B9B9',
         'legend': {
           'enabled': true,
           'vAlign': 'bottom',

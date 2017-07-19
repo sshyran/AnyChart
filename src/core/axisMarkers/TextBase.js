@@ -372,16 +372,6 @@ anychart.core.axisMarkers.TextBase.prototype.anchor = function(opt_value) {
 //----------------------------------------------------------------------------------------------------------------------
 //  Settings.
 //----------------------------------------------------------------------------------------------------------------------
-// /**
-//  * Get/Set text marker settings.
-//  * @param {(string)=} opt_value TextMarker text settings.
-//  * @return {string|anychart.core.axisMarkers.TextBase} TextMarker line settings or TextMarker instance for method chaining.
-//  */
-// anychart.core.axisMarkers.TextBase.prototype.text = function(opt_value) {
-//   return /** @type {anychart.core.axisMarkers.TextBase|string} */(this.textSettings('text', opt_value));
-// };
-
-
 /**
  * Getter/setter for scale.
  * @param {*=} opt_value - Value to be set.
@@ -472,22 +462,6 @@ anychart.core.axisMarkers.TextBase.prototype.height = function(opt_value) {
   }
   return this.height_;
 };
-
-
-// /** @inheritDoc */
-// anychart.core.axisMarkers.TextBase.prototype.applyTextSettings = function(textElement, isInitial) {
-//   var text = this.getOption('text');
-//   var textElementText = useHtml ? textElement.htmlText() : textElement.text();
-//
-//   if (isInitial || text !== textElementText) {
-//     var useHtml = !!this.getOption('useHtml');
-//     if (useHtml)
-//       textElement.htmlText(text);
-//     else
-//       textElement.text(text);
-//   }
-//   anychart.core.axisMarkers.TextBase.base(this, 'applyTextSettings', textElement, isInitial);
-// };
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -696,7 +670,6 @@ anychart.core.axisMarkers.TextBase.prototype.serialize = function() {
   json['rotation'] = this.rotation();
   json['offsetX'] = this.offsetX();
   json['offsetY'] = this.offsetY();
-  // json['text'] = this.text();
   json['height'] = this.height();
   json['width'] = this.width();
   return json;
@@ -719,7 +692,6 @@ anychart.core.axisMarkers.TextBase.prototype.setupByJSON = function(config, opt_
   this.rotation(config['rotation']);
   this.offsetX(config['offsetX']);
   this.offsetY(config['offsetY']);
-  // this.text(config['text']);
   this.height(config['height']);
   this.width(config['width']);
 

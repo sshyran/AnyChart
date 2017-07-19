@@ -32,13 +32,6 @@ anychart.core.ui.CrosshairLabel = function() {
    */
   this.y_ = NaN;
 
-  // /**
-  //  * Label text formatting function, by default we use value field of the format provider.
-  //  * @type {Function}
-  //  * @private
-  //  */
-  // this.format_ = null;
-
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['format', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED]
   ]);
@@ -110,23 +103,6 @@ anychart.core.ui.CrosshairLabel.prototype.formatProvider = function(opt_value) {
     return this.formatProvider_;
   }
 };
-
-
-// /**
-//  * Gets or sets labels text formatter function.
-//  * @param {Function=} opt_value Labels text formatter function.
-//  * @return {Function|anychart.core.ui.CrosshairLabel} Labels text formatter function or Labels instance for chaining call.
-//  */
-// anychart.core.ui.CrosshairLabel.prototype.format = function(opt_value) {
-//   if (goog.isDef(opt_value)) {
-//     this.format_ = opt_value;
-//     this.invalidate(anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-//         anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
-//     return this;
-//   } else {
-//     return this.format_;
-//   }
-// };
 
 
 /**
@@ -243,8 +219,6 @@ anychart.core.ui.CrosshairLabel.prototype.setupByJSON = function(config, opt_def
   }
 
   this.axisIndex(config['axisIndex']);
-  // this.anchor(config['anchor']);
-  // this.format(config['format']);
 };
 
 
@@ -252,16 +226,6 @@ anychart.core.ui.CrosshairLabel.prototype.setupByJSON = function(config, opt_def
   var proto = anychart.core.ui.CrosshairLabel.prototype;
   //exports
   proto['axisIndex'] = proto.axisIndex;
-  // proto['format'] = proto.format;
   proto['background'] = proto.background;
   proto['padding'] = proto.padding;
-  // proto['width'] = proto.width;
-  // proto['height'] = proto.height;
-  // proto['anchor'] = proto.anchor;
-  // proto['offsetX'] = proto.offsetX;
-  // proto['offsetY'] = proto.offsetY;
-  // proto['minFontSize'] = proto.minFontSize;
-  // proto['maxFontSize'] = proto.maxFontSize;
-  // proto['adjustFontSize'] = proto.adjustFontSize;
-  // proto['rotation'] = proto.rotation;
 })();
