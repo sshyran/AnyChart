@@ -33,7 +33,7 @@ anychart.core.series.HeatMap = function(chart, plot, type, config, sortedMode) {
    * @private
    */
   this.strokeResolver_ = /** @type {function(anychart.core.series.Base, number, boolean=, boolean=):acgraph.vector.Stroke} */(
-      anychart.color.getColorResolver(
+      anychart.color.getColorResolver2(
       ['stroke', 'hoverStroke', 'selectStroke'], anychart.enums.ColorType.STROKE));
   anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
     ['stroke',

@@ -108,7 +108,7 @@ anychart.charts.Cartesian3d.prototype.handleMouseEvent = function(event) {
  */
 anychart.charts.Cartesian3d.areaPostProcessor = function(series, shapes, pointState) {
   var frontFill, topFill, rightFill, bottomFill, backFill, leftFill;
-  var resolver = anychart.color.getColorResolver(
+  var resolver = anychart.color.getColorResolver2(
       ['fill', 'hoverFill', 'selectFill'], anychart.enums.ColorType.FILL);
   var fill = resolver(series, pointState);
   var opacity = goog.isObject(fill) ? fill['opacity'] : 1;
@@ -164,7 +164,7 @@ anychart.charts.Cartesian3d.areaPostProcessor = function(series, shapes, pointSt
  */
 anychart.charts.Cartesian3d.barColumnPostProcessor = function(series, shapes, pointState) {
   var frontFill, topFill, rightFill, bottomFill, backFill, leftFill;
-  var resolver = anychart.color.getColorResolver(
+  var resolver = anychart.color.getColorResolver2(
       ['fill', 'hoverFill', 'selectFill'], anychart.enums.ColorType.FILL);
   var fill = resolver(series, pointState);
   var opacity = goog.isObject(fill) ? fill['opacity'] : 1;

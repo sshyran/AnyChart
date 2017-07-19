@@ -540,7 +540,7 @@ anychart.core.series.Stock.prototype.getLegendIconColor = function(legendItemJso
         name = rising ? 'risingFill' : 'fallingFill';
       }
     }
-    var resolver = anychart.color.getColorResolver([name], colorType);
+    var resolver = anychart.color.getColorResolver2([name], colorType);
     return resolver(this, anychart.PointState.NORMAL, true);
   } else {
     return anychart.core.series.Stock.base(this, 'getLegendIconColor', legendItemJson, colorType, baseColor, context);

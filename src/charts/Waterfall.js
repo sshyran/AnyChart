@@ -310,7 +310,7 @@ anychart.charts.Waterfall.prototype.createLegendItemsProvider = function(sourceM
     for (var i = 0; i < seriesList.length; i++) {
       series = /** @type {anychart.core.series.Base} */ (seriesList[i]);
 
-      resolver = anychart.color.getColorResolver(['risingFill'], anychart.enums.ColorType.FILL);
+      resolver = anychart.color.getColorResolver2(['risingFill'], anychart.enums.ColorType.FILL);
       risingFill = resolver(series, anychart.PointState.NORMAL, true, true);
       risingFillHash = anychart.utils.hash(risingFill);
       if (!(risingFillHash in seen)) {
@@ -330,7 +330,7 @@ anychart.charts.Waterfall.prototype.createLegendItemsProvider = function(sourceM
         this.keyToSeriesMap_[seen[risingFillHash]].series.push(series);
       }
 
-      resolver = anychart.color.getColorResolver(['fallingFill'], anychart.enums.ColorType.FILL);
+      resolver = anychart.color.getColorResolver2(['fallingFill'], anychart.enums.ColorType.FILL);
       fallingFill = resolver(series, anychart.PointState.NORMAL, true, true);
       fallingFillHash = anychart.utils.hash(fallingFill);
       if (!(fallingFillHash in seen)) {
@@ -350,7 +350,7 @@ anychart.charts.Waterfall.prototype.createLegendItemsProvider = function(sourceM
         this.keyToSeriesMap_[seen[fallingFillHash]].series.push(series);
       }
 
-      resolver = anychart.color.getColorResolver(['fill'], anychart.enums.ColorType.FILL);
+      resolver = anychart.color.getColorResolver2(['fill'], anychart.enums.ColorType.FILL);
       totalFill = resolver(series, anychart.PointState.NORMAL, true, true);
       totalFillHash = anychart.utils.hash(totalFill);
       if (!(totalFillHash in seen)) {
