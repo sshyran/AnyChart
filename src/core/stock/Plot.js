@@ -106,17 +106,17 @@ anychart.core.stock.Plot = function(chart) {
    */
   this.minorGrids_ = [];
 
-  /**
-   * @type {acgraph.vector.Path}
-   * @private
-   */
-  this.dateTimeHighlighter_ = null;
+  // /**
+  //  * @type {acgraph.vector.Path}
+  //  * @private
+  //  */
+  // this.dateTimeHighlighter_ = null;
 
-  /**
-   * @type {acgraph.vector.Stroke}
-   * @private
-   */
-  this.dateTimeHighlighterStroke_ = '#f00';
+  // /**
+  //  * @type {acgraph.vector.Stroke}
+  //  * @private
+  //  */
+  // this.dateTimeHighlighterStroke_ = '#f00';
 
   /**
    * @type {acgraph.vector.Rect}
@@ -139,7 +139,7 @@ anychart.core.stock.Plot = function(chart) {
     if (isNaN(this.frameHighlightRatio_))
       this.chart_.unhighlight();
     else
-      this.chart_.highlightAtRatio(this.frameHighlightRatio_, this.frameHighlightX_, this.frameHighlightY_);
+      this.chart_.highlightAtRatio(this.frameHighlightRatio_, this.frameHighlightX_, this.frameHighlightY_, this);
   }, this);
 
   this.defaultSeriesType(anychart.enums.StockSeriesType.LINE);
@@ -1417,31 +1417,31 @@ anychart.core.stock.Plot.prototype.minorGrid = function(opt_indexOrValue, opt_va
 };
 
 
-/**
- * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Stroke settings,
- *    if used as a setter.
- * @param {number=} opt_thickness Line thickness. If empty - set to 1.
- * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
- *    Dash array contains a list of comma and/or white space separated lengths and percentages that specify the
- *    lengths of alternating dashes and gaps. If an odd number of values is provided, then the list of values is
- *    repeated to yield an even number of values. Thus, stroke dashpattern: 5,3,2 is equivalent to dashpattern: 5,3,2,5,3,2.
- * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line join style.
- * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Style of line cap.
- * @return {acgraph.vector.Stroke|anychart.core.stock.Plot} .
- */
-anychart.core.stock.Plot.prototype.dateTimeHighlighter = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
-  if (goog.isDef(opt_strokeOrFill)) {
-    var color = acgraph.vector.normalizeStroke.apply(null, arguments);
-    if (this.dateTimeHighlighterStroke_ != color) {
-      this.dateTimeHighlighterStroke_ = color;
-      if (this.dateTimeHighlighter_)
-        this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
-    }
-    return this;
-  } else {
-    return this.dateTimeHighlighterStroke_;
-  }
-};
+// /**
+//  * @param {(acgraph.vector.Stroke|acgraph.vector.ColoredFill|string|null)=} opt_strokeOrFill Stroke settings,
+//  *    if used as a setter.
+//  * @param {number=} opt_thickness Line thickness. If empty - set to 1.
+//  * @param {string=} opt_dashpattern Controls the pattern of dashes and gaps used to stroke paths.
+//  *    Dash array contains a list of comma and/or white space separated lengths and percentages that specify the
+//  *    lengths of alternating dashes and gaps. If an odd number of values is provided, then the list of values is
+//  *    repeated to yield an even number of values. Thus, stroke dashpattern: 5,3,2 is equivalent to dashpattern: 5,3,2,5,3,2.
+//  * @param {acgraph.vector.StrokeLineJoin=} opt_lineJoin Line join style.
+//  * @param {acgraph.vector.StrokeLineCap=} opt_lineCap Style of line cap.
+//  * @return {acgraph.vector.Stroke|anychart.core.stock.Plot} .
+//  */
+// anychart.core.stock.Plot.prototype.dateTimeHighlighter = function(opt_strokeOrFill, opt_thickness, opt_dashpattern, opt_lineJoin, opt_lineCap) {
+//   if (goog.isDef(opt_strokeOrFill)) {
+//     var color = acgraph.vector.normalizeStroke.apply(null, arguments);
+//     if (this.dateTimeHighlighterStroke_ != color) {
+//       this.dateTimeHighlighterStroke_ = color;
+//       if (this.dateTimeHighlighter_)
+//         this.dateTimeHighlighter_.stroke(this.dateTimeHighlighterStroke_);
+//     }
+//     return this;
+//   } else {
+//     return this.dateTimeHighlighterStroke_;
+//   }
+// };
 
 
 //endregion
@@ -1930,15 +1930,23 @@ anychart.core.stock.Plot.prototype.prepareHighlight = function(value) {
 /**
  * Highlights passed value.
  * @param {number} value
+ * @param {boolean} isLastPlot - .
+ * @param {anychart.core.stock.Plot} hlSource - Highlight source.
  */
-anychart.core.stock.Plot.prototype.highlight = function(value) {
+anychart.core.stock.Plot.prototype.highlight = function(value, isLastPlot, hlSource) {
   if (!this.rootLayer_ || !this.seriesBounds_) return;
 
   this.crosshair().suspendSignalsDispatching();
   this.crosshair().parentBounds(this.getPlotBounds());
   this.crosshair().resumeSignalsDispatching(false);
 
-  // var ratio = this.chart_.xScale().transform(value);
+  var ratio = this.chart_.xScale().transform(value);
+  var thickness = acgraph.vector.getThickness(/** @type {acgraph.vector.Stroke} */ (this.crosshair().getOption('yStroke')));
+  var x = this.seriesBounds_.left + ratio * this.seriesBounds_.width;
+  x = anychart.utils.applyPixelShift(x, thickness);
+
+  this.crosshair().autoHighlightX(x, isLastPlot, hlSource != this);
+
   //
   // this.highlightedValue_ = value;
   //
@@ -1979,8 +1987,8 @@ anychart.core.stock.Plot.prototype.highlight = function(value) {
 /**
  */
 anychart.core.stock.Plot.prototype.unhighlight = function() {
-  if (this.dateTimeHighlighter_)
-    this.dateTimeHighlighter_.remove();
+  // if (this.dateTimeHighlighter_)
+  //   this.dateTimeHighlighter_.remove();
 
   this.highlightedValue_ = NaN;
 
@@ -2023,7 +2031,6 @@ anychart.core.stock.Plot.prototype.initDragger_ = function(e) {
  */
 anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
   if (this.seriesBounds_) {
-    this.dispatchEvent(acgraph.events.EventType.MOUSEMOVE);
     var stageReferencePoint = this.container().getStage().getClientPosition();
     var x = e['clientX'] - stageReferencePoint.x - this.seriesBounds_.left;
     var y = e['clientY'] - stageReferencePoint.y - this.seriesBounds_.top;
@@ -2036,7 +2043,7 @@ anychart.core.stock.Plot.prototype.handlePlotMouseOverAndMove_ = function(e) {
       if (!goog.isDef(this.frame_))
         this.frame_ = window.requestAnimationFrame(this.frameAction_);
     }
-    this.chart_.highlightPlots(this, e['clientX'] - stageReferencePoint.x);
+    // this.chart_.highlightPlots(this, e['clientX'] - stageReferencePoint.x);
   }
 };
 
@@ -2081,7 +2088,6 @@ anychart.core.stock.Plot.prototype.crosshair = function(opt_value) {
   if (!this.crosshair_) {
     this.crosshair_ = new anychart.core.ui.Crosshair();
     this.crosshair_.enabled(true);
-    this.crosshair_.bindHandlers(this);
     this.registerDisposable(this.crosshair_);
     this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
     this.invalidate(anychart.ConsistencyState.AXES_CHART_CROSSHAIR, anychart.Signal.NEEDS_REDRAW);
@@ -2384,7 +2390,7 @@ anychart.core.stock.Plot.prototype.serialize = function() {
 
   axesIds.push(goog.getUid(this.xAxis()));
   json['xAxis'] = this.xAxis().serialize();
-  json['dateTimeHighlighter'] = anychart.color.serialize(this.dateTimeHighlighterStroke_);
+  // json['dateTimeHighlighter'] = anychart.color.serialize(this.dateTimeHighlighterStroke_);
 
   json['palette'] = this.palette().serialize();
   json['markerPalette'] = this.markerPalette().serialize();
@@ -2527,7 +2533,7 @@ anychart.core.stock.Plot.prototype.setupByJSON = function(config, opt_default) {
   this.background(config['background']);
 
   this.xAxis(config['xAxis']);
-  this.dateTimeHighlighter(config['dateTimeHighlighter']);
+  // this.dateTimeHighlighter(config['dateTimeHighlighter']);
   this.legend(config['legend']);
   var type = this.getChart().getType();
 
@@ -2762,6 +2768,7 @@ anychart.core.stock.Plot.Dragger.prototype.limitY = function(y) {
 //exports
 (function() {
   var proto = anychart.core.stock.Plot.prototype;
+  proto['crosshair'] = proto.crosshair;
   proto['background'] = proto.background;
   proto['legend'] = proto.legend;
   proto['area'] = proto.area;
@@ -2787,7 +2794,7 @@ anychart.core.stock.Plot.Dragger.prototype.limitY = function(y) {
   proto['xAxis'] = proto.xAxis;
   proto['grid'] = proto.grid;
   proto['minorGrid'] = proto.minorGrid;
-  proto['dateTimeHighlighter'] = proto.dateTimeHighlighter;
+  // proto['dateTimeHighlighter'] = proto.dateTimeHighlighter;
   proto['defaultSeriesType'] = proto.defaultSeriesType;
   proto['addSeries'] = proto.addSeries;
   proto['getSeriesAt'] = proto.getSeriesAt;

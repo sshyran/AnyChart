@@ -563,6 +563,9 @@ anychart.charts.Stock.prototype.plot = function(opt_indexOrValue, opt_value) {
   var plot = this.plots_[index];
   if (!plot) {
     plot = new anychart.core.stock.Plot(this);
+    plot.crosshair().parent(/** @type {anychart.core.ui.Crosshair} */ (this.crosshair()));
+    plot.crosshair().bindHandlers(plot);
+
     if (goog.isDef(this.defaultPlotSettings_))
       plot.setup(this.defaultPlotSettings_);
     plot.setParentEventTarget(this);
@@ -1691,12 +1694,14 @@ anychart.charts.Stock.prototype.defaultAnnotationSettings = function(opt_value) 
  * @param {number} ratio
  * @param {number} clientX
  * @param {number} clientY
+ * @param {anychart.core.stock.Plot} plot
  */
-anychart.charts.Stock.prototype.highlightAtRatio = function(ratio, clientX, clientY) {
+anychart.charts.Stock.prototype.highlightAtRatio = function(ratio, clientX, clientY, plot) {
   this.highlightedRatio_ = ratio;
   this.highlightedClientX_ = clientX;
   this.highlightedClientY_ = clientY;
-  this.highlightAtRatio_(ratio, clientX, clientY);
+  this.highlightSourcePlot_ = plot;
+  this.highlightAtRatio_(ratio, clientX, clientY, plot);
 };
 
 
@@ -1707,6 +1712,7 @@ anychart.charts.Stock.prototype.unhighlight = function() {
   this.highlightedRatio_ = NaN;
   this.highlightedClientX_ = NaN;
   this.highlightedClientY_ = NaN;
+  this.highlightSourcePlot_ = null;
   this.unhighlight_();
 };
 
@@ -1744,7 +1750,7 @@ anychart.charts.Stock.prototype.allowHighlight = function() {
  */
 anychart.charts.Stock.prototype.refreshHighlight_ = function() {
   if (!isNaN(this.highlightedRatio_)) {
-    this.highlightAtRatio_(this.highlightedRatio_, this.highlightedClientX_, this.highlightedClientY_);
+    this.highlightAtRatio_(this.highlightedRatio_, this.highlightedClientX_, this.highlightedClientY_, this.highlightSourcePlot_);
   }
 };
 
@@ -1754,9 +1760,10 @@ anychart.charts.Stock.prototype.refreshHighlight_ = function() {
  * @param {number} ratio
  * @param {number} clientX
  * @param {number} clientY
+ * @param {anychart.core.stock.Plot} sourcePlot - .
  * @private
  */
-anychart.charts.Stock.prototype.highlightAtRatio_ = function(ratio, clientX, clientY) {
+anychart.charts.Stock.prototype.highlightAtRatio_ = function(ratio, clientX, clientY, sourcePlot) {
   if (this.highlightPrevented_ || ratio < 0 || ratio > 1) return;
   var value = this.dataController_.alignHighlight(this.xScale().inverseTransform(ratio));
   if (isNaN(value)) return;
@@ -1774,8 +1781,10 @@ anychart.charts.Stock.prototype.highlightAtRatio_ = function(ratio, clientX, cli
   };
   //if (this.dispatchEvent(eventInfo)) {
   for (i = 0; i < this.plots_.length; i++) {
-    if (this.plots_[i])
-      this.plots_[i].highlight(value);
+    if (this.plots_[i]) {
+      var lastPlot = i == this.plots_.length - 1;
+      this.plots_[i].highlight(value, lastPlot, sourcePlot);
+    }
   }
   this.highlighted_ = true;
 
@@ -1829,21 +1838,19 @@ anychart.charts.Stock.prototype.unhighlight_ = function() {
 };
 
 
-/**
- * Highlights plots by crosshair.
- * @param {anychart.core.stock.Plot} exclusion - Plot that must not be highlighted, the source of mouse event.
- * @param {number} mouseX - Mouse x coordinate.
- */
-anychart.charts.Stock.prototype.highlightPlots = function(exclusion, mouseX) {
-  for (var i = 0; i < this.plots_.length; i++) {
-    var plot = this.plots_[i];
-    var lastPlot = i == this.plots_.length - 1;
-    plot.crosshair().xLabelAutoEnabled(lastPlot);
-    if (plot != exclusion) {
-      plot.crosshair().autoHighlightX(mouseX, lastPlot);
-    }
-  }
-};
+// /**
+//  * Highlights plots by crosshair.
+//  * @param {anychart.core.stock.Plot} target - Plot that initialized highlighting.
+//  * @param {number} mouseX - Mouse x coordinate.
+//  */
+// anychart.charts.Stock.prototype.highlightPlots = function(target, mouseX) {
+//   for (var i = 0; i < this.plots_.length; i++) {
+//     var plot = this.plots_[i];
+//     var lastPlot = i == this.plots_.length - 1;
+//     plot.crosshair().xLabelAutoEnabled(lastPlot);
+//     plot.crosshair().autoHighlightX(mouseX, lastPlot, plot != target);
+//   }
+// };
 
 
 /**
@@ -1879,7 +1886,8 @@ anychart.charts.Stock.prototype.createInteractivitySettings = function() {
 anychart.charts.Stock.prototype.crosshair = function(opt_value) {
   if (!this.crosshair_) {
     this.crosshair_ = new anychart.core.ui.Crosshair();
-    this.crosshair_.enabled(false);
+    this.crosshair_.needsForceSignalsDispatching(true);
+    // this.crosshair_.enabled(false);
     // this.crosshair_.bindHandlers(this);
     this.registerDisposable(this.crosshair_);
     this.crosshair_.listenSignals(this.onCrosshairSignal_, this);
@@ -2556,6 +2564,8 @@ anychart.charts.Stock.prototype.setupByJSON = function(config, opt_default) {
 
   if ('xScale' in config)
     this.xScale(config['xScale']);
+
+  this.crosshair().setupInternal(!!opt_default, config['crosshair']);
 
   if ('defaultPlotSettings' in config)
     this.setDefaultPlotSettings(config['defaultPlotSettings']);

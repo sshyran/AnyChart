@@ -670,8 +670,8 @@ anychart.themes.merging.mergingMap_ = [
       'scatter.crosshair.yLabel',
       'map.crosshair.xLabel',
       'map.crosshair.yLabel',
-      'stock.defaultPlotSettings.crosshair.xLabel',
-      'stock.defaultPlotSettings.crosshair.yLabel'
+      'stock.crosshair.xLabel',
+      'stock.crosshair.yLabel'
     ]
   },
   {

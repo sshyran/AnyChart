@@ -353,6 +353,14 @@ anychart.core.Text.prototype.invalidate = function(state, opt_signal) {
 
 //endregion
 //region -- IResolvable impl.
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
+anychart.core.Text.prototype.getOption = anychart.core.settings.getOption;
+
+
 /** @inheritDoc */
 anychart.core.Text.prototype.resolutionChainCache = function(opt_value) {
   if (goog.isDef(opt_value)) {
@@ -686,8 +694,8 @@ anychart.core.Text.prototype.applyTextSettings = function(textElement, isInitial
           textElementKey = key;
       }
 
-      if (textElementKey != 'useHtml' && (isInitial || textElement[textElementKey]() !== this.getOwnOption(key)))
-        textElement[textElementKey](this.getOwnOption(key));
+      if (textElementKey != 'useHtml' && (isInitial || textElement[textElementKey]() !== this.getOption(key)))
+        textElement[textElementKey](this.getOption(key));
     }
   }
 

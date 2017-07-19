@@ -4598,7 +4598,7 @@ goog.provide('anychart.themes.defaultTheme');
             }
           }
         },
-        'dateTimeHighlighter': '#B9B9B9',
+        // 'dateTimeHighlighter': '#B9B9B9',
         'legend': {
           'enabled': true,
           'vAlign': 'bottom',
@@ -4673,10 +4673,6 @@ goog.provide('anychart.themes.defaultTheme');
         'zIndex': 10,
         'yAxes': [{}],
         'crosshair': {
-          'enabled': true,
-          'displayMode': 'float',
-          'xStroke': colorStrokeExtraBright,
-          'yStroke': colorStrokeExtraBright,
           'zIndex': 41
         }
       },
@@ -4806,6 +4802,13 @@ goog.provide('anychart.themes.defaultTheme');
       'interactivity': {
         'zoomOnMouseWheel': false,
         'scrollOnMouseWheel': false
+      },
+      'crosshair': {
+        'enabled': true,
+        'displayMode': 'float',
+        'xStroke': colorStrokeExtraBright,
+        'yStroke': colorStrokeExtraBright,
+        'zIndex': 41
       }
     },
 

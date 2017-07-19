@@ -1212,7 +1212,7 @@ anychart.core.ui.LegendItem.prototype.applyDefaults = function() {
 
   // legend item default text
   // this.settingsObj['text'] = 'Legend Item';
-  this.ownSettings['text'] = 'Legend Item';
+  // this.ownSettings['text'] = 'Legend Item';
 };
 
 
@@ -1225,6 +1225,7 @@ anychart.core.ui.LegendItem.prototype.clear = function() {
   this.dropPixelBounds();
   this.applyDefaults();
   this.ownSettings = {};
+  this.resolutionChainCache(null);
   // this.settingsObj = {};
   // this.changedSettings = {};
   this.prevSourceKey = this.sourceKey();

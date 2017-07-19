@@ -251,7 +251,6 @@ anychart.core.ui.LabelBase.DESCRIPTORS = (function() {
 anychart.core.settings.populate(anychart.core.ui.LabelBase, anychart.core.ui.LabelBase.DESCRIPTORS);
 
 
-
 //endregion
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -270,21 +269,39 @@ anychart.core.settings.populate(anychart.core.ui.LabelBase, anychart.core.ui.Lab
 //region -- Parental relations.
 /** @inheritDoc */
 anychart.core.ui.LabelBase.prototype.parent = function(opt_value) {
-  // anychart.core.ui.Tooltip.base(this, 'constructor');
-  anychart.core.ui.LabelBase.base(this, 'parent', opt_value);
-  var parent = /** @type {anychart.core.ui.LabelBase} */ (this.parent());
+  var parent = /** @type {anychart.core.ui.LabelBase} */ (anychart.core.ui.LabelBase.base(this, 'parent'));
+
   if (goog.isDef(opt_value)) {
     if (parent != opt_value) {
+      anychart.core.ui.LabelBase.base(this, 'parent', opt_value);
       if (goog.isNull(opt_value)) {
         this.background().parent(null);
         this.padding().parent(null);
       } else {
-        this.background().parent(parent.background());
-        this.padding().parent(parent.padding());
+        this.background().parent((/** @type {anychart.core.ui.LabelBase} */ (opt_value)).background());
+        this.padding().parent((/** @type {anychart.core.ui.LabelBase} */ (opt_value)).padding());
       }
     }
     return this;
   }
+
+
+  // anychart.core.ui.Tooltip.base(this, 'constructor');
+  // anychart.core.ui.LabelBase.base(this, 'parent', opt_value);
+  // debugger;
+  // if (goog.isDef(opt_value)) {
+  //   if (parent != opt_value) {
+  //     if (goog.isNull(opt_value)) {
+  //       this.background().parent(null);
+  //       this.padding().parent(null);
+  //     } else {
+  //       this.background().parent(parent.background());
+  //       this.padding().parent(parent.padding());
+  //     }
+  //   }
+  //   return this;
+  // }
+
   return parent;
 };
 
