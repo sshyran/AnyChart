@@ -218,7 +218,7 @@ anychart.core.series.Base = function(chart, plot, type, config) {
       anychart.Signal.NEEDS_REDRAW,
       anychart.core.drawers.Capabilities.IS_MARKER_BASED]
   ]);
-  anychart.core.settings.populateAliases(anychart.core.series.Base, goog.object.getKeys(normalDescriptorsMeta), this.normal_);
+  var aliases = goog.object.getKeys(normalDescriptorsMeta);
   anychart.core.settings.createDescriptorsMeta(normalDescriptorsMeta, [
     ['labels', 0, 0, 0, this.labelsInvalidated_, this],
     ['markers', 0, 0, 0, this.markersInvalidated_, this],
@@ -226,6 +226,7 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   ]);
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
   this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
+  anychart.core.settings.populateAliases(anychart.core.series.Base, aliases, this.normal_);
 
   var hoveredDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
