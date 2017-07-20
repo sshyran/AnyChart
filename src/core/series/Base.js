@@ -216,14 +216,16 @@ anychart.core.series.Base = function(chart, plot, type, config) {
     ['size',
       anychart.ConsistencyState.SERIES_POINTS,
       anychart.Signal.NEEDS_REDRAW,
-      anychart.core.drawers.Capabilities.IS_MARKER_BASED],
+      anychart.core.drawers.Capabilities.IS_MARKER_BASED]
+  ]);
+  anychart.core.settings.populateAliases(anychart.core.series.Base, goog.object.getKeys(normalDescriptorsMeta), this.normal_);
+  anychart.core.settings.createDescriptorsMeta(normalDescriptorsMeta, [
     ['labels', 0, 0, 0, this.labelsInvalidated_, this],
     ['markers', 0, 0, 0, this.markersInvalidated_, this],
     ['outlierMarkers', 0, 0, 0, this.outlierMarkersInvalidated_, this]
   ]);
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
   this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
-  anychart.core.settings.populateAliases(anychart.core.series.Base, goog.object.getKeys(normalDescriptorsMeta), this.normal_);
 
   var hoveredDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
@@ -317,6 +319,48 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   this.applyConfig(config, true);
 };
 goog.inherits(anychart.core.series.Base, anychart.core.VisualBaseWithBounds);
+
+
+/**
+ * Getter/setter for labels.
+ * @param {(Object|boolean|null)=} opt_value .
+ * @return {anychart.core.ui.LabelsFactory|anychart.core.series.Base} .
+ */
+anychart.core.series.Base.prototype.labels = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.normal_.labels(opt_value);
+    return this;
+  }
+  return /** @type {anychart.core.ui.LabelsFactory} */ (this.normal_.labels());
+};
+
+
+/**
+ * Getter/setter for markers.
+ * @param {(Object|boolean|null)=} opt_value .
+ * @return {anychart.core.ui.MarkersFactory|anychart.core.series.Base} .
+ */
+anychart.core.series.Base.prototype.markers = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.normal_.markers(opt_value);
+    return this;
+  }
+  return /** @type {anychart.core.ui.MarkersFactory} */ (this.normal_.markers());
+};
+
+
+/**
+ * Getter/setter for outlier markers.
+ * @param {(Object|boolean|null)=} opt_value .
+ * @return {anychart.core.ui.MarkersFactory|anychart.core.series.Base} .
+ */
+anychart.core.series.Base.prototype.outlierMarkers = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    this.normal_.outlierMarkers(opt_value);
+    return this;
+  }
+  return /** @type {anychart.core.ui.MarkersFactory} */ (this.normal_.outlierMarkers());
+};
 
 
 //region --- Class const

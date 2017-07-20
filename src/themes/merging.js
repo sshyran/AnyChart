@@ -680,12 +680,15 @@ anychart.themes.merging.mergingMap_ = [
     targets: [
       'chart.defaultAnnotationSettings.base.markers',
       'chart.defaultSeriesSettings.base.markers',
+      'chart.defaultSeriesSettings.base.normal.markers',
       'pieFunnelPyramidBase.markers',
       'pieFunnelPyramidBase.normal.markers',
       'defaultTimeline.markers',
       'standalones.markersFactory',
       'heatMap.markers',
+      'heatMap.normal.markers',
       'map.defaultSeriesSettings.base.markers',
+      'map.defaultSeriesSettings.base.normal.markers',
       'treeMap.markers',
       'venn.markers'
     ]
