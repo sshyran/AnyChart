@@ -2083,6 +2083,11 @@ anychart.core.series.Base.prototype.resolveOption = function(names, state, point
     val = normalizer(val);
   } else {
     name = opt_seriesName || names[0];
+    if (name in this.descriptorsMeta) {
+      val = this.getOption(name);
+      if (goog.isDef(val))
+        return normalizer(val);
+    }
     val = stateObject.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
       val = stateObject.themeSettings[name];
