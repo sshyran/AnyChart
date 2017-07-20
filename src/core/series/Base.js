@@ -2083,9 +2083,9 @@ anychart.core.series.Base.prototype.resolveOption = function(names, state, point
     val = normalizer(val);
   } else {
     name = opt_seriesName || names[0];
-    val = this.ownSettings[name];
+    val = stateObject.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
-      val = this.themeSettings[name];
+      val = stateObject.themeSettings[name];
       if (!goog.isDefAndNotNull(val))
         val = this.autoSettings[name];
       if (goog.isDef(val))
