@@ -4731,15 +4731,15 @@ anychart.core.series.Base.prototype.disposeInternal = function() {
 
   proto['yScale'] = proto.yScale;
 
-  //proto['labels'] = proto.labels;//doc|ex
+  proto['labels'] = proto.labels;//doc|ex
   //proto['hoverLabels'] = proto.hoverLabels;
   //proto['selectLabels'] = proto.selectLabels;
 
-  //proto['markers'] = proto.markers;//doc|ex
+  proto['markers'] = proto.markers;//doc|ex
   //proto['hoverMarkers'] = proto.hoverMarkers;//doc|ex
   //proto['selectMarkers'] = proto.selectMarkers;
 
-  //proto['outlierMarkers'] = proto.outlierMarkers;
+  proto['outlierMarkers'] = proto.outlierMarkers;
   //proto['hoverOutlierMarkers'] = proto.hoverOutlierMarkers;
   //proto['selectOutlierMarkers'] = proto.selectOutlierMarkers;
 
