@@ -537,11 +537,11 @@ anychart.scales.StockScatterDateTime.prototype.normalizeTicks_ = function(value)
         var major = this.normalizeTicksRow_(val['major']);
         if (minor && major) {
           res.push({
-            range: anychart.utils.getIntervalRange(minor[0], minor[1]),
-            minorUnit: minor[0],
-            minorCount: minor[1],
-            majorUnit: major[0],
-            majorCount: major[1]
+            range: anychart.utils.getIntervalRange(/** @type {anychart.enums.Interval} */(minor[0]), /** @type {number} */(minor[1])),
+            minorUnit: /** @type {anychart.enums.Interval} */(minor[0]),
+            minorCount: /** @type {number} */(minor[1]),
+            majorUnit: /** @type {anychart.enums.Interval} */(major[0]),
+            majorCount: /** @type {number} */(major[1])
           });
         }
       }
@@ -616,7 +616,7 @@ anychart.scales.StockScatterDateTime.DEFAULT_TICKS_ = [
   {'minor': {'unit': anychart.enums.Interval.QUARTER, 'count': 1}, 'major': {'unit': anychart.enums.Interval.SEMESTER, 'count': 1}},
   {'minor': {'unit': anychart.enums.Interval.SEMESTER, 'count': 1}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 1}},
   {'minor': {'unit': anychart.enums.Interval.YEAR, 'count': 1}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 2}},
-  {'minor': {'unit': anychart.enums.Interval.YEAR, 'count': 2}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 4}},
+  {'minor': {'unit': anychart.enums.Interval.YEAR, 'count': 2}, 'major': {'unit': anychart.enums.Interval.YEAR, 'count': 4}}
 ];
 
 
