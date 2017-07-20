@@ -194,7 +194,6 @@ anychart.charts.Pie = function(opt_data, opt_csvSettings) {
   ];
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL, descriptorsOverride);
   this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.CircularLabelsFactory);
-  anychart.core.settings.populateAliases(anychart.charts.Pie, ['fill', 'stroke', 'hatchFill'], this.normal_);
 
   var hoveredDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
@@ -209,7 +208,7 @@ anychart.charts.Pie = function(opt_data, opt_csvSettings) {
   this.resumeSignalsDispatching(false);
 };
 goog.inherits(anychart.charts.Pie, anychart.core.SeparateChart);
-
+anychart.core.settings.populateAliases(anychart.charts.Pie, ['fill', 'stroke', 'hatchFill'], 'normal');
 
 /**
  * Normal state settings.

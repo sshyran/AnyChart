@@ -331,7 +331,7 @@ anychart.core.settings.populate = function(classConstructor, descriptors) {
  * Populate aliases.
  * @param {!Function} classConstructor
  * @param {Array.<string>} aliases
- * @param {anychart.core.settings.IObjectWithSettings} aliasTo
+ * @param {string} aliasTo
  */
 anychart.core.settings.populateAliases = function(classConstructor, aliases, aliasTo) {
   for (var i = 0; i < aliases.length; i++) {
@@ -339,7 +339,9 @@ anychart.core.settings.populateAliases = function(classConstructor, aliases, ali
     classConstructor.prototype[alias] = (function(propName) {
       return function(args) {
         if (goog.isDef(arguments[0])) {
-          aliasTo[propName].apply(aliasTo, arguments);
+          //aliasTo[propName].apply(aliasTo, arguments);
+          var calledAlias = this[aliasTo]();
+          calledAlias[propName].apply(calledAlias, arguments);
           return this;
         }
         return aliasTo[propName]();

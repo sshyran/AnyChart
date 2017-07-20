@@ -226,7 +226,6 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   ]);
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
   this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
-  anychart.core.settings.populateAliases(anychart.core.series.Base, aliases, this.normal_);
 
   var hoveredDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(hoveredDescriptorsMeta, [
@@ -320,6 +319,29 @@ anychart.core.series.Base = function(chart, plot, type, config) {
   this.applyConfig(config, true);
 };
 goog.inherits(anychart.core.series.Base, anychart.core.VisualBaseWithBounds);
+
+anychart.core.settings.populateAliases(anychart.core.series.Base, [
+  'fill',
+  'negativeFill',
+  'risingFill',
+  'fallingFill',
+  'stroke',
+  'lowStroke',
+  'highStroke',
+  'negativeStroke',
+  'risingStroke',
+  'fallingStroke',
+  'medianStroke',
+  'stemStroke',
+  'whiskerStroke',
+  'hatchFill',
+  'negativeHatchFill',
+  'risingHatchFill',
+  'fallingHatchFill',
+  'whiskerWidth',
+  'type',
+  'size'
+], 'normal');
 
 
 /**

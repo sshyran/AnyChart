@@ -114,7 +114,6 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
   ]);
   this.normal_ = new anychart.core.StateSettings(this, normalDescriptorsMeta, anychart.PointState.NORMAL);
   this.normal_.setOption('labelsFactoryConstructor', anychart.core.ui.LabelsFactory);
-  anychart.core.settings.populateAliases(anychart.charts.PyramidFunnel, ['fill', 'stroke', 'hatchFill'], this.normal_);
 
   var interactivityDescriptorsMeta = {};
   anychart.core.settings.createDescriptorsMeta(interactivityDescriptorsMeta, [
@@ -146,7 +145,7 @@ anychart.charts.PyramidFunnel = function(opt_data, opt_csvSettings) {
   this.resumeSignalsDispatching(false);
 };
 goog.inherits(anychart.charts.PyramidFunnel, anychart.core.SeparateChart);
-
+anychart.core.settings.populateAliases(anychart.charts.PyramidFunnel, ['fill', 'stroke', 'hatchFill'], 'normal');
 
 /**
  * Normal state settings.
