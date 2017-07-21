@@ -4509,7 +4509,7 @@ anychart.charts.Pie.PieOutsideLabelsDomain.prototype.calculate = function() {
  * @inheritDoc
  */
 anychart.charts.Pie.prototype.disposeInternal = function() {
-  goog.dispose(this.animationQueue_);
+  goog.disposeAll(this.animationQueue_, this.normal_, this.hovered_);
   anychart.charts.Pie.base(this, 'disposeInternal');
 };
 

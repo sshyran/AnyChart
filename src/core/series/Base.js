@@ -4622,6 +4622,9 @@ anychart.core.series.Base.prototype.disposeInternal = function() {
   goog.disposeAll(
       this.shapeManager,
       this.drawer,
+      this.normal_,
+      this.hovered_,
+      this.selected_,
       //this.markers_,
       //this.hoverMarkers_,
       //this.selectMarkers_,

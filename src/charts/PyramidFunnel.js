@@ -3219,7 +3219,7 @@ anychart.charts.PyramidFunnel.prototype.setupByJSON = function(config, opt_defau
  * @inheritDoc
  */
 anychart.charts.PyramidFunnel.prototype.disposeInternal = function() {
-  goog.disposeAll(this.animationQueue_);
+  goog.disposeAll(this.animationQueue_, this.normal_, this.hovered_, this.selected_);
   anychart.charts.PyramidFunnel.base(this, 'disposeInternal');
 };
 

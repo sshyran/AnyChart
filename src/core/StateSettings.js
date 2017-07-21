@@ -51,7 +51,7 @@ anychart.core.StateSettings.prototype.invalidate = function(state, opt_signal) {
 //region --- Setup / Serialize / Dispose
 /** @inheritDoc */
 anychart.core.StateSettings.prototype.disposeInternal = function() {
-  goog.disposeAll(this.labels_, this.markers_);
+  goog.disposeAll(this.labels_, this.markers_, this.outlierMarkers_);
   anychart.core.StateSettings.base(this, 'disposeInternal');
 };
 
