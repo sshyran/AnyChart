@@ -48,11 +48,14 @@ anychart.graphics = goog.global['acgraph'];
 
 
 /**
- * Set global.
- * @param {Window} global Global context.
+ * Get/Set global object.
+ * @param {Window=} opt_value Global context.
  */
-anychart.setGlobal = function(global) {
-  goog.global = global;
+anychart.global = function(opt_value) {
+  if (goog.isDef(opt_value)) {
+    goog.global = opt_value;
+  }
+  return goog.global;
 };
 
 
@@ -491,6 +494,9 @@ anychart.ready_ = function(event) {
  * @param {*=} opt_scope Function call context.
  */
 anychart.onDocumentReady = function(func, opt_scope) {
+  if (goog.global['isNodeJS'])
+    anychart.isReady_ = true;
+    
   if (anychart.isReady_) {
     func.call(opt_scope);
   }
@@ -1123,7 +1129,7 @@ goog.exportSymbol('anychart.quadrant', anychart.quadrant);
 goog.exportSymbol('anychart.venn', anychart.venn);
 goog.exportSymbol('anychart.theme', anychart.theme);
 goog.exportSymbol('anychart.appendTheme', anychart.appendTheme);
-goog.exportSymbol('anychart.setGlobal', anychart.setGlobal);
+goog.exportSymbol('anychart.global', anychart.global);
 goog.exportSymbol('anychart.treeMap', anychart.treeMap);
 goog.exportSymbol('anychart.pareto', anychart.pareto);
 goog.exportSymbol('anychart.resource', anychart.resource);

@@ -551,7 +551,7 @@ def __get_wrapper(file_name):
                          '(window.anychart_init_start=(typeof window.performance==\'object\')' + \
                          '&&(typeof window.performance.now==\'function\')?window.performance.now():+new Date()-window.anychart_init_start).toFixed(5),\'ms\');delete window.anychart_init_start'
     sourceMapping = ('//# sourceMappingURL=%s.map' % file_name) if __should_gen_debug_files() else ''
-    return '(function(global,factory){if(typeof module===\'object\'&&typeof module.exports===\'object\'){var wrapper=function(w){if(!w.document){throw new Error(\'AnyChart requires a window with a document\');}factory.call(w,w,w.document);w.acgraph.isNodeJS=true;w.anychart.getGlobal=function(){return w;};return w.anychart;};module.exports=global.document?wrapper(global):wrapper;}else{factory.call(global,window,document)}})(typeof window!==\'undefined\'?window:this,function(window,document,opt_noGlobal){%s%s%s})%s' % (
+    return '(function(global,factory){if(typeof module===\'object\'&&typeof module.exports===\'object\'){var wrapper=function(w){if(!w.document){throw new Error(\'AnyChart requires a window with a document\');}factory.call(w,w,w.document);w.isNodeJS=true;return w.anychart;};module.exports=global.document?wrapper(global):wrapper;}else{factory.call(global,window,document)}})(typeof window!==\'undefined\'?window:this,function(window,document,opt_noGlobal){%s%s%s})%s' % (
         performanceStart, '%output%', performanceEnd, sourceMapping)
 
 

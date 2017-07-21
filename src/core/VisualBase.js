@@ -530,7 +530,7 @@ anychart.core.VisualBase.prototype.parentBounds = function(opt_boundsOrLeft, opt
     return this.parentBounds_.clone();
   var stage;
   if (this.container_ && (stage = this.container_.getStage()))
-    return goog.global['acgraph']['isNodeJS'] ? anychart.math.rect(0, 0, 1024, 768) : stage.getBounds();
+    return goog.global['isNodeJS'] ? anychart.math.rect(0, 0, 1024, 768) : stage.getBounds();
   return null;
 };
 
