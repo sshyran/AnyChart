@@ -1302,26 +1302,28 @@ anychart.core.series.Base.prototype.axesLinesSpace = function(opt_spaceOrTopOrTo
  * @return {number} Whisker width pixel value.
  */
 anychart.core.series.Base.prototype.getWhiskerWidth = function(point, pointState) {
-  var name;
-  if (!!(pointState & anychart.PointState.SELECT)) {
-    name = 'selectWhiskerWidth';
-  } else if (!!(pointState & anychart.PointState.HOVER)) {
-    name = 'hoverWhiskerWidth';
+  var names = ['whiskerWidth', 'hoverWhiskerWidth', 'selectWhiskerWidth'];
+
+  var stateObject;
+  var pointStateName;
+  if (pointState == 2) {
+    stateObject = this.selected_;
+    pointStateName = 'selected';
+  } else if (pointState == 1) {
+    stateObject = this.hovered_;
+    pointStateName = 'hovered';
+  } else {
+    stateObject = this.normal_;
+    pointStateName = 'normal';
   }
   var result;
-  if (name) {
-    if (this.supportsPointSettings())
-      result = point.get(name);
-    if (!goog.isDef(result))
-      result = this.getOption(name);
-  }
-
-  if (!goog.isDef(result)) {
-    if (this.supportsPointSettings())
-      result = point.get('whiskerWidth');
-    if (!goog.isDef(result))
-      result = this.getOption('whiskerWidth');
-  }
+  var pointStateObject = point.get(pointStateName);
+  result = anychart.utils.getFirstDefinedValue(
+      goog.isDef(pointStateObject) ? pointStateObject[names[0]] : void 0,
+      point.get(names[pointState]),
+      stateObject.getOption(names[0]));
+  if (!goog.isDefAndNotNull(result))
+    result = this.normal_.getOption(names[0]);
 
   return anychart.utils.normalizeSize(/** @type {(number|string)} */(result), this.pointWidthCache);
 };
