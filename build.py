@@ -96,12 +96,12 @@ def __ensure_installed(module_name, version=None):
         return False
     except ImportError:
         print 'Installing ' + module_name
-        commands = [] if platform.system() == 'Windows' else ['sudo']
-        commands += ['easy_install', module_name if version is None else '%s==%s' % (module_name, version)]
+        commands = ['python', '-m', 'pip', 'install',
+                    module_name if version is None else '%s==%s' % (module_name, version)]
         try:
             subprocess.call(commands)
         except StandardError:
-            raise StandardError('Install failed: you should install easy_install module for python')
+            raise StandardError('Install failed: you should install pip manually first')
         print 'Done'
         return True
 
