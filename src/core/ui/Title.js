@@ -1,4 +1,5 @@
 goog.provide('anychart.core.ui.Title');
+goog.provide('anychart.standalones.Title');
 goog.require('anychart.core.IStandaloneBackend');
 goog.require('anychart.core.VisualBase');
 goog.require('anychart.core.settings');
@@ -38,7 +39,6 @@ goog.require('goog.math.AffineTransform');
  *     .draw();
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @implements {anychart.core.IStandaloneBackend}
  */
@@ -147,21 +147,6 @@ anychart.core.ui.Title = function() {
    */
   this.transformation_ = null;
 
-
-  /**
-   * Theme settings.
-   * @type {Object}
-   */
-  this.themeSettings = {};
-
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-
   /**
    * Auto values of settings set by external controller.
    * @type {!Object}
@@ -196,6 +181,20 @@ anychart.core.ui.Title = function() {
    * @private
    */
   this.resolutionChainCache_ = null;
+
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.ConsistencyState.APPEARANCE,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['width', anychart.ConsistencyState.BOUNDS],
+    ['height', anychart.ConsistencyState.BOUNDS],
+    ['align', anychart.ConsistencyState.BOUNDS],
+    ['orientation', anychart.ConsistencyState.BOUNDS],
+    ['rotation', anychart.ConsistencyState.BOUNDS],
+    ['text', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS]
+  ]);
 };
 goog.inherits(anychart.core.ui.Title, anychart.core.VisualBase);
 
@@ -227,12 +226,7 @@ anychart.core.ui.Title.prototype.SUPPORTED_CONSISTENCY_STATES =
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.ui.Title.prototype.TEXT_DESCRIPTORS =
-    anychart.core.settings.createTextPropertiesDescriptors(
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.ConsistencyState.APPEARANCE,
-        anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-        anychart.Signal.NEEDS_REDRAW
-    );
+    anychart.core.settings.createTextPropertiesDescriptors();
 anychart.core.settings.populate(anychart.core.ui.Title, anychart.core.ui.Title.prototype.TEXT_DESCRIPTORS);
 
 
@@ -248,49 +242,37 @@ anychart.core.ui.Title.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() {
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'align',
-      anychart.enums.normalizeAlign,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeAlign);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'orientation',
-      anychart.enums.normalizeOrientation,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.enums.normalizeOrientation);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'rotation',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'text',
-      anychart.core.settings.stringNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringNormalizer);
 
   return map;
 })();
@@ -358,36 +340,23 @@ anychart.core.ui.Title.prototype.getHighPriorityResolutionChain = function() {
 //endregion
 //region -- IObjectWithSettings implementation
 /** @inheritDoc */
-anychart.core.ui.Title.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.ui.Title.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.ui.Title.prototype.getOption = anychart.core.settings.getOption;
 
 
 /** @inheritDoc */
-anychart.core.ui.Title.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.Title.prototype.check = function(flags) {
-  return true;
+anychart.core.ui.Title.prototype.getSignal = function(fieldName) {
+  // all props invalidates with NEEDS_REDRAW | BOUNDS_CHANGED
+  return anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED;
 };
 
 
@@ -1153,22 +1122,11 @@ anychart.core.ui.Title.prototype.setThemeSettings = function(config) {
 anychart.core.ui.Title.prototype.serialize = function() {
   var json = {};
 
-  var zIndex;
-  if (this.hasOwnOption('zIndex')) {
-    zIndex = this.getOwnOption('zIndex');
-  }
-  if (!goog.isDef(zIndex)) {
-    zIndex = this.getThemeOption('zIndex');
-  }
-  if (goog.isDef(zIndex)) json['zIndex'] = zIndex;
+  var zIndex = anychart.core.Base.prototype.getOption.call(this, 'zIndex');
+  if (goog.isDef(zIndex))
+    json['zIndex'] = zIndex;
 
-  var enabled;
-  if (this.hasOwnOption('enabled')) {
-    enabled = this.getOwnOption('enabled');
-  }
-  if (!goog.isDef(enabled)) {
-    enabled = this.getThemeOption('enabled');
-  }
+  var enabled = anychart.core.Base.prototype.getOption.call(this, 'enabled');
   if (goog.isDef(enabled))
     json['enabled'] = enabled;
 
@@ -1231,8 +1189,50 @@ anychart.core.ui.Title.prototype.setupByJSON = function(config, opt_default) {
   if ('margin' in config)
     this.margin(config['margin']);
 };
-//endregion
 
+
+
+//endregion
+//region --- Standalone
+//------------------------------------------------------------------------------
+//
+//  Standalone
+//
+//------------------------------------------------------------------------------
+/**
+ * @constructor
+ * @extends {anychart.core.ui.Title}
+ */
+anychart.standalones.Title = function() {
+  anychart.standalones.Title.base(this, 'constructor');
+};
+goog.inherits(anychart.standalones.Title, anychart.core.ui.Title);
+anychart.core.makeStandalone(anychart.standalones.Title, anychart.core.ui.Title);
+
+
+//region --- STANDALONE ---
+/** @inheritDoc */
+anychart.standalones.Title.prototype.dependsOnContainerSize = function() {
+  //TODO(AntonKagakin): should be reworked to getOption
+  var width = this.width();
+  var height = this.height();
+  return anychart.utils.isPercent(width) || anychart.utils.isPercent(height) || goog.isNull(width) || goog.isNull(height);
+};
+
+
+//endregion
+/**
+ * Constructor function.
+ * @return {!anychart.standalones.Title}
+ */
+anychart.standalones.title = function() {
+  var title = new anychart.standalones.Title();
+  title.setupInternal(true, anychart.getFullTheme('standalones.title'));
+  return title;
+};
+
+
+//endregion
 //exports
 (function() {
   var proto = anychart.core.ui.Title.prototype;
@@ -1267,4 +1267,10 @@ anychart.core.ui.Title.prototype.setupByJSON = function(config, opt_default) {
   // proto['align'] = proto.align;
   // proto['orientation'] = proto.orientation;
   proto['getRemainingBounds'] = proto.getRemainingBounds;
+
+  proto = anychart.standalones.Title.prototype;
+  goog.exportSymbol('anychart.standalones.title', anychart.standalones.title);
+  proto['draw'] = proto.draw;
+  proto['parentBounds'] = proto.parentBounds;
+  proto['container'] = proto.container;
 })();

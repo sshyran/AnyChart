@@ -1,6 +1,8 @@
 //region --- Requiring and Providing
 goog.provide('anychart.core.ui.LabelsFactory');
 goog.provide('anychart.core.ui.LabelsFactory.Label');
+goog.provide('anychart.standalones.LabelsFactory');
+goog.provide('anychart.standalones.LabelsFactory.Label');
 goog.require('acgraph.math');
 goog.require('anychart.core.IStandaloneBackend');
 goog.require('anychart.core.VisualBase');
@@ -22,7 +24,6 @@ goog.require('goog.math.Coordinate');
  * Any individual label can be changed after all labels are displayed.
  * @constructor
  * @extends {anychart.core.VisualBase}
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @implements {anychart.core.IStandaloneBackend}
  */
@@ -103,18 +104,6 @@ anychart.core.ui.LabelsFactory = function() {
   ];
 
   /**
-   * Theme settings.
-   * @type {!Object}
-   */
-  this.themeSettings = {};
-
-  /**
-   * Own settings (Settings set by user with API).
-   * @type {!Object}
-   */
-  this.ownSettings = {};
-
-  /**
    * Auto values of settings set by external controller.
    * @type {!Object}
    */
@@ -123,6 +112,25 @@ anychart.core.ui.LabelsFactory = function() {
   this.adjustFontSizeMode('different');
 
   this.resumeSignalsDispatching(false);
+
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['format', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['positionFormatter', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['position', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['anchor', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['offsetX', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['offsetY', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['connectorStroke', anychart.ConsistencyState.LABELS_FACTORY_CONNECTOR, anychart.Signal.NEEDS_REDRAW],
+    ['rotation', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['width', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['height', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['clip', anychart.ConsistencyState.LABELS_FACTORY_CLIP, anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.ui.LabelsFactory, anychart.core.VisualBase);
 
@@ -226,12 +234,7 @@ anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer = function(value) {
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.ui.LabelsFactory.prototype.TEXT_DESCRIPTORS =
-    anychart.core.settings.createTextPropertiesDescriptors(
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-        anychart.Signal.NEEDS_REDRAW
-    );
+    anychart.core.settings.createTextPropertiesDescriptors();
 anychart.core.settings.populate(anychart.core.ui.LabelsFactory, anychart.core.ui.LabelsFactory.prototype.TEXT_DESCRIPTORS);
 
 
@@ -246,89 +249,67 @@ anychart.core.ui.LabelsFactory.prototype.SIMPLE_PROPS_DESCRIPTORS = (function() 
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'format',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'positionFormatter',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'position',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'anchor',
-      anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetX',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetY',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'connectorStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.LABELS_FACTORY_CONNECTOR,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'rotation',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'clip',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.LABELS_FACTORY_CLIP,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.asIsNormalizer);
 
   return map;
 })();
@@ -653,24 +634,16 @@ anychart.core.ui.LabelsFactory.prototype.getHighPriorityResolutionChain = functi
 //endregion
 //region --- IObjectWithSettings implementation
 /** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/** @inheritDoc */
 anychart.core.ui.LabelsFactory.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.getThemeOption = function(name) {
-  return this.themeSettings[name];
-};
-
-
-/** @inheritDoc */
+/**
+ * @override
+ * @param {string} name
+ * @return {*}
+ */
 anychart.core.ui.LabelsFactory.prototype.getOption = anychart.core.settings.getOption;
 
 
@@ -690,18 +663,6 @@ anychart.core.ui.LabelsFactory.prototype.getOwnAndAutoOption = function(name) {
     }
   }
   return void 0;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/** @inheritDoc */
-anychart.core.ui.LabelsFactory.prototype.check = function(flags) {
-  return true;
 };
 
 
@@ -1301,7 +1262,6 @@ anychart.core.ui.LabelsFactory.prototype.setupByJSON = function(config, opt_defa
  * Class for creation of sets of similar labels and management of such sets.
  * Any individual label can be changed after all labels are displayed.
  * @constructor
- * @implements {anychart.core.settings.IObjectWithSettings}
  * @implements {anychart.core.settings.IResolvable}
  * @extends {anychart.core.VisualBase}
  */
@@ -1348,12 +1308,6 @@ anychart.core.ui.LabelsFactory.Label = function() {
   this.states_ = {};
 
   /**
-   * Own settings (Settings set by user with API).
-   * @type {Object}
-   */
-  this.ownSettings = {};
-
-  /**
    * Auto values of settings set by external controller.
    * @type {!Object}
    */
@@ -1388,6 +1342,26 @@ anychart.core.ui.LabelsFactory.Label = function() {
   this.resetSettings();
 
   this.markConsistent(anychart.ConsistencyState.LABELS_FACTORY_CACHE);
+
+  anychart.core.settings.createTextPropertiesDescriptorsMeta(this.descriptorsMeta,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      anychart.Signal.NEEDS_REDRAW);
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['format', anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS | anychart.ConsistencyState.LABELS_FACTORY_CACHE, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['positionFormatter', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['position', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['anchor', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['offsetX', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['offsetY', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['connectorStroke', anychart.ConsistencyState.LABELS_FACTORY_CONNECTOR, anychart.Signal.NEEDS_REDRAW],
+    ['rotation', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['width', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['height', anychart.ConsistencyState.BOUNDS, anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED],
+    ['clip', anychart.ConsistencyState.LABELS_FACTORY_CLIP, anychart.Signal.NEEDS_REDRAW],
+    ['enabled', anychart.ConsistencyState.ENABLED, anychart.Signal.BOUNDS_CHANGED | anychart.Signal.NEEDS_REDRAW]
+  ]);
 };
 goog.inherits(anychart.core.ui.LabelsFactory.Label, anychart.core.VisualBase);
 
@@ -1599,12 +1573,7 @@ anychart.core.ui.LabelsFactory.Label.prototype.checkInvalidationState = function
  * @type {!Object.<string, anychart.core.settings.PropertyDescriptor>}
  */
 anychart.core.ui.LabelsFactory.Label.prototype.TEXT_DESCRIPTORS =
-    anychart.core.settings.createTextPropertiesDescriptors(
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS,
-        anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-        anychart.Signal.NEEDS_REDRAW
-    );
+    anychart.core.settings.createTextPropertiesDescriptors();
 anychart.core.settings.populate(anychart.core.ui.LabelsFactory.Label, anychart.core.ui.LabelsFactory.Label.prototype.TEXT_DESCRIPTORS);
 
 
@@ -1620,97 +1589,73 @@ anychart.core.ui.LabelsFactory.Label.prototype.SIMPLE_PROPS_DESCRIPTORS = (funct
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'format',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.APPEARANCE | anychart.ConsistencyState.BOUNDS | anychart.ConsistencyState.LABELS_FACTORY_CACHE,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'positionFormatter',
-      anychart.core.settings.stringOrFunctionNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.stringOrFunctionNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'position',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'anchor',
-      anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetX',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'offsetY',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.MULTI_ARG,
       'connectorStroke',
-      anychart.core.settings.strokeNormalizer,
-      anychart.ConsistencyState.LABELS_FACTORY_CONNECTOR,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.strokeNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'rotation',
-      anychart.core.settings.numberNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'width',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'height',
-      anychart.core.settings.numberOrPercentNormalizer,
-      anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED);
+      anychart.core.settings.numberOrPercentNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'clip',
-      anychart.core.settings.asIsNormalizer,
-      anychart.ConsistencyState.LABELS_FACTORY_CLIP,
-      anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.asIsNormalizer);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'enabled',
-      anychart.core.settings.boolOrNullNormalizer,
-      anychart.ConsistencyState.ENABLED,
-      anychart.Signal.BOUNDS_CHANGED | anychart.Signal.NEEDS_REDRAW);
+      anychart.core.settings.boolOrNullNormalizer);
 
   return map;
 })();
@@ -1968,28 +1913,14 @@ anychart.core.ui.LabelsFactory.Label.prototype.getHighPriorityResolutionChain = 
 
 //endregion
 //region --- IObjectWithSettings implementation
-/**
- * Returns option value if it was set directly to the object.
- * @param {string} name
- * @return {*}
- */
-anychart.core.ui.LabelsFactory.Label.prototype.getOwnOption = function(name) {
-  return this.ownSettings[name];
-};
-
-
-/**
- * Returns true if the option value was set directly to the object.
- * @param {string} name
- * @return {boolean}
- */
+/** @inheritDoc */
 anychart.core.ui.LabelsFactory.Label.prototype.hasOwnOption = function(name) {
   return goog.isDefAndNotNull(this.ownSettings[name]);
 };
 
 
 /**
- * Returns option value by priorities.
+ * @override
  * @param {string} name
  * @return {*}
  */
@@ -2006,26 +1937,6 @@ anychart.core.ui.LabelsFactory.Label.prototype.getOwnAndAutoOption = anychart.co
 
 /** @inheritDoc */
 anychart.core.ui.LabelsFactory.Label.prototype.getThemeOption = anychart.core.ui.LabelsFactory.Label.prototype.getOwnOption;
-
-
-/**
- * Sets option value to the instance.
- * @param {string} name
- * @param {*} value
- */
-anychart.core.ui.LabelsFactory.Label.prototype.setOption = function(name, value) {
-  this.ownSettings[name] = value;
-};
-
-
-/**
- * Performs checks on the instance to determine whether the state should be invalidated after option change.
- * @param {number} flags
- * @return {boolean}
- */
-anychart.core.ui.LabelsFactory.Label.prototype.check = function(flags) {
-  return true;
-};
 
 
 //endregion
@@ -2331,7 +2242,11 @@ anychart.core.ui.LabelsFactory.Label.prototype.clear = function() {
  */
 anychart.core.ui.LabelsFactory.Label.prototype.drawLabel = function(bounds, parentBounds) {
   var positionFormatter = this.mergedSettings['positionFormatter'];
-  var anchor = anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer(this.mergedSettings['anchor']) || anychart.enums.Anchor.LEFT_TOP;
+  var isTextByPath = !!this.textElement.path();
+  var anchor = isTextByPath ?
+      anychart.enums.Anchor.CENTER :
+      anychart.core.ui.LabelsFactory.anchorNoAutoNormalizer(this.mergedSettings['anchor']) || anychart.enums.Anchor.LEFT_TOP;
+
   var isVertical = this.autoVertical();
 
   var offsetX = this.mergedSettings['offsetX'];
@@ -2419,7 +2334,7 @@ anychart.core.ui.LabelsFactory.Label.prototype.drawConnector = function() {
 anychart.core.ui.LabelsFactory.Label.prototype.applyTextSettings = function(textElement, isInitial, opt_settings) {
   var textVal, useHtml, text;
   var target = goog.isDef(opt_settings) ?
-      function(value) {return opt_settings[value]} :
+      function(value) { return opt_settings[value]; } :
       this instanceof anychart.core.ui.LabelsFactory.Label ?
           this.getOwnOption :
           anychart.core.ui.LabelsFactory.prototype.getOwnAndAutoOption;
@@ -2628,6 +2543,7 @@ anychart.core.ui.LabelsFactory.Label.prototype.draw = function() {
       }
       autoWidth = true;
     }
+
     if (goog.isDef(textWidth)) this.textElement.width(textWidth);
 
     //calculate text height and outer height
@@ -2775,12 +2691,12 @@ anychart.core.ui.LabelsFactory.Label.prototype.getTextElement = function() {
 anychart.core.ui.LabelsFactory.Label.prototype.serialize = function() {
   var json = anychart.core.ui.LabelsFactory.Label.base(this, 'serialize');
   var val;
-  if (goog.isDef(this.hasOwnOption('background'))) {
+  if (goog.isDef(this.getOwnOption('background'))) {
     val = this.background().serialize();
     if (!goog.object.isEmpty(val))
       json['background'] = val;
   }
-  if (goog.isDef(this.hasOwnOption('padding'))) {
+  if (goog.isDef(this.getOwnOption('padding'))) {
     val = this.padding().serialize();
     if (!goog.object.isEmpty(val))
       json['padding'] = val;
@@ -2838,6 +2754,53 @@ anychart.core.ui.LabelsFactory.Label.prototype.disposeInternal = function() {
 };
 
 
+
+//endregion
+//region --- anychart.standalones.LabelsFactory
+//------------------------------------------------------------------------------
+//
+//  anychart.standalones.LabelsFactory
+//
+//------------------------------------------------------------------------------
+/**
+ * @constructor
+ * @extends {anychart.core.ui.LabelsFactory}
+ */
+anychart.standalones.LabelsFactory = function() {
+  anychart.standalones.LabelsFactory.base(this, 'constructor');
+};
+goog.inherits(anychart.standalones.LabelsFactory, anychart.core.ui.LabelsFactory);
+anychart.core.makeStandalone(anychart.standalones.LabelsFactory, anychart.core.ui.LabelsFactory);
+
+
+/** @inheritDoc */
+anychart.standalones.LabelsFactory.prototype.createLabel = function() {
+  return new anychart.standalones.LabelsFactory.Label();
+};
+
+
+
+/**
+ * @constructor
+ * @extends {anychart.core.ui.LabelsFactory.Label}
+ */
+anychart.standalones.LabelsFactory.Label = function() {
+  anychart.standalones.LabelsFactory.Label.base(this, 'constructor');
+};
+goog.inherits(anychart.standalones.LabelsFactory.Label, anychart.core.ui.LabelsFactory.Label);
+
+
+/**
+ * Constructor function.
+ * @return {!anychart.standalones.LabelsFactory}
+ */
+anychart.standalones.labelsFactory = function() {
+  var factory = new anychart.standalones.LabelsFactory();
+  factory.setupInternal(true, anychart.getFullTheme('standalones.labelsFactory'));
+  return factory;
+};
+
+
 //endregion
 //region --- Exports
 //exports
@@ -2884,5 +2847,16 @@ anychart.core.ui.LabelsFactory.Label.prototype.disposeInternal = function() {
   // proto['adjustFontSize'] = proto.adjustFontSize;
   // proto['minFontSize'] = proto.minFontSize;
   // proto['maxFontSize'] = proto.maxFontSize;
+
+
+  proto = anychart.standalones.LabelsFactory.prototype;
+  goog.exportSymbol('anychart.standalones.labelsFactory', anychart.standalones.labelsFactory);
+  proto['draw'] = proto.draw;
+  proto['parentBounds'] = proto.parentBounds;
+  proto['container'] = proto.container;
+  proto['add'] = proto.add;
+  proto['clear'] = proto.clear;
+  proto['measure'] = proto.measure;
+  proto['measureWithTransform'] = proto.measureWithTransform;
 })();
 //endregion

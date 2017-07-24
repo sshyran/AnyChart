@@ -79,6 +79,22 @@ anychart.core.ChartWithOrthogonalScales = function(categorizeData) {
    * @protected
    */
   this.drawingPlansByXScale = {};
+
+  function beforeInvalidation() {
+    this.invalidateWidthBasedSeries();
+  }
+  anychart.core.settings.createDescriptorsMeta(this.descriptorsMeta, [
+    ['barGroupsPadding',
+      anychart.ConsistencyState.SERIES_CHART_SERIES | anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      0,
+      beforeInvalidation],
+    ['barsPadding',
+      anychart.ConsistencyState.SERIES_CHART_SERIES | anychart.ConsistencyState.BOUNDS,
+      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
+      0,
+      beforeInvalidation]
+  ]);
 };
 goog.inherits(anychart.core.ChartWithOrthogonalScales, anychart.core.ChartWithSeries);
 
@@ -115,28 +131,18 @@ anychart.core.ChartWithOrthogonalScales.prototype.SUPPORTED_CONSISTENCY_STATES =
 anychart.core.ChartWithOrthogonalScales.PROPERTY_DESCRIPTORS = (function() {
   /** @type {!Object.<string, anychart.core.settings.PropertyDescriptor>} */
   var map = {};
-  function beforeInvalidation() {
-    this.invalidateWidthBasedSeries();
-  }
+
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'barGroupsPadding',
-      anychart.utils.toNumber,
-      anychart.ConsistencyState.SERIES_CHART_SERIES | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-      0,
-      beforeInvalidation);
+      anychart.utils.toNumber);
 
   anychart.core.settings.createDescriptor(
       map,
       anychart.enums.PropertyHandlerType.SINGLE_ARG,
       'barsPadding',
-      anychart.utils.toNumber,
-      anychart.ConsistencyState.SERIES_CHART_SERIES | anychart.ConsistencyState.BOUNDS,
-      anychart.Signal.NEEDS_REDRAW | anychart.Signal.BOUNDS_CHANGED,
-      0,
-      beforeInvalidation);
+      anychart.utils.toNumber);
 
   return map;
 })();
@@ -370,7 +376,7 @@ anychart.core.ChartWithOrthogonalScales.prototype.makeScaleMaps = function() {
     anychart.core.Base.suspendSignalsDispatching(this.seriesList);
     var i, series;
     var seriesCount = this.seriesList.length;
-    var changed = false;
+    var changed = !seriesCount;
     var xScales = {};
     var yScales = {};
     for (i = 0; i < seriesCount; i++) {
@@ -695,6 +701,13 @@ anychart.core.ChartWithOrthogonalScales.prototype.calculateXScales = function() 
       if (xScale.needsAutoCalc())
         xScale.finishAutoCalc();
     }
+
+    //This action correctly resets scale domain when all series are removed.
+    if (goog.object.isEmpty(this.xScales) && this.xScale().needsAutoCalc()) {
+      this.xScale().startAutoCalc();
+      this.xScale().finishAutoCalc();
+    }
+
     this.markConsistent(anychart.ConsistencyState.SCALE_CHART_SCALES);
     anychart.performance.end('X scales and drawing plan calculation');
   }
@@ -997,6 +1010,11 @@ anychart.core.ChartWithOrthogonalScales.prototype.calculateYScales = function() 
         yScale.finishAutoCalc();
     }
 
+    //This action correctly resets scale domain when all series are removed.
+    if (goog.object.isEmpty(this.yScales) && this.yScale().needsAutoCalc()) {
+      this.yScale().startAutoCalc();
+      this.yScale().finishAutoCalc();
+    }
 
     this.invalidate(anychart.ConsistencyState.SCALE_CHART_STATISTICS | anychart.ConsistencyState.SCALE_CHART_SCALES_STATISTICS);
     this.markConsistent(anychart.ConsistencyState.SCALE_CHART_Y_SCALES);
@@ -2237,13 +2255,11 @@ anychart.core.ChartWithOrthogonalScales.prototype.setupSeriesByJSON = function(c
  */
 anychart.core.ChartWithOrthogonalScales.prototype.serializeSeries = function(json, scales, scaleIds) {
   var i;
-  var scale;
   var config;
   var seriesList = [];
   for (i = 0; i < this.seriesList.length; i++) {
     var series = this.seriesList[i];
     config = series.serialize();
-    scale = series.xScale();
     this.serializeScale(config, 'xScale', /** @type {anychart.scales.Base} */(series.xScale()), scales, scaleIds);
     this.serializeScale(config, 'yScale', /** @type {anychart.scales.Base} */(series.yScale()), scales, scaleIds);
     seriesList.push(config);
