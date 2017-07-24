@@ -338,13 +338,13 @@ anychart.core.settings.populateAliases = function(classConstructor, aliases, ali
     var alias = aliases[i];
     classConstructor.prototype[alias] = (function(propName) {
       return function(args) {
+        var calledAlias = this[aliasTo]();
         if (goog.isDef(arguments[0])) {
           //aliasTo[propName].apply(aliasTo, arguments);
-          var calledAlias = this[aliasTo]();
           calledAlias[propName].apply(calledAlias, arguments);
           return this;
         }
-        return aliasTo[propName]();
+        return calledAlias[propName]();
       }
     })(alias);
   }

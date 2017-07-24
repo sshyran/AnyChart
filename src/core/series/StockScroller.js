@@ -47,37 +47,6 @@ anychart.core.series.StockScroller = function(scroller, type, config) {
 goog.inherits(anychart.core.series.StockScroller, anychart.core.series.Stock);
 
 
-//region Legacy
-//----------------------------------------------------------------------------------------------------------------------
-//
-//  Legacy
-//
-//----------------------------------------------------------------------------------------------------------------------
-/**
- * @type {Function}
- */
-anychart.core.series.StockScroller.prototype['selectedFill'] = anychart.core.series.Base.prototype['selectFill'];
-
-
-/**
- * @type {Function}
- */
-anychart.core.series.StockScroller.prototype['selectedStroke'] = anychart.core.series.Base.prototype['selectStroke'];
-
-
-/**
- * @type {Function}
- */
-anychart.core.series.StockScroller.prototype['selectedRisingStroke'] = anychart.core.series.Base.prototype['selectRisingStroke'];
-
-
-/**
- * @type {Function}
- */
-anychart.core.series.StockScroller.prototype['selectedFallingStroke'] = anychart.core.series.Base.prototype['selectFallingStroke'];
-
-
-//endregion
 //region Config
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -104,6 +73,12 @@ anychart.core.series.StockScroller.prototype.applyConfig = function(config, opt_
       interactive, 'secondaryShapes', config.postProcessor);
 
   anychart.core.series.StockScroller.base(this, 'applyConfig', config, opt_reapplyClip);
+};
+
+
+/** @inheritDoc */
+anychart.core.series.StockScroller.prototype.isScrollerSeries = function() {
+  return true;
 };
 
 
@@ -242,23 +217,4 @@ anychart.core.series.StockScroller.prototype.applyZIndex = function() {
 };
 
 
-//endregion
-//region Serialization/Deserialization
-//----------------------------------------------------------------------------------------------------------------------
-//
-//  Serialization/Deserialization
-//
-//----------------------------------------------------------------------------------------------------------------------
-/**
- * @inheritDoc
- */
-anychart.core.series.StockScroller.prototype.setupByJSON = function(config, opt_default) {
-  anychart.core.series.StockScroller.base(this, 'setupByJSON', config, opt_default);
-
-  // Legacy
-  this['selectedFill'](config['selectFill']);
-  this['selectedStroke'](config['selectStroke']);
-  this['selectedRisingStroke'](config['selectRisingStroke']);
-  this['selectedFallingStroke'](config['selectFallingStroke']);
-};
 //endregion

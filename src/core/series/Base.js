@@ -1118,6 +1118,15 @@ anychart.core.series.Base.prototype.isLineBased = function() {
 
 
 /**
+ * Tester if the series is scroller series.
+ * @return {boolean}
+ */
+anychart.core.series.Base.prototype.isScrollerSeries = function() {
+  return false;
+};
+
+
+/**
  * Tester if it is a series.
  * @return {boolean}
  */
@@ -2109,6 +2118,10 @@ anychart.core.series.Base.prototype.resolveOption = function(names, state, point
       val = this.getOption(name);
       if (goog.isDef(val))
         return normalizer(val);
+    }
+    if (names.length == 1 && (names[0].indexOf('select') != -1) && this.isScrollerSeries()) {
+      name = anychart.utils.decapitalize(names[0].replace('select', ''));
+      stateObject = this.selected_;
     }
     val = stateObject.ownSettings[name];
     if (!goog.isDefAndNotNull(val)) {
