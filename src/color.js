@@ -555,7 +555,7 @@ anychart.color.getColorResolver = function(colorNames, colorType) {
   } else {
     result = anychart.color.colorResolversCache['transparent'];
     if (!result)
-      result = anychart.color.colorResolversCache['transparent'] = function() {return anychart.color.TRANSPARENT_HANDLER};
+      result = anychart.color.colorResolversCache['transparent'] = function() { return anychart.color.TRANSPARENT_HANDLER; };
   }
   return result;
 };
@@ -667,7 +667,7 @@ anychart.color.getColorResolver2 = function(colorNames, colorType) {
  * @param {Array.<string>} colorNames
  * @param {!Function} normalizer
  * @param {boolean} isHatchFill
- * @param {anychart.core.IShapeManagerUser|anychart.charts.PyramidFunnel} series
+ * @param {anychart.core.IShapeManagerUser} series
  * @param {number} state
  * @param {boolean=} opt_ignorePointSettings
  * @param {boolean=} opt_ignoreColorScale
@@ -678,7 +678,7 @@ anychart.color.getColor2 = function(colorNames, normalizer, isHatchFill, series,
   state = Math.min(state & (anychart.PointState.HOVER | anychart.PointState.SELECT),
       anychart.PointState.SELECT);
   if (state != anychart.PointState.NORMAL && colorNames.length > 1) {
-    stateColor = /** @type {anychart.charts.PyramidFunnel} */ (series).resolveOption(colorNames, state, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+    stateColor = series.resolveOption(colorNames, state, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
     if (isHatchFill && stateColor === true)
       stateColor = normalizer(series.getAutoHatchFill());
     if (goog.isDef(stateColor)) {
@@ -691,7 +691,7 @@ anychart.color.getColor2 = function(colorNames, normalizer, isHatchFill, series,
     }
   }
   // we can get here only if state color is undefined or is a function
-  var color = /** @type {anychart.charts.PyramidFunnel} */ (series).resolveOption(colorNames, 0, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
+  var color = series.resolveOption(colorNames, 0, series.getIterator(), normalizer, void 0, opt_ignorePointSettings);
   if (isHatchFill && color === true)
     color = normalizer(series.getAutoHatchFill());
   if (goog.isFunction(color)) {
