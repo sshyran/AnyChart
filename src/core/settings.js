@@ -345,7 +345,7 @@ anychart.core.settings.populateAliases = function(classConstructor, aliases, ali
           return this;
         }
         return calledAlias[propName]();
-      }
+      };
     })(alias);
   }
 };

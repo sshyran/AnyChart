@@ -3008,7 +3008,7 @@ anychart.pieModule.Chart.prototype.createLegendItemsProvider = function(sourceMo
    */
   var data = [];
   var iterator = this.getIterator().reset();
-  var x, index;
+  var index;
   var isAqua = (this.normal_.getOption('fill') == 'aquastyle');
   if (isAqua) {
     /** @type {Object} */

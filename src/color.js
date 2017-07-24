@@ -656,7 +656,7 @@ anychart.color.getColorResolver2 = function(colorNames, colorType) {
   } else {
     result = anychart.color.colorResolversCache2['transparent'];
     if (!result)
-      result = anychart.color.colorResolversCache2['transparent'] = function() {return anychart.color.TRANSPARENT_HANDLER};
+      result = anychart.color.colorResolversCache2['transparent'] = function() { return anychart.color.TRANSPARENT_HANDLER; };
   }
   return result;
 };

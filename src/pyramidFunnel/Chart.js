@@ -1624,6 +1624,7 @@ anychart.core.settings.populate(anychart.pyramidFunnelModule.Chart, anychart.pyr
 
 //region --- anychart.core.IShapeManagerUser implementation
 /**
+ * Returns proper settings due to the state if point settings are supported by the IShapeManagerUser.
  * @param {Array.<string>} names
  * @param {number} state
  * @param {anychart.data.IRowInfo} point

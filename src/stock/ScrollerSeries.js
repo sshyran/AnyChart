@@ -77,7 +77,7 @@ anychart.stockModule.ScrollerSeries.prototype.applyConfig = function(config, opt
 
 
 /** @inheritDoc */
-anychart.core.series.StockScroller.prototype.isScrollerSeries = function() {
+anychart.stockModule.ScrollerSeries.prototype.isScrollerSeries = function() {
   return true;
 };
 

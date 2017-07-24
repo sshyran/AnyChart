@@ -216,10 +216,7 @@ anychart.core.series.Base = function(chart, plot, type, config) {
     ['size',
       anychart.ConsistencyState.SERIES_POINTS,
       anychart.Signal.NEEDS_REDRAW,
-      anychart.core.drawers.Capabilities.IS_MARKER_BASED]
-  ]);
-  var aliases = goog.object.getKeys(normalDescriptorsMeta);
-  anychart.core.settings.createDescriptorsMeta(normalDescriptorsMeta, [
+      anychart.core.drawers.Capabilities.IS_MARKER_BASED],
     ['labels', 0, 0, 0, this.labelsInvalidated_, this],
     ['markers', 0, 0, 0, this.markersInvalidated_, this],
     ['outlierMarkers', 0, 0, 0, this.outlierMarkersInvalidated_, this]
@@ -2183,7 +2180,7 @@ anychart.core.series.Base.prototype.prepareFactory = function(factory, stateFact
 
 /**
  * Draws element(s) for point.
- * @param {Array.<function(this:anychart.core.series.Base):(anychart.core.ui.LabelsFactory|anychart.core.ui.MarkersFactory)>} seriesFactoryGetters
+ * @param {Array.<function(this:anychart.core.StateSettings):(anychart.core.ui.LabelsFactory|anychart.core.ui.MarkersFactory)>} seriesFactoryGetters
  * @param {Array.<function(this:anychart.core.IChart):(anychart.core.ui.LabelsFactory|anychart.core.ui.MarkersFactory)>} chartFactoryGetters
  * @param {Array.<string>} overrideNames
  * @param {boolean} hasPointOverrides
