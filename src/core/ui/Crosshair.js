@@ -17,7 +17,7 @@ anychart.core.ui.Crosshair = function() {
   anychart.core.ui.Crosshair.base(this, 'constructor');
 
   /**
-   * @type {anychart.core.ChartWithAxes|anychart.charts.Map|anychart.charts.Stock|anychart.core.stock.Plot}
+   * @type {anychart.core.ChartWithAxes|anychart.mapModule.Chart|anychart.stockModule.Chart|anychart.stockModule.Plot}
    * @protected
    */
   this.chart = null;
@@ -30,13 +30,13 @@ anychart.core.ui.Crosshair = function() {
   this.barChartMode_ = false;
 
   /**
-   * @type {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime}
+   * @type {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis}
    * @private
    */
   this.xAxis_ = null;
 
   /**
-   * @type {anychart.core.axes.Linear|anychart.core.axes.Map}
+   * @type {anychart.core.Axis|anychart.mapModule.elements.Axis}
    * @private
    */
   this.yAxis_ = null;
@@ -313,8 +313,8 @@ anychart.core.ui.Crosshair.prototype.barChartMode = function(opt_value) {
 
 /**
  *
- * @param {(anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime)=} opt_value
- * @return {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime|anychart.core.ui.Crosshair}
+ * @param {(anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis)=} opt_value
+ * @return {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis|anychart.core.ui.Crosshair}
  */
 anychart.core.ui.Crosshair.prototype.xAxis = function(opt_value) {
   if (goog.isDef(opt_value)) {
@@ -342,8 +342,8 @@ anychart.core.ui.Crosshair.prototype.xAxis = function(opt_value) {
 
 /**
  *
- * @param {(anychart.core.axes.Linear|anychart.core.axes.Map)=} opt_value
- * @return {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.ui.Crosshair}
+ * @param {(anychart.core.Axis|anychart.mapModule.elements.Axis)=} opt_value
+ * @return {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.core.ui.Crosshair}
  */
 anychart.core.ui.Crosshair.prototype.yAxis = function(opt_value) {
   if (goog.isDef(opt_value)) {
@@ -371,7 +371,7 @@ anychart.core.ui.Crosshair.prototype.yAxis = function(opt_value) {
 
 /**
  *
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
+ * @param {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis} axis
  * @return {anychart.enums.Anchor}
  * @private
  */
@@ -501,7 +501,7 @@ anychart.core.ui.Crosshair.prototype.invalidate = function(state, opt_signal) {
 //endregion
 /**
  *
- * @param {(anychart.core.ChartWithAxes|anychart.charts.Map|anychart.core.stock.Plot)=} opt_chart
+ * @param {(anychart.core.ChartWithAxes|anychart.mapModule.Chart|anychart.stockModule.Chart|anychart.stockModule.Plot)=} opt_chart
  */
 anychart.core.ui.Crosshair.prototype.bindHandlers = function(opt_chart) {
   if (opt_chart) {
@@ -656,7 +656,7 @@ anychart.core.ui.Crosshair.prototype.hideY = function() {
 
 /**
  * Checks whether scale for axis can return a value.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis Axis.
+ * @param {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis} axis Axis.
  * @return {boolean} Is scale of axis can resolve defined ratio.
  */
 anychart.core.ui.Crosshair.prototype.canDrawForAxis = function(axis) {
@@ -835,7 +835,7 @@ anychart.core.ui.Crosshair.prototype.autoHighlightX = function(x, opt_showXLabel
 
 /**
  * Get the coordinate on the axis scale, given the type of scale.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
+ * @param {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis} axis
  * @param {number} ratio Current ratio.
  * @param {number} coord Current mouse coordinate.
  * @return {number}
@@ -857,7 +857,7 @@ anychart.core.ui.Crosshair.prototype.prepareCoordinate_ = function(axis, ratio, 
 
 /**
  * Get the label position, given the type of scale and axis orientation.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
+ * @param {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis} axis
  * @param {anychart.core.ui.CrosshairLabel} label
  * @param {number} mouseX
  * @param {number} mouseY
@@ -935,7 +935,7 @@ anychart.core.ui.Crosshair.prototype.isLabelAnchorTop = function(label) {
 
 /**
  * Gets format provider for label.
- * @param {anychart.core.axes.Linear|anychart.core.axes.Map|anychart.core.axes.StockDateTime} axis
+ * @param {anychart.core.Axis|anychart.mapModule.elements.Axis|anychart.stockModule.Axis} axis
  * @param {number} ratio
  * @return {Object} Labels format provider.
  * @protected
